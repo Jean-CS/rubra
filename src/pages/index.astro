@@ -62,6 +62,7 @@ const communities = [
 const institutions = [
 	{
 		name: "SENAI",
+		website: "https://www.senaipr.org.br/",
 		type: "Formação técnica",
 		indexType: "TEC",
 		description:
@@ -72,6 +73,7 @@ const institutions = [
 	},
 	{
 		name: "UTFPR",
+		website: "https://www.utfpr.edu.br/campus/londrina",
 		type: "Universidade",
 		indexType: "PUB",
 		description:
@@ -82,6 +84,7 @@ const institutions = [
 	},
 	{
 		name: "IFPR",
+		website: "https://londrina.ifpr.edu.br/",
 		type: "Instituto",
 		indexType: "IF",
 		description:
@@ -92,6 +95,7 @@ const institutions = [
 	},
 	{
 		name: "UEL",
+		website: "https://portal.uel.br/",
 		type: "Universidade",
 		indexType: "UNI",
 		description:
@@ -102,6 +106,7 @@ const institutions = [
 	},
 	{
 		name: "Positivo",
+		website: "https://www.up.edu.br/",
 		type: "Ensino superior",
 		indexType: "UNI",
 		description:
@@ -112,6 +117,7 @@ const institutions = [
 	},
 	{
 		name: "UNOPAR Anhanguera",
+		website: "https://www.anhanguera.com/",
 		type: "Ensino superior",
 		indexType: "UNI",
 		description:
@@ -122,6 +128,7 @@ const institutions = [
 	},
 	{
 		name: "UniCesumar",
+		website: "https://www.unicesumar.edu.br/conheca-a-unicesumar/estrutura-londrina/",
 		type: "Ensino superior",
 		indexType: "UNI",
 		description:
@@ -132,6 +139,7 @@ const institutions = [
 	},
 	{
 		name: "UniFil",
+		website: "https://unifil.br/",
 		type: "Centro universitário",
 		indexType: "UNI",
 		description:
@@ -259,7 +267,7 @@ const signals = [
 				<span>comunidades iniciais</span>
 			</div>
 			<div>
-				<strong>8</strong>
+				<strong>{institutions.length}</strong>
 				<span>Instituições de Ensino</span>
 			</div>
 		</section>
@@ -345,10 +353,24 @@ const signals = [
 								))}
 							</div>
 							<div class="card-footer">
-								<span>{institution.indexType}</span>
-								<a href="#indicar" aria-label={`Atualizar dados de ${institution.name}`}>
-									Atualizar
+								<a
+									class="website-link"
+									href={institution.website}
+									target="_blank"
+									rel="noopener noreferrer"
+									aria-label={`Abrir site de ${institution.name} em nova aba`}
+								>
+									<svg aria-hidden="true" viewBox="0 0 24 24">
+										<circle cx="12" cy="12" r="10"></circle>
+										<path d="M2 12h20"></path>
+										<path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+									</svg>
 								</a>
+								<div class="card-actions">
+									<a href="#indicar" aria-label={`Atualizar dados de ${institution.name}`}>
+										Atualizar
+									</a>
+								</div>
 							</div>
 						</article>
 					))
@@ -1035,6 +1057,12 @@ const signals = [
 		color: var(--steel);
 	}
 
+	.card-actions {
+		display: inline-flex;
+		align-items: center;
+		gap: 10px;
+	}
+
 	.card-footer a {
 		color: color-mix(in srgb, var(--steel) 82%, transparent);
 		font-size: 0.62rem;
@@ -1047,6 +1075,41 @@ const signals = [
 
 	.card-footer a:hover {
 		color: var(--ink);
+	}
+
+	.card-footer .website-link {
+		display: inline-grid;
+		width: 34px;
+		height: 34px;
+		place-items: center;
+		border: 1px solid transparent;
+		background: transparent;
+		color: color-mix(in srgb, var(--steel) 82%, transparent);
+		text-decoration: none;
+		transition: transform 160ms ease, background 160ms ease, border-color 160ms ease;
+	}
+
+	.card-footer .website-link:hover,
+	.card-footer .website-link:focus-visible {
+		border-color: color-mix(in srgb, var(--accent) 68%, var(--ink));
+		background: rgba(255, 255, 255, 0.36);
+		transform: translateY(-1px);
+	}
+
+	.card-footer .website-link:active {
+		border-color: var(--ink);
+		background: var(--accent);
+		transform: translateY(0);
+	}
+
+	.website-link svg {
+		width: 17px;
+		height: 17px;
+		fill: none;
+		stroke: currentColor;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+		stroke-width: 1.9;
 	}
 
 	.signal-section {
