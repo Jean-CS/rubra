@@ -1036,9 +1036,17 @@ const signals = [
 	}
 
 	.card-footer a {
+		color: color-mix(in srgb, var(--steel) 82%, transparent);
+		font-size: 0.62rem;
+		font-weight: 600;
+		text-decoration: underline;
+		text-decoration-thickness: 1px;
+		text-underline-offset: 3px;
+		transition: color 160ms ease, opacity 160ms ease;
+	}
+
+	.card-footer a:hover {
 		color: var(--ink);
-		text-decoration-thickness: 2px;
-		text-underline-offset: 4px;
 	}
 
 	.signal-section {
