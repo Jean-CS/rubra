@@ -53,7 +53,7 @@ const ecosystemTracks = [
 ];
 
 const signals = [
-	"Call for speakers",
+	"Call for papers",
 	"Agenda compartilhada",
 	"Novas comunidades",
 	"Instituições de Ensino",
@@ -123,7 +123,7 @@ const signals = [
 						</div>
 					</div>
 					<div class="panel-footer">
-						<span>{communities.length + institutions.length} entradas iniciais</span>
+						<span>{communities.length + institutions.length} entradas mapeadas</span>
 						<span>Aberto para novas indicações</span>
 					</div>
 				</div>
@@ -137,7 +137,7 @@ const signals = [
 			</div>
 			<div>
 				<strong>{communities.length}</strong>
-				<span>comunidades iniciais</span>
+				<span>comunidades mapeadas</span>
 			</div>
 			<div>
 				<strong>{institutions.length}</strong>
@@ -160,11 +160,11 @@ const signals = [
 		<section class="section directory-section" id="comunidades" aria-labelledby="directory-title">
 			<div class="section-heading">
 				<div>
-					<p class="section-kicker">Diretório inicial</p>
+					<p class="section-kicker">Diretório regional</p>
 					<h2 id="directory-title">Comunidades em destaque</h2>
 				</div>
 				<p>
-					Um primeiro mapa, feito para crescer com contribuições dos próprios organizadores.
+					Um mapa vivo, feito para crescer com contribuições dos próprios organizadores.
 				</p>
 			</div>
 
@@ -203,7 +203,7 @@ const signals = [
 				</div>
 				<p>
 					Universidades, institutos e centros de formação entram no mapa porque também
-					abrem portas para estudantes, projetos, pesquisa, eventos e primeiras conexões
+					abrem portas para estudantes, projetos, pesquisa, eventos e novas conexões
 					com a cena local.
 				</p>
 			</div>
@@ -252,7 +252,11 @@ const signals = [
 		<section class="signal-section" id="sinais" aria-labelledby="signals-title">
 			<div class="signal-copy">
 				<p class="section-kicker">Sinais da região</p>
-				<h2 id="signals-title">Um radar para o que está acontecendo agora.</h2>
+				<h2 id="signals-title">Acompanhe</h2>
+				<p>
+					Um resumo dos movimentos que ajudam a cena local a se encontrar: chamadas abertas,
+					agendas compartilhadas, novas comunidades, meetups e oportunidades para estudantes.
+				</p>
 			</div>
 			<div class="signal-board" aria-label="Sinais do ecossistema">
 				{
@@ -987,44 +991,76 @@ const signals = [
 
 	.signal-section {
 		display: grid;
-		grid-template-columns: minmax(0, 0.55fr) minmax(0, 1fr);
-		gap: clamp(28px, 6vw, 76px);
-		align-items: center;
+		grid-template-columns: minmax(430px, 0.36fr) minmax(0, 1fr);
+		gap: clamp(36px, 6vw, 88px);
+		align-items: start;
 		padding-top: 110px;
 	}
 
+	.signal-copy {
+		position: relative;
+		z-index: 2;
+		min-width: 0;
+	}
+
 	.signal-copy h2 {
-		font-size: clamp(2.6rem, 5vw, 5.4rem);
+		max-width: 7ch;
+		margin-bottom: 18px;
+		font-size: clamp(2.8rem, 4.8vw, 5.1rem);
+		overflow-wrap: normal;
+		text-wrap: balance;
+	}
+
+	.signal-copy p:not(.section-kicker) {
+		max-width: 420px;
+		margin: 0;
+		color: #4a3c31;
+		font-size: 1.02rem;
+		line-height: 1.62;
+		text-wrap: pretty;
 	}
 
 	.signal-board {
+		position: relative;
 		display: flex;
 		flex-wrap: wrap;
-		gap: 10px;
-		align-content: center;
-		min-height: 280px;
-		padding: 24px;
-		border: 1px solid var(--ink);
-		background:
-			linear-gradient(135deg, rgba(185, 67, 43, 0.9), rgba(185, 209, 91, 0.78)),
-			var(--lime);
-		box-shadow: 6px 6px 0 var(--ink);
+		gap: 12px;
+		align-content: flex-start;
+		justify-content: flex-end;
+		min-height: 0;
+		margin-top: clamp(52px, 7vw, 92px);
+		padding: clamp(20px, 3vw, 30px) 0 0;
+		border-top: 2px solid var(--ink);
 	}
 
 	.signal-board span {
+		position: relative;
 		display: inline-flex;
 		align-items: center;
-		min-height: 40px;
-		padding: 0 13px;
-		border: 1px solid rgba(22, 15, 11, 0.34);
-		background: rgba(248, 241, 231, 0.72);
+		min-height: 44px;
+		padding: 0 15px;
+		border: 1px solid var(--ink);
+		background: var(--paper);
 		color: var(--ink);
 		font-family: var(--mono);
 		font-size: 0.75rem;
 		font-weight: 600;
 		text-transform: uppercase;
+		box-shadow: 4px 4px 0 var(--ink);
 		animation: signal-rise 700ms ease both;
 		animation-delay: var(--delay);
+	}
+
+	.signal-board span:nth-child(3n + 1) {
+		background: var(--lime);
+	}
+
+	.signal-board span:nth-child(3n + 2) {
+		box-shadow: 4px 4px 0 var(--cyan);
+	}
+
+	.signal-board span:nth-child(3n) {
+		box-shadow: 4px 4px 0 var(--red);
 	}
 
 	.submit-section {
