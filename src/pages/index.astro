@@ -1,165 +1,29 @@
 ---
+import { getCollection } from "astro:content";
 import Layout from "../layouts/Layout.astro";
 
-const communities = [
-	{
-		name: "GDG Ladies",
-		type: "Mulheres em tecnologia",
-		indexType: "GDG",
-		description:
-			"Braço do GDG Londrina focado em trocas entre mulheres da tecnologia, criando um espaço próprio para conexão, apoio e aprendizado.",
-		cadence: "Trocas e encontros",
-		status: "Ativa",
-		accent: "violet",
-		tags: ["Mulheres", "Tecnologia", "Networking"],
-	},
-	{
-		name: "GDG Londrina",
-		type: "Developers",
-		indexType: "DEV",
-		description:
-			"Comunidade local para pessoas que criam com Google technologies, web, cloud, mobile e práticas modernas de desenvolvimento.",
-		cadence: "Meetups e eventos",
-		status: "Ativa",
-		accent: "red",
-		tags: ["Web", "Cloud", "Android"],
-	},
-	{
-		name: "IA Londrina",
-		type: "Inteligência Artificial",
-		indexType: "IA",
-		description:
-			"Espaço para explorar IA aplicada, agentes, automação, pesquisa, produtos e conversas técnicas sobre o que está surgindo.",
-		cadence: "Encontros abertos",
-		status: "Ativa",
-		accent: "violet",
-		tags: ["AI", "LLMs", "Automação"],
-	},
-	{
-		name: "Londrina Hacker Club",
-		type: "Hacker culture",
-		indexType: "HACK",
-		description:
-			"Um ponto de encontro para segurança, cultura hacker, hardware, software livre, curiosidade técnica e experimentos práticos.",
-		cadence: "Comunidade local",
-		status: "Ativa",
-		accent: "lime",
-		tags: ["Security", "Hardware", "Labs"],
-	},
-	{
-		name: "Londrina Tech",
-		type: "Ecossistema",
-		indexType: "HUB",
-		description:
-			"Uma nova frente para conectar pessoas, empresas, eventos e iniciativas que fortalecem a cena tech de Londrina e região.",
-		cadence: "Em construção",
-		status: "Nova",
-		accent: "cyan",
-		tags: ["Networking", "Eventos", "Startups"],
-	},
-	{
-		name: "Redfoot",
-		type: "Startups",
-		indexType: "START",
-		description:
-			"Comunidade de startups do norte e noroeste do Paraná, também conhecida como Redfoot Brasil ou Redfoot Startup Community.",
-		cadence: "Meetups e mentorias",
-		status: "Ativa",
-		accent: "coral",
-		tags: ["Startups", "Inovação", "Meetups"],
-	},
-];
+const sortByName = <T extends { name: string }>(items: T[]) =>
+	items.sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
 
-const institutions = [
-	{
-		name: "IFPR",
-		website: "https://londrina.ifpr.edu.br/",
-		type: "Instituto",
-		indexType: "IF",
-		description:
-			"Ensino técnico, superior e extensão pública, com potencial de conexão entre estudantes, tecnologia e iniciativas locais.",
-		profile: "Federal",
-		accent: "violet",
-		tags: ["Público", "Técnico", "Extensão"],
-	},
-	{
-		name: "Positivo",
-		website: "https://www.up.edu.br/",
-		type: "Ensino superior",
-		indexType: "UNI",
-		description:
-			"Instituição privada com cursos superiores, programas de formação e projetos aplicados em áreas conectadas à tecnologia.",
-		profile: "Privada",
-		accent: "cyan",
-		tags: ["Privada", "Graduação", "Mercado"],
-	},
-	{
-		name: "SENAI",
-		website: "https://www.senaipr.org.br/",
-		type: "Formação técnica",
-		indexType: "TEC",
-		description:
-			"Formação técnica, cursos profissionalizantes e trilhas conectadas à indústria, automação, tecnologia e desenvolvimento de talentos.",
-		profile: "Sistema S",
-		accent: "lime",
-		tags: ["Técnico", "Indústria", "Carreira"],
-	},
-	{
-		name: "UEL",
-		website: "https://portal.uel.br/",
-		type: "Universidade",
-		indexType: "UNI",
-		description:
-			"Universidade estadual com Ciência da Computação no CCE, laboratórios, pesquisa, extensão e pós-graduação acadêmica na área.",
-		profile: "Estadual",
-		accent: "coral",
-		tags: ["Estadual", "Pesquisa", "Extensão"],
-	},
-	{
-		name: "UNOPAR Anhanguera",
-		website: "https://www.anhanguera.com/",
-		type: "Ensino superior",
-		indexType: "UNI",
-		description:
-			"Presença educacional ampla em Londrina, com cursos presenciais e digitais que alcançam muitos estudantes da região.",
-		profile: "Privada",
-		accent: "lime",
-		tags: ["Graduação", "Digital", "Carreira"],
-	},
-	{
-		name: "UniCesumar",
-		website: "https://www.unicesumar.edu.br/conheca-a-unicesumar/estrutura-londrina/",
-		type: "Ensino superior",
-		indexType: "UNI",
-		description:
-			"Instituição com cursos superiores e formação continuada, conectando estudantes locais a trilhas profissionais e digitais.",
-		profile: "Privada",
-		accent: "coral",
-		tags: ["Graduação", "EAD", "Profissional"],
-	},
-	{
-		name: "UniFil",
-		website: "https://unifil.br/",
-		type: "Centro universitário",
-		indexType: "UNI",
-		description:
-			"Centro universitário com histórico em cursos de tecnologia, incluindo Ciência da Computação, Engenharia de Software e ADS.",
-		profile: "Privada",
-		accent: "violet",
-		tags: ["Local", "Graduação", "Projetos"],
-	},
-	{
-		name: "UTFPR",
-		website: "https://www.utfpr.edu.br/campus/londrina",
-		type: "Universidade",
-		indexType: "PUB",
-		description:
-			"Instituição federal com presença em engenharia, computação, pesquisa aplicada e formação tecnológica no norte do Paraná.",
-		profile: "Federal",
-		accent: "cyan",
-		tags: ["Federal", "Pesquisa", "Engenharia"],
-	},
-];
+const communities = sortByName(
+	(await getCollection("communities", ({ data }) => data.draft !== true)).map(
+		({ data }) => data,
+	),
+);
+
+const institutions = sortByName(
+	(await getCollection("institutions", ({ data }) => data.draft !== true)).map(
+		({ data }) => data,
+	),
+);
+
+const githubIssueBaseUrl = "https://github.com/jeancs/comunidades/issues/new";
+const communityIssueUrl = `${githubIssueBaseUrl}?template=indicar-comunidade.yml`;
+const institutionIssueUrl = `${githubIssueBaseUrl}?template=indicar-instituicao.yml`;
+const communityUpdateIssueUrl = (name: string) =>
+	`${communityIssueUrl}&title=${encodeURIComponent(`Atualizar comunidade: ${name}`)}`;
+const institutionUpdateIssueUrl = (name: string) =>
+	`${institutionIssueUrl}&title=${encodeURIComponent(`Atualizar instituição: ${name}`)}`;
 
 const ecosystemTracks = [
 	{
@@ -325,7 +189,7 @@ const signals = [
 							</div>
 							<div class="card-footer">
 								<span>{community.cadence}</span>
-								<a href="#indicar" aria-label={`Atualizar dados de ${community.name}`}>
+								<a href={communityUpdateIssueUrl(community.name)} aria-label={`Atualizar dados de ${community.name}`}>
 									Atualizar
 								</a>
 							</div>
@@ -378,7 +242,7 @@ const signals = [
 									</svg>
 								</a>
 								<div class="card-actions">
-									<a href="#indicar" aria-label={`Atualizar dados de ${institution.name}`}>
+									<a href={institutionUpdateIssueUrl(institution.name)} aria-label={`Atualizar dados de ${institution.name}`}>
 										Atualizar
 									</a>
 								</div>
@@ -423,10 +287,10 @@ const signals = [
 					</p>
 				</div>
 				<div class="submit-actions">
-					<a class="button button-primary" href="mailto:hello@comunidades.dev?subject=Indicar comunidade">
+					<a class="button button-primary" href={communityIssueUrl}>
 						Indicar comunidade
 					</a>
-					<a class="button button-secondary" href="mailto:hello@comunidades.dev?subject=Indicar Instituicao de Ensino">
+					<a class="button button-secondary" href={institutionIssueUrl}>
 						Indicar Instituição de Ensino
 					</a>
 				</div>

@@ -1,0 +1,85 @@
+name: Indicar ou atualizar comunidade
+description: Sugira uma comunidade, meetup, coletivo, lab ou iniciativa recorrente de tecnologia em Londrina e região.
+title: "[Comunidade] "
+labels:
+  - contribuicao
+  - comunidade
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Obrigado por ajudar a manter o mapa vivo. As informações passam por curadoria manual antes de entrar no site.
+  - type: dropdown
+    id: request-type
+    attributes:
+      label: Tipo de solicitação
+      options:
+        - Nova comunidade
+        - Atualização de comunidade existente
+    validations:
+      required: true
+  - type: input
+    id: name
+    attributes:
+      label: Nome da comunidade
+      placeholder: GDG Londrina
+    validations:
+      required: true
+  - type: input
+    id: link
+    attributes:
+      label: Link público
+      description: Site, Instagram, LinkedIn, Meetup, grupo público ou outra página verificável.
+      placeholder: https://...
+    validations:
+      required: true
+  - type: input
+    id: type
+    attributes:
+      label: Tipo
+      description: Uma categoria curta para aparecer no card.
+      placeholder: Developers, Inteligência Artificial, Mulheres em tecnologia
+    validations:
+      required: true
+  - type: input
+    id: cadence
+    attributes:
+      label: Cadência ou formato
+      description: Como a comunidade costuma se reunir ou atuar.
+      placeholder: Meetups e eventos
+    validations:
+      required: true
+  - type: dropdown
+    id: status
+    attributes:
+      label: Status
+      options:
+        - Ativa
+        - Nova
+        - Em construção
+        - Pausada
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Descrição sugerida
+      description: Escreva 1 ou 2 frases objetivas, sem tom promocional exagerado.
+      placeholder: Comunidade local para pessoas que...
+    validations:
+      required: true
+  - type: input
+    id: tags
+    attributes:
+      label: Tags
+      description: Informe de 1 a 5 tags separadas por vírgula.
+      placeholder: Web, Cloud, Android
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Como verificar?
+      description: Inclua links, perfis de organizadores, eventos recentes ou contexto local que ajude na curadoria.
+    validations:
+      required: true

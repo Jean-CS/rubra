@@ -1,0 +1,78 @@
+name: Indicar ou atualizar instituição de ensino
+description: Sugira uma universidade, instituto, centro de formação ou curso relevante para tecnologia em Londrina e região.
+title: "[Instituição] "
+labels:
+  - contribuicao
+  - instituicao
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Obrigado por ajudar a manter o mapa vivo. As informações passam por curadoria manual antes de entrar no site.
+  - type: dropdown
+    id: request-type
+    attributes:
+      label: Tipo de solicitação
+      options:
+        - Nova instituição
+        - Atualização de instituição existente
+    validations:
+      required: true
+  - type: input
+    id: name
+    attributes:
+      label: Nome da instituição
+      placeholder: UEL
+    validations:
+      required: true
+  - type: input
+    id: website
+    attributes:
+      label: Site oficial
+      placeholder: https://...
+    validations:
+      required: true
+  - type: input
+    id: type
+    attributes:
+      label: Tipo
+      description: Uma categoria curta para aparecer no card.
+      placeholder: Universidade, Instituto, Formação técnica
+    validations:
+      required: true
+  - type: dropdown
+    id: profile
+    attributes:
+      label: Perfil
+      options:
+        - Federal
+        - Estadual
+        - Municipal
+        - Privada
+        - Sistema S
+        - Comunitária
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Descrição sugerida
+      description: Escreva 1 ou 2 frases objetivas sobre a relação com formação, pesquisa, extensão, cursos ou tecnologia.
+      placeholder: Instituição com cursos superiores e...
+    validations:
+      required: true
+  - type: input
+    id: tags
+    attributes:
+      label: Tags
+      description: Informe de 1 a 5 tags separadas por vírgula.
+      placeholder: Pesquisa, Extensão, Graduação
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Como verificar?
+      description: Inclua páginas de cursos, projetos, campus, eventos, extensão ou outro contexto útil.
+    validations:
+      required: true
