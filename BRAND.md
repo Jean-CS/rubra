@@ -2,15 +2,15 @@
 
 ## Core Idea
 
-Comunidades is the central map for Londrina's tech ecosystem. It helps developers, founders, designers, AI builders, students, hackers, and curious locals discover the communities, educational institutions, events, initiatives, and people already shaping the city's technology scene.
+Comunidades is the central map for the tech ecosystem around Londrina and its metropolitan region. It helps developers, founders, designers, AI builders, students, hackers, and curious locals discover the communities, educational institutions, events, initiatives, and people already shaping the region's technology scene.
 
 The product should feel like a premium civic-tech layer over the local ecosystem: polished enough to signal quality, warm enough to feel community-owned, and lively enough to make people want to participate.
 
 ## Positioning
 
-**One-liner:** The front door to Londrina's tech scene.
+**One-liner:** The front door to the Londrina region's tech scene.
 
-**Audience:** People in and around Londrina who want to find tech communities, discover educational institutions, attend events, meet peers, organize meetups, or understand what is happening locally.
+**Audience:** People in Londrina and its metropolitan region who want to find tech communities, discover educational institutions, attend events, meet peers, organize meetups, or understand what is happening locally. This includes people who commute into Londrina for work, study, and events because it is the biggest city in northern Paraná.
 
 **Promise:** No more scattered links, private circles, or "I wish I knew this existed earlier." Comunidades makes the local tech scene visible.
 
@@ -45,7 +45,7 @@ Imagine a refined city map, a conference badge wall, and a high-end startup laun
 
 **Recommended hero headline:** A porta de entrada para a cena tech de Londrina.
 
-**Hero subheadline:** Encontre comunidades, Instituições de Ensino, eventos e pessoas de tecnologia em um só lugar, de GDG Londrina ao Londrina Hacker Club, UEL, UTFPR, SENAI e novas iniciativas surgindo pela cidade.
+**Hero subheadline:** Encontre comunidades, Instituições de Ensino, eventos e pessoas de tecnologia em um só lugar, de GDG Londrina ao Londrina Hacker Club, UEL, UTFPR, SENAI e novas iniciativas surgindo pela região metropolitana.
 
 **Primary CTA:** Explorar o mapa
 
@@ -56,7 +56,7 @@ Imagine a refined city map, a conference badge wall, and a high-end startup laun
 - Descubra comunidades ativas sem depender de grupos fechados ou links perdidos.
 - Veja quais Instituições de Ensino formam, conectam e aproximam novas pessoas da tecnologia.
 - Veja eventos, encontros e iniciativas em uma agenda compartilhada.
-- Encontre espaços para aprender, palestrar, organizar e conhecer gente local.
+- Encontre espaços para aprender, palestrar, organizar e conhecer gente de Londrina e região.
 - Ajude novas comunidades e instituições relevantes a ganhar visibilidade depois de aprovação editorial.
 
 ## Color System
@@ -119,7 +119,7 @@ Initial version can be strong without photography.
 
 Preferred assets:
 
-- Abstract local network map inspired by Londrina's tech groups.
+- Abstract regional network map inspired by Londrina's tech groups and metropolitan circulation.
 - Event badge/card motifs.
 - Small community logos when available.
 - Simple map coordinates or neighborhood references.
