@@ -1,8 +1,10 @@
-# Comunidades Brand Kit
+# Rubra Brand Kit
 
 ## Core Idea
 
-Comunidades is the central map for the tech ecosystem around Londrina and its metropolitan region. It helps developers, founders, designers, AI builders, students, hackers, and curious locals discover the communities, educational institutions, events, initiatives, and people already shaping the region's technology scene.
+Rubra is the central map for the tech ecosystem around Londrina and its metropolitan region. It helps developers, founders, designers, AI builders, students, hackers, and curious locals discover the communities, educational institutions, events, initiatives, and people already shaping the region's technology scene.
+
+The name honors Londrina's red soil, the reddish memory of coffee culture, and the local pride of being called "pé vermelho." Rubra should feel rooted in place without becoming nostalgic or provincial.
 
 The product should feel like a premium civic-tech layer over the local ecosystem: polished enough to signal quality, warm enough to feel community-owned, and lively enough to make people want to participate.
 
@@ -12,7 +14,7 @@ The product should feel like a premium civic-tech layer over the local ecosystem
 
 **Audience:** People in Londrina and its metropolitan region who want to find tech communities, discover educational institutions, attend events, meet peers, organize meetups, or understand what is happening locally. This includes people who commute into Londrina for work, study, and events because it is the biggest city in northern Paraná.
 
-**Promise:** No more scattered links, private circles, or "I wish I knew this existed earlier." Comunidades makes the local tech scene visible.
+**Promise:** No more scattered links, private circles, or "I wish I knew this existed earlier." Rubra makes the local tech scene visible.
 
 **Category:** Local tech ecosystem hub.
 
@@ -35,17 +37,17 @@ Imagine a refined city map, a conference badge wall, and a high-end startup laun
 
 ## Naming And Copy
 
-**Product name:** Comunidades
+**Product name:** Rubra
 
 **Working headline options:**
 
-- Onde a tecnologia de Londrina se encontra.
 - A porta de entrada para a cena tech de Londrina.
+- Onde a tecnologia de Londrina cria raiz.
 - Descubra as comunidades, instituições e eventos que movem a tecnologia em Londrina.
 
 **Recommended hero headline:** A porta de entrada para a cena tech de Londrina.
 
-**Hero subheadline:** Encontre comunidades, Instituições de Ensino, eventos e pessoas de tecnologia em um só lugar, de GDG Londrina ao Londrina Hacker Club, UEL, UTFPR, SENAI e novas iniciativas surgindo pela região metropolitana.
+**Hero subheadline:** Rubra reúne comunidades, Instituições de Ensino, eventos e pessoas de tecnologia.
 
 **Primary CTA:** Explorar o mapa
 
@@ -61,7 +63,7 @@ Imagine a refined city map, a conference badge wall, and a high-end startup laun
 
 ## Color System
 
-The palette should avoid generic purple startup gradients. Use a crisp light foundation, near-black text, and high-energy accents inspired by city lights and event signage.
+The palette should avoid generic purple startup gradients. Use a crisp light foundation, near-black text, and high-energy accents, inspired by city lights , precise digital accents, and event signage.
 
 | Token | Hex | Use |
 | --- | --- | --- |
@@ -71,6 +73,7 @@ The palette should avoid generic purple startup gradients. Use a crisp light fou
 | `--lime` | `#B7FF4A` | Primary accent, CTA glow |
 | `--cyan` | `#22D3C5` | Links, map lines, active states |
 | `--coral` | `#FF6247` | Event highlights, warm emphasis |
+| `--red` | `#E53935` | Brand red, used sparingly |
 | `--violet` | `#7357FF` | Secondary accent, used sparingly |
 | `--steel` | `#69746F` | Secondary text |
 

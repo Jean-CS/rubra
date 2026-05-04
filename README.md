@@ -1,6 +1,6 @@
-# Comunidades
+# Rubra
 
-Hub estático para mapear comunidades, instituições de ensino, eventos e iniciativas de tecnologia em Londrina e região.
+Hub estático para mapear comunidades, instituições de ensino, eventos e iniciativas de tecnologia em Londrina e região. O nome homenageia a terra roxa, a cor avermelhada do café e o orgulho pé vermelho de Londrina.
 
 ## Contribuições
 

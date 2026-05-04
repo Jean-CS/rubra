@@ -68,8 +68,8 @@ const signals = [
 		<div class="viewport-stage">
 			<nav class="nav" aria-label="Navegação principal">
 				<a class="brand" href="/">
-					<span class="brand-mark" aria-hidden="true">C</span>
-					<span>Comunidades</span>
+					<span class="brand-mark" aria-hidden="true">R</span>
+					<span>Rubra</span>
 				</a>
 				<div class="nav-links">
 					<a href="#comunidades">Comunidades</a>
@@ -84,9 +84,7 @@ const signals = [
 					<p class="eyebrow">Londrina e região · Hub tech do norte do PR</p>
 					<h1 id="hero-title">A cena tech de Londrina, em um só lugar.</h1>
 					<p class="hero-lede">
-						Encontre comunidades, Instituições de Ensino, eventos e pessoas de tecnologia,
-						de GDG Londrina ao Londrina Hacker Club, UEL, UTFPR, SENAI e novas iniciativas
-						surgindo pela região metropolitana.
+						Rubra reúne comunidades, Instituições de Ensino, eventos e pessoas de tecnologia.
 					</p>
 					<div class="hero-actions">
 						<a class="button button-primary" href="#comunidades">Explorar o mapa</a>
@@ -107,7 +105,7 @@ const signals = [
 						<span>23°18'S · 51°10'W</span>
 					</div>
 					<div class="index-board">
-						<div class="index-stamp" aria-hidden="true">C</div>
+						<div class="index-stamp" aria-hidden="true">R</div>
 						<div class="index-heading">
 							<span>Ecossistema / Londrina e região</span>
 							<strong>Índice da cena tech regional.</strong>
@@ -152,11 +150,9 @@ const signals = [
 			<div class="intro-grid">
 				<h2>A cena já existe. O problema é conseguir encontrá-la.</h2>
 				<p>
-					Comunidades nasce para transformar links soltos, grupos fechados, encontros
+					Rubra nasce para transformar links soltos, grupos fechados, encontros
 					espalhados e instituições difíceis de comparar em um mapa vivo da tecnologia em
-					Londrina e região metropolitana. Um hub simples para quem estuda, trabalha,
-					organiza, aprende, palestra ou só quer descobrir onde as coisas estão acontecendo
-					na cidade-polo do norte do Paraná.
+					Londrina e região metropolitana. Um hub para quem estuda, trabalha, organiza, aprende, palestra ou só quer descobrir onde as coisas estão acontecendo na cidade-polo do norte do Paraná.
 				</p>
 			</div>
 		</section>
@@ -301,17 +297,18 @@ const signals = [
 
 <style>
 	:root {
-		--ink: #08110f;
-		--paper: #f7f5ef;
-		--mist: #e8ece5;
+		--ink: #160f0b;
+		--paper: #f8f1e7;
+		--mist: #eadfce;
 		--lime: #b7ff4a;
 		--cyan: #22d3c5;
 		--coral: #ff6247;
 		--red: #e53935;
-		--violet: #7357ff;
-		--steel: #69746f;
-		--line: rgba(8, 17, 15, 0.14);
-		--shadow: 0 28px 80px rgba(8, 17, 15, 0.14);
+		--violet: #6f5ae8;
+		--coffee: #4b2117;
+		--steel: #766a5e;
+		--line: rgba(22, 15, 11, 0.14);
+		--shadow: 0 28px 80px rgba(55, 27, 15, 0.16);
 		--display: "Bricolage Grotesque", "IBM Plex Sans", sans-serif;
 		--body: "IBM Plex Sans", system-ui, sans-serif;
 		--mono: "IBM Plex Mono", ui-monospace, monospace;
@@ -325,8 +322,8 @@ const signals = [
 		overflow-x: clip;
 		background:
 			radial-gradient(circle at 16% 8%, rgba(183, 255, 74, 0.32), transparent 26rem),
-			radial-gradient(circle at 84% 10%, rgba(34, 211, 197, 0.26), transparent 24rem),
-			linear-gradient(120deg, rgba(255, 98, 71, 0.08), transparent 28rem),
+			radial-gradient(circle at 84% 10%, rgba(34, 211, 197, 0.2), transparent 24rem),
+			linear-gradient(120deg, rgba(159, 47, 28, 0.14), transparent 28rem),
 			var(--paper);
 	}
 
@@ -345,8 +342,8 @@ const signals = [
 		pointer-events: none;
 		content: "";
 		background-image:
-			linear-gradient(rgba(8, 17, 15, 0.055) 1px, transparent 1px),
-			linear-gradient(90deg, rgba(8, 17, 15, 0.055) 1px, transparent 1px);
+			linear-gradient(rgba(22, 15, 11, 0.055) 1px, transparent 1px),
+			linear-gradient(90deg, rgba(22, 15, 11, 0.055) 1px, transparent 1px);
 		background-size: 42px 42px;
 		mask-image: linear-gradient(to bottom, #000 0%, transparent 72%);
 	}
@@ -358,8 +355,8 @@ const signals = [
 		content: "";
 		opacity: 0.34;
 		background-image:
-			linear-gradient(115deg, transparent 0 44%, rgba(8, 17, 15, 0.08) 44% 44.3%, transparent 44.3%),
-			linear-gradient(25deg, transparent 0 72%, rgba(8, 17, 15, 0.06) 72% 72.2%, transparent 72.2%);
+			linear-gradient(115deg, transparent 0 44%, rgba(22, 15, 11, 0.08) 44% 44.3%, transparent 44.3%),
+			linear-gradient(25deg, transparent 0 72%, rgba(22, 15, 11, 0.06) 72% 72.2%, transparent 72.2%);
 	}
 
 	.nav,
@@ -403,6 +400,7 @@ const signals = [
 		border: 1px solid var(--ink);
 		background: var(--lime);
 		box-shadow: 4px 4px 0 var(--ink);
+		color: var(--ink);
 		font-family: var(--mono);
 		font-size: 0.85rem;
 	}
@@ -411,7 +409,7 @@ const signals = [
 		gap: 8px;
 		padding: 6px;
 		border: 1px solid var(--line);
-		background: rgba(247, 245, 239, 0.72);
+		background: rgba(248, 241, 231, 0.72);
 		backdrop-filter: blur(16px);
 	}
 
@@ -478,7 +476,7 @@ const signals = [
 	.hero-lede {
 		max-width: 640px;
 		margin-bottom: clamp(18px, 2.6dvh, 26px);
-		color: #31403a;
+		color: #4a3c31;
 		font-size: clamp(1rem, min(1.55vw, 2.3dvh), 1.24rem);
 		line-height: 1.56;
 	}
@@ -505,7 +503,7 @@ const signals = [
 		min-height: 34px;
 		padding: 0 10px;
 		border: 1px solid var(--line);
-		background: rgba(247, 245, 239, 0.72);
+		background: rgba(248, 241, 231, 0.72);
 		font-family: var(--mono);
 		font-size: 0.68rem;
 		font-weight: 600;
@@ -561,7 +559,7 @@ const signals = [
 	}
 
 	.button-secondary {
-		background: rgba(247, 245, 239, 0.72);
+		background: rgba(248, 241, 231, 0.72);
 		color: var(--ink);
 	}
 
@@ -575,9 +573,9 @@ const signals = [
 		align-self: center;
 		height: clamp(380px, 62dvh, 620px);
 		min-height: 0;
-		border: 1px solid rgba(8, 17, 15, 0.24);
+		border: 1px solid rgba(22, 15, 11, 0.24);
 		background:
-			linear-gradient(135deg, rgba(8, 17, 15, 0.97), rgba(17, 25, 22, 0.94)),
+			linear-gradient(135deg, rgba(22, 15, 11, 0.98), rgba(75, 33, 23, 0.94)),
 			var(--ink);
 		box-shadow: var(--shadow);
 		color: var(--paper);
@@ -590,8 +588,8 @@ const signals = [
 		inset: 0;
 		content: "";
 		background-image:
-			linear-gradient(rgba(247, 245, 239, 0.08) 1px, transparent 1px),
-			linear-gradient(90deg, rgba(247, 245, 239, 0.08) 1px, transparent 1px);
+			linear-gradient(rgba(248, 241, 231, 0.08) 1px, transparent 1px),
+			linear-gradient(90deg, rgba(248, 241, 231, 0.08) 1px, transparent 1px);
 		background-size: 36px 36px;
 		mask-image: linear-gradient(to bottom, #000, transparent 88%);
 	}
@@ -601,7 +599,7 @@ const signals = [
 		inset: auto -12% -24% 22%;
 		height: 280px;
 		content: "";
-		background: radial-gradient(circle, rgba(34, 211, 197, 0.42), transparent 68%);
+		background: radial-gradient(circle, rgba(185, 67, 43, 0.46), transparent 68%);
 		filter: blur(10px);
 	}
 
@@ -614,7 +612,7 @@ const signals = [
 		display: flex;
 		justify-content: space-between;
 		gap: 20px;
-		color: rgba(247, 245, 239, 0.72);
+		color: rgba(248, 241, 231, 0.72);
 		font-family: var(--mono);
 		font-size: 0.72rem;
 		font-weight: 600;
@@ -644,7 +642,7 @@ const signals = [
 		right: 0;
 		bottom: -10px;
 		z-index: -1;
-		color: rgba(247, 245, 239, 0.035);
+		color: rgba(248, 241, 231, 0.035);
 		font-family: var(--display);
 		font-size: clamp(12rem, 22vw, 18rem);
 		font-weight: 800;
@@ -667,7 +665,7 @@ const signals = [
 	}
 
 	.index-heading span {
-		color: rgba(247, 245, 239, 0.62);
+		color: rgba(248, 241, 231, 0.62);
 	}
 
 	.index-heading strong {
@@ -694,8 +692,8 @@ const signals = [
 		align-items: center;
 		min-height: 0;
 		padding: 0 clamp(14px, 2vw, 20px);
-		border: 1px solid rgba(247, 245, 239, 0.14);
-		background: rgba(247, 245, 239, 0.075);
+		border: 1px solid rgba(248, 241, 231, 0.14);
+		background: rgba(248, 241, 231, 0.075);
 		color: var(--paper);
 		text-decoration: none;
 		backdrop-filter: blur(14px);
@@ -713,7 +711,7 @@ const signals = [
 	.index-row:hover {
 		transform: translateX(4px);
 		border-color: color-mix(in srgb, var(--accent) 58%, transparent);
-		background: rgba(247, 245, 239, 0.12);
+		background: rgba(248, 241, 231, 0.12);
 	}
 
 	.index-row strong {
@@ -726,7 +724,7 @@ const signals = [
 	}
 
 	.index-number {
-		color: rgba(247, 245, 239, 0.48);
+		color: rgba(248, 241, 231, 0.48);
 	}
 
 	.index-type {
@@ -749,7 +747,7 @@ const signals = [
 
 	.metrics div {
 		padding: 24px;
-		border-right: 1px solid rgba(247, 245, 239, 0.18);
+		border-right: 1px solid rgba(248, 241, 231, 0.18);
 	}
 
 	.metrics div:last-child {
@@ -766,7 +764,7 @@ const signals = [
 	}
 
 	.metrics span {
-		color: rgba(247, 245, 239, 0.74);
+		color: rgba(248, 241, 231, 0.74);
 		font-family: var(--mono);
 		font-size: 0.75rem;
 		font-weight: 600;
@@ -795,7 +793,7 @@ const signals = [
 	.section-heading > p,
 	.submit-card p,
 	.submit-flow span {
-		color: #31403a;
+		color: #4a3c31;
 		font-size: 1.08rem;
 		line-height: 1.72;
 	}
@@ -821,7 +819,7 @@ const signals = [
 		flex-direction: column;
 		padding: 20px;
 		border: 1px solid var(--line);
-		background: rgba(247, 245, 239, 0.78);
+		background: rgba(248, 241, 231, 0.78);
 		backdrop-filter: blur(18px);
 		overflow: hidden;
 		transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
@@ -837,8 +835,8 @@ const signals = [
 
 	.community-card:hover {
 		transform: translateY(-4px);
-		border-color: rgba(8, 17, 15, 0.34);
-		box-shadow: 0 18px 50px rgba(8, 17, 15, 0.1);
+		border-color: rgba(22, 15, 11, 0.34);
+		box-shadow: 0 18px 50px rgba(55, 27, 15, 0.12);
 	}
 
 	.accent-lime {
@@ -902,7 +900,7 @@ const signals = [
 	}
 
 	.community-card > p {
-		color: #394942;
+		color: #514236;
 		line-height: 1.58;
 	}
 
@@ -922,7 +920,7 @@ const signals = [
 		padding: 7px 9px;
 		border: 1px solid var(--line);
 		background: rgba(255, 255, 255, 0.34);
-		color: #31403a;
+		color: #4a3c31;
 	}
 
 	.card-footer {
@@ -1008,7 +1006,7 @@ const signals = [
 		padding: 24px;
 		border: 1px solid var(--ink);
 		background:
-			linear-gradient(135deg, rgba(183, 255, 74, 0.88), rgba(34, 211, 197, 0.84)),
+			linear-gradient(135deg, rgba(185, 67, 43, 0.9), rgba(185, 209, 91, 0.78)),
 			var(--lime);
 		box-shadow: 6px 6px 0 var(--ink);
 	}
@@ -1018,8 +1016,8 @@ const signals = [
 		align-items: center;
 		min-height: 40px;
 		padding: 0 13px;
-		border: 1px solid rgba(8, 17, 15, 0.34);
-		background: rgba(247, 245, 239, 0.72);
+		border: 1px solid rgba(22, 15, 11, 0.34);
+		background: rgba(248, 241, 231, 0.72);
 		color: var(--ink);
 		font-family: var(--mono);
 		font-size: 0.75rem;
@@ -1039,7 +1037,7 @@ const signals = [
 		padding: clamp(28px, 5vw, 54px);
 		border: 1px solid var(--ink);
 		background:
-			linear-gradient(120deg, rgba(247, 245, 239, 0.92), rgba(232, 236, 229, 0.86)),
+			linear-gradient(120deg, rgba(248, 241, 231, 0.92), rgba(234, 223, 206, 0.86)),
 			var(--mist);
 		box-shadow: 7px 7px 0 var(--ink);
 	}
@@ -1055,7 +1053,7 @@ const signals = [
 		background:
 			linear-gradient(90deg, transparent 46%, var(--ink) 46% 48%, transparent 48%),
 			linear-gradient(transparent 46%, var(--ink) 46% 48%, transparent 48%),
-			var(--coral);
+			var(--lime);
 		box-shadow: 5px 5px 0 var(--ink);
 	}
 
@@ -1318,7 +1316,7 @@ const signals = [
 
 		.metrics div {
 			border-right: 0;
-			border-bottom: 1px solid rgba(247, 245, 239, 0.18);
+			border-bottom: 1px solid rgba(248, 241, 231, 0.18);
 		}
 
 		.metrics div:last-child {

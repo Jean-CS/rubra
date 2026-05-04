@@ -1,6 +1,6 @@
 # Como contribuir
 
-Comunidades usa o GitHub como fluxo de contribuição e curadoria. Qualquer pessoa pode sugerir uma nova comunidade, uma instituição de ensino ou uma atualização. Nada entra automaticamente no site: toda mudança passa por revisão editorial.
+Rubra usa o GitHub como fluxo de contribuição e curadoria. Qualquer pessoa pode sugerir uma nova comunidade, uma instituição de ensino ou uma atualização. Nada entra automaticamente no site: toda mudança passa por revisão editorial.
 
 ## Sugerir dados
 
