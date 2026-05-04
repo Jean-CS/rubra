@@ -10,7 +10,7 @@ const communities = [
 			"Comunidade local para pessoas que criam com Google technologies, web, cloud, mobile e práticas modernas de desenvolvimento.",
 		cadence: "Meetups e eventos",
 		status: "Ativa",
-		accent: "lime",
+		accent: "red",
 		tags: ["Web", "Cloud", "Android"],
 	},
 	{
@@ -23,6 +23,17 @@ const communities = [
 		status: "Nova",
 		accent: "cyan",
 		tags: ["Networking", "Eventos", "Startups"],
+	},
+	{
+		name: "Redfoot",
+		type: "Startups",
+		indexType: "START",
+		description:
+			"Comunidade de startups do norte e noroeste do Paraná, também conhecida como Redfoot Brasil ou Redfoot Startup Community.",
+		cadence: "Meetups e mentorias",
+		status: "Ativa",
+		accent: "coral",
+		tags: ["Startups", "Inovação", "Meetups"],
 	},
 	{
 		name: "Londrina AI",
@@ -43,7 +54,7 @@ const communities = [
 			"Um ponto de encontro para segurança, cultura hacker, hardware, software livre, curiosidade técnica e experimentos práticos.",
 		cadence: "Comunidade local",
 		status: "Ativa",
-		accent: "coral",
+		accent: "lime",
 		tags: ["Security", "Hardware", "Labs"],
 	},
 ];
@@ -244,7 +255,7 @@ const signals = [
 				<span>pessoas na cidade</span>
 			</div>
 			<div>
-				<strong>4</strong>
+				<strong>{communities.length}</strong>
 				<span>comunidades iniciais</span>
 			</div>
 			<div>
@@ -398,6 +409,7 @@ const signals = [
 		--lime: #b7ff4a;
 		--cyan: #22d3c5;
 		--coral: #ff6247;
+		--red: #e53935;
 		--violet: #7357ff;
 		--steel: #69746f;
 		--line: rgba(8, 17, 15, 0.14);
@@ -945,6 +957,10 @@ const signals = [
 
 	.accent-coral {
 		--accent: var(--coral);
+	}
+
+	.accent-red {
+		--accent: var(--red);
 	}
 
 	.card-header,

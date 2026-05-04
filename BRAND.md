@@ -151,6 +151,7 @@ Starter communities:
 
 - GDG Londrina
 - Londrina Tech
+- Redfoot
 - Londrina AI community
 - Londrina Hacker Club
 
