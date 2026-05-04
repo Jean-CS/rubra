@@ -149,11 +149,12 @@ Suggested fields for communities:
 
 Starter communities:
 
+- GDG Ladies
 - GDG Londrina
+- IA Londrina community
+- Londrina Hacker Club
 - Londrina Tech
 - Redfoot
-- Londrina AI community
-- Londrina Hacker Club
 
 Suggested fields for Instituições de Ensino:
 

@@ -3,6 +3,17 @@ import Layout from "../layouts/Layout.astro";
 
 const communities = [
 	{
+		name: "GDG Ladies",
+		type: "Mulheres em tecnologia",
+		indexType: "GDG",
+		description:
+			"Braço do GDG Londrina focado em trocas entre mulheres da tecnologia, criando um espaço próprio para conexão, apoio e aprendizado.",
+		cadence: "Trocas e encontros",
+		status: "Ativa",
+		accent: "violet",
+		tags: ["Mulheres", "Tecnologia", "Networking"],
+	},
+	{
 		name: "GDG Londrina",
 		type: "Developers",
 		indexType: "DEV",
@@ -12,6 +23,28 @@ const communities = [
 		status: "Ativa",
 		accent: "red",
 		tags: ["Web", "Cloud", "Android"],
+	},
+	{
+		name: "IA Londrina",
+		type: "Inteligência Artificial",
+		indexType: "IA",
+		description:
+			"Espaço para explorar IA aplicada, agentes, automação, pesquisa, produtos e conversas técnicas sobre o que está surgindo.",
+		cadence: "Encontros abertos",
+		status: "Ativa",
+		accent: "violet",
+		tags: ["AI", "LLMs", "Automação"],
+	},
+	{
+		name: "Londrina Hacker Club",
+		type: "Hacker culture",
+		indexType: "HACK",
+		description:
+			"Um ponto de encontro para segurança, cultura hacker, hardware, software livre, curiosidade técnica e experimentos práticos.",
+		cadence: "Comunidade local",
+		status: "Ativa",
+		accent: "lime",
+		tags: ["Security", "Hardware", "Labs"],
 	},
 	{
 		name: "Londrina Tech",
@@ -35,53 +68,9 @@ const communities = [
 		accent: "coral",
 		tags: ["Startups", "Inovação", "Meetups"],
 	},
-	{
-		name: "Londrina AI",
-		type: "Inteligência Artificial",
-		indexType: "IA",
-		description:
-			"Espaço para explorar IA aplicada, agentes, automação, pesquisa, produtos e conversas técnicas sobre o que está surgindo.",
-		cadence: "Encontros abertos",
-		status: "Ativa",
-		accent: "violet",
-		tags: ["AI", "LLMs", "Automação"],
-	},
-	{
-		name: "Londrina Hacker Club",
-		type: "Hacker culture",
-		indexType: "HACK",
-		description:
-			"Um ponto de encontro para segurança, cultura hacker, hardware, software livre, curiosidade técnica e experimentos práticos.",
-		cadence: "Comunidade local",
-		status: "Ativa",
-		accent: "lime",
-		tags: ["Security", "Hardware", "Labs"],
-	},
 ];
 
 const institutions = [
-	{
-		name: "SENAI",
-		website: "https://www.senaipr.org.br/",
-		type: "Formação técnica",
-		indexType: "TEC",
-		description:
-			"Formação técnica, cursos profissionalizantes e trilhas conectadas à indústria, automação, tecnologia e desenvolvimento de talentos.",
-		profile: "Sistema S",
-		accent: "lime",
-		tags: ["Técnico", "Indústria", "Carreira"],
-	},
-	{
-		name: "UTFPR",
-		website: "https://www.utfpr.edu.br/campus/londrina",
-		type: "Universidade",
-		indexType: "PUB",
-		description:
-			"Instituição federal com presença em engenharia, computação, pesquisa aplicada e formação tecnológica no norte do Paraná.",
-		profile: "Federal",
-		accent: "cyan",
-		tags: ["Federal", "Pesquisa", "Engenharia"],
-	},
 	{
 		name: "IFPR",
 		website: "https://londrina.ifpr.edu.br/",
@@ -94,17 +83,6 @@ const institutions = [
 		tags: ["Público", "Técnico", "Extensão"],
 	},
 	{
-		name: "UEL",
-		website: "https://portal.uel.br/",
-		type: "Universidade",
-		indexType: "UNI",
-		description:
-			"Universidade estadual com Ciência da Computação no CCE, laboratórios, pesquisa, extensão e pós-graduação acadêmica na área.",
-		profile: "Estadual",
-		accent: "coral",
-		tags: ["Estadual", "Pesquisa", "Extensão"],
-	},
-	{
 		name: "Positivo",
 		website: "https://www.up.edu.br/",
 		type: "Ensino superior",
@@ -114,6 +92,28 @@ const institutions = [
 		profile: "Privada",
 		accent: "cyan",
 		tags: ["Privada", "Graduação", "Mercado"],
+	},
+	{
+		name: "SENAI",
+		website: "https://www.senaipr.org.br/",
+		type: "Formação técnica",
+		indexType: "TEC",
+		description:
+			"Formação técnica, cursos profissionalizantes e trilhas conectadas à indústria, automação, tecnologia e desenvolvimento de talentos.",
+		profile: "Sistema S",
+		accent: "lime",
+		tags: ["Técnico", "Indústria", "Carreira"],
+	},
+	{
+		name: "UEL",
+		website: "https://portal.uel.br/",
+		type: "Universidade",
+		indexType: "UNI",
+		description:
+			"Universidade estadual com Ciência da Computação no CCE, laboratórios, pesquisa, extensão e pós-graduação acadêmica na área.",
+		profile: "Estadual",
+		accent: "coral",
+		tags: ["Estadual", "Pesquisa", "Extensão"],
 	},
 	{
 		name: "UNOPAR Anhanguera",
@@ -147,6 +147,17 @@ const institutions = [
 		profile: "Privada",
 		accent: "violet",
 		tags: ["Local", "Graduação", "Projetos"],
+	},
+	{
+		name: "UTFPR",
+		website: "https://www.utfpr.edu.br/campus/londrina",
+		type: "Universidade",
+		indexType: "PUB",
+		description:
+			"Instituição federal com presença em engenharia, computação, pesquisa aplicada e formação tecnológica no norte do Paraná.",
+		profile: "Federal",
+		accent: "cyan",
+		tags: ["Federal", "Pesquisa", "Engenharia"],
 	},
 ];
 
