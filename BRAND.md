@@ -2,19 +2,19 @@
 
 ## Core Idea
 
-Comunidades is the central hub for tech communities in Londrina. It helps developers, founders, designers, AI builders, students, hackers, and curious locals discover the groups, events, and people already shaping the city's technology scene.
+Comunidades is the central map for Londrina's tech ecosystem. It helps developers, founders, designers, AI builders, students, hackers, and curious locals discover the communities, educational institutions, events, initiatives, and people already shaping the city's technology scene.
 
 The product should feel like a premium civic-tech layer over the local ecosystem: polished enough to signal quality, warm enough to feel community-owned, and lively enough to make people want to participate.
 
 ## Positioning
 
-**One-liner:** The front door to Londrina's tech communities.
+**One-liner:** The front door to Londrina's tech scene.
 
-**Audience:** People in and around Londrina who want to find tech communities, attend events, meet peers, organize meetups, or understand what is happening locally.
+**Audience:** People in and around Londrina who want to find tech communities, discover educational institutions, attend events, meet peers, organize meetups, or understand what is happening locally.
 
 **Promise:** No more scattered links, private circles, or "I wish I knew this existed earlier." Comunidades makes the local tech scene visible.
 
-**Category:** Local tech community hub.
+**Category:** Local tech ecosystem hub.
 
 **Tone:** Premium, civic, energetic, welcoming, lightly playful.
 
@@ -23,7 +23,7 @@ The product should feel like a premium civic-tech layer over the local ecosystem
 - **Curated, not corporate:** The site should feel intentionally designed, but never like enterprise software.
 - **Local, not provincial:** Londrina is the center of the story, with a visual language that feels globally current.
 - **Fun, not childish:** Use color, motion, and rhythm, but keep the typography and layout precise.
-- **Community-first, not platform-first:** The communities are the heroes. Comunidades is the lens that makes them easier to find.
+- **Community-first, not platform-first:** The local ecosystem is the hero. Communities carry the emotional center, and institutions, events, and initiatives help people understand the full map.
 
 ## Visual Direction
 
@@ -41,22 +41,23 @@ Imagine a refined city map, a conference badge wall, and a high-end startup laun
 
 - Onde a tecnologia de Londrina se encontra.
 - A porta de entrada para a cena tech de Londrina.
-- Descubra as comunidades que movem a tecnologia em Londrina.
+- Descubra as comunidades, instituições e eventos que movem a tecnologia em Londrina.
 
 **Recommended hero headline:** A porta de entrada para a cena tech de Londrina.
 
-**Hero subheadline:** Encontre grupos, eventos e pessoas de tecnologia em um só lugar, de GDG Londrina ao Londrina Hacker Club, AI meetups e novas comunidades surgindo pela cidade.
+**Hero subheadline:** Encontre comunidades, Instituições de Ensino, eventos e pessoas de tecnologia em um só lugar, de GDG Londrina ao Londrina Hacker Club, UEL, UTFPR, SENAI e novas iniciativas surgindo pela cidade.
 
-**Primary CTA:** Explorar comunidades
+**Primary CTA:** Explorar o mapa
 
-**Secondary CTA:** Indicar uma comunidade
+**Secondary CTA:** Indicar iniciativa
 
 **Short value props:**
 
 - Descubra comunidades ativas sem depender de grupos fechados ou links perdidos.
+- Veja quais Instituições de Ensino formam, conectam e aproximam novas pessoas da tecnologia.
 - Veja eventos, encontros e iniciativas em uma agenda compartilhada.
 - Encontre espaços para aprender, palestrar, organizar e conhecer gente local.
-- Ajude novas comunidades a ganhar visibilidade desde o primeiro encontro.
+- Ajude novas comunidades e instituições relevantes a ganhar visibilidade depois de aprovação editorial.
 
 ## Color System
 
@@ -97,7 +98,7 @@ Use expressive type without making the site look like a generic startup template
 
 - Lead with the product name and Londrina context immediately.
 - Use a dense but breathable editorial grid instead of generic stacked marketing sections.
-- Make communities feel like real entities: cards should have names, tags, cadence, location, and a clear status.
+- Make communities and institutions feel like real entities: cards should have names, tags, cadence or role, location when useful, and a clear status.
 - Include one memorable visual system: a network map, orbit, directory board, or city signal layer.
 - Keep cards sharp and premium: 8px radius or less, hairline borders, precise shadows, no chunky rounded SaaS blobs.
 - Avoid nested cards. Sections should be full-width bands or clean constrained layouts.
@@ -131,11 +132,11 @@ Avoid:
 - Stock people in offices.
 - Overly glossy 3D objects unless they are custom and meaningful.
 
-## Community Data Model
+## Directory Data Model
 
 The first version should be easy to maintain manually.
 
-Suggested fields:
+Suggested fields for communities:
 
 - Name
 - Description
@@ -153,13 +154,35 @@ Starter communities:
 - Londrina AI community
 - Londrina Hacker Club
 
+Suggested fields for Instituições de Ensino:
+
+- Name
+- Description
+- Type: university, technical education, college, training center
+- Tags
+- Website or social link
+- Role in the ecosystem
+- Nature: federal, state, private, Sistema S, community suggested
+
+Starter Instituições de Ensino:
+
+- SENAI
+- UTFPR
+- IFPR
+- UEL
+- Positivo
+- UNOPAR Anhanguera
+- UniCesumar
+- UniFil
+
 ## Landing Page Structure
 
-1. **Hero:** Name, Londrina-specific headline, primary CTA, secondary CTA, animated network visual.
+1. **Hero:** Name, Londrina-specific headline, primary CTA, secondary CTA, animated ecosystem index visual.
 2. **Community Directory:** Featured cards for known communities.
-3. **Why It Exists:** Explain the discovery problem and the value of a central hub.
-4. **Events / Signals:** Placeholder for upcoming meetups and calls for speakers.
-5. **Submit A Community:** Lightweight CTA for organizers to add or update a listing.
+3. **Instituições de Ensino:** Initial map of educational institutions connected to the tech ecosystem.
+4. **Why It Exists:** Explain the discovery problem and the value of a central hub.
+5. **Events / Signals:** Placeholder for upcoming meetups and calls for speakers.
+6. **Submit / Approval Flow:** Two clear paths: submit a community or submit an Instituição de Ensino. Both are reviewed before publishing.
 
 ## Voice Guidelines
 

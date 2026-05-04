@@ -5,6 +5,7 @@ const communities = [
 	{
 		name: "GDG Londrina",
 		type: "Developers",
+		indexType: "DEV",
 		description:
 			"Comunidade local para pessoas que criam com Google technologies, web, cloud, mobile e práticas modernas de desenvolvimento.",
 		cadence: "Meetups e eventos",
@@ -15,6 +16,7 @@ const communities = [
 	{
 		name: "Londrina Tech",
 		type: "Ecossistema",
+		indexType: "HUB",
 		description:
 			"Uma nova frente para conectar pessoas, empresas, eventos e iniciativas que fortalecem a cena de tecnologia da cidade.",
 		cadence: "Em construção",
@@ -25,6 +27,7 @@ const communities = [
 	{
 		name: "Londrina AI",
 		type: "Inteligência Artificial",
+		indexType: "IA",
 		description:
 			"Espaço para explorar IA aplicada, agentes, automação, pesquisa, produtos e conversas técnicas sobre o que está surgindo.",
 		cadence: "Encontros abertos",
@@ -35,6 +38,7 @@ const communities = [
 	{
 		name: "Londrina Hacker Club",
 		type: "Hacker culture",
+		indexType: "HACK",
 		description:
 			"Um ponto de encontro para segurança, cultura hacker, hardware, software livre, curiosidade técnica e experimentos práticos.",
 		cadence: "Comunidade local",
@@ -44,10 +48,121 @@ const communities = [
 	},
 ];
 
+const institutions = [
+	{
+		name: "SENAI",
+		type: "Formação técnica",
+		indexType: "TEC",
+		description:
+			"Formação técnica, cursos profissionalizantes e trilhas conectadas à indústria, automação, tecnologia e desenvolvimento de talentos.",
+		profile: "Sistema S",
+		accent: "lime",
+		tags: ["Técnico", "Indústria", "Carreira"],
+	},
+	{
+		name: "UTFPR",
+		type: "Universidade",
+		indexType: "PUB",
+		description:
+			"Instituição federal com presença em engenharia, computação, pesquisa aplicada e formação tecnológica no norte do Paraná.",
+		profile: "Federal",
+		accent: "cyan",
+		tags: ["Federal", "Pesquisa", "Engenharia"],
+	},
+	{
+		name: "IFPR",
+		type: "Instituto",
+		indexType: "IF",
+		description:
+			"Ensino técnico, superior e extensão pública, com potencial de conexão entre estudantes, tecnologia e iniciativas locais.",
+		profile: "Federal",
+		accent: "violet",
+		tags: ["Público", "Técnico", "Extensão"],
+	},
+	{
+		name: "UEL",
+		type: "Universidade",
+		indexType: "UNI",
+		description:
+			"Universidade estadual com Ciência da Computação no CCE, laboratórios, pesquisa, extensão e pós-graduação acadêmica na área.",
+		profile: "Estadual",
+		accent: "coral",
+		tags: ["Estadual", "Pesquisa", "Extensão"],
+	},
+	{
+		name: "Positivo",
+		type: "Ensino superior",
+		indexType: "UNI",
+		description:
+			"Instituição privada com cursos superiores, programas de formação e projetos aplicados em áreas conectadas à tecnologia.",
+		profile: "Privada",
+		accent: "cyan",
+		tags: ["Privada", "Graduação", "Mercado"],
+	},
+	{
+		name: "UNOPAR Anhanguera",
+		type: "Ensino superior",
+		indexType: "UNI",
+		description:
+			"Presença educacional ampla em Londrina, com cursos presenciais e digitais que alcançam muitos estudantes da região.",
+		profile: "Privada",
+		accent: "lime",
+		tags: ["Graduação", "Digital", "Carreira"],
+	},
+	{
+		name: "UniCesumar",
+		type: "Ensino superior",
+		indexType: "UNI",
+		description:
+			"Instituição com cursos superiores e formação continuada, conectando estudantes locais a trilhas profissionais e digitais.",
+		profile: "Privada",
+		accent: "coral",
+		tags: ["Graduação", "EAD", "Profissional"],
+	},
+	{
+		name: "UniFil",
+		type: "Centro universitário",
+		indexType: "UNI",
+		description:
+			"Centro universitário com histórico em cursos de tecnologia, incluindo Ciência da Computação, Engenharia de Software e ADS.",
+		profile: "Privada",
+		accent: "violet",
+		tags: ["Local", "Graduação", "Projetos"],
+	},
+];
+
+const ecosystemTracks = [
+	{
+		name: "Comunidades",
+		indexType: "COM",
+		accent: "lime",
+		href: "#comunidades",
+	},
+	{
+		name: "Instituições de Ensino",
+		indexType: "EDU",
+		accent: "cyan",
+		href: "#instituicoes",
+	},
+	{
+		name: "Eventos e sinais",
+		indexType: "EVT",
+		accent: "violet",
+		href: "#sinais",
+	},
+	{
+		name: "Novas iniciativas",
+		indexType: "NEW",
+		accent: "coral",
+		href: "#indicar",
+	},
+];
+
 const signals = [
 	"Call for speakers",
 	"Agenda compartilhada",
 	"Novas comunidades",
+	"Instituições de Ensino",
 	"Meetups em Londrina",
 	"Grupos para estudantes",
 	"Eventos de IA",
@@ -56,78 +171,72 @@ const signals = [
 
 <Layout>
 	<main class="site-shell">
-		<nav class="nav" aria-label="Navegação principal">
-			<a class="brand" href="/">
-				<span class="brand-mark" aria-hidden="true">C</span>
-				<span>Comunidades</span>
-			</a>
-			<div class="nav-links">
-				<a href="#comunidades">Comunidades</a>
-				<a href="#sinais">Sinais</a>
-				<a href="#indicar">Indicar</a>
-			</div>
-		</nav>
+		<div class="viewport-stage">
+			<nav class="nav" aria-label="Navegação principal">
+				<a class="brand" href="/">
+					<span class="brand-mark" aria-hidden="true">C</span>
+					<span>Comunidades</span>
+				</a>
+				<div class="nav-links">
+					<a href="#comunidades">Comunidades</a>
+					<a href="#instituicoes">Ensino</a>
+					<a href="#sinais">Sinais</a>
+					<a href="#indicar">Indicar</a>
+				</div>
+			</nav>
 
-		<section class="hero" aria-labelledby="hero-title">
-			<div class="hero-copy reveal">
-				<p class="eyebrow">Londrina, PR · Hub tech local</p>
-				<h1 id="hero-title">A cena tech de Londrina, em um só lugar.</h1>
-				<p class="hero-lede">
-					Encontre grupos, eventos e pessoas de tecnologia em um só lugar, de GDG
-					Londrina ao Londrina Hacker Club, comunidades de IA e novas iniciativas surgindo
-					pela cidade.
-				</p>
-				<div class="hero-actions">
-					<a class="button button-primary" href="#comunidades">Explorar comunidades</a>
-					<a class="button button-secondary" href="#indicar">Indicar uma comunidade</a>
+			<section class="hero" aria-labelledby="hero-title">
+				<div class="hero-copy reveal">
+					<p class="eyebrow">Londrina, PR · Hub tech local</p>
+					<h1 id="hero-title">A cena tech de Londrina, em um só lugar.</h1>
+					<p class="hero-lede">
+						Encontre comunidades, Instituições de Ensino, eventos e pessoas de tecnologia,
+						de GDG Londrina ao Londrina Hacker Club, UEL, UTFPR, SENAI e novas iniciativas
+						surgindo pela cidade.
+					</p>
+					<div class="hero-actions">
+						<a class="button button-primary" href="#comunidades">Explorar o mapa</a>
+						<a class="button button-secondary" href="#indicar">Indicar iniciativa</a>
+					</div>
+					<div class="hero-strip" aria-label="Partes do ecossistema mapeadas">
+						<span>Mapeando agora</span>
+						<strong>Comunidades</strong>
+						<strong>Instituições de Ensino</strong>
+						<strong>Eventos</strong>
+						<strong>Iniciativas</strong>
+					</div>
 				</div>
-				<div class="hero-strip" aria-label="Comunidades mapeadas">
-					<span>Mapeando agora</span>
-					<strong>GDG Londrina</strong>
-					<strong>Londrina Tech</strong>
-					<strong>Londrina AI</strong>
-					<strong>Londrina Hacker Club</strong>
-				</div>
-			</div>
 
-			<div class="network-panel reveal" aria-label="Mapa visual das comunidades tech de Londrina">
-				<div class="panel-topline">
-					<span>Tech map</span>
-					<span>23°18'S · 51°10'W</span>
+				<div class="index-panel reveal" aria-label="Prévia do mapa da cena tech de Londrina">
+					<div class="panel-topline">
+						<span>Diretório local</span>
+						<span>23°18'S · 51°10'W</span>
+					</div>
+					<div class="index-board">
+							<div class="index-stamp" aria-hidden="true">C</div>
+							<div class="index-heading">
+								<span>Ecossistema / Londrina</span>
+								<strong>Índice da cena tech local.</strong>
+							</div>
+						<div class="index-list">
+							{
+								ecosystemTracks.map((track, index) => (
+									<a class={`index-row accent-${track.accent}`} href={track.href}>
+										<span class="index-number">{String(index + 1).padStart(2, "0")}</span>
+										<strong>{track.name}</strong>
+										<span class="index-type">{track.indexType}</span>
+									</a>
+								))
+							}
+						</div>
+					</div>
+					<div class="panel-footer">
+						<span>{communities.length + institutions.length} entradas iniciais</span>
+						<span>Aberto para novas indicações</span>
+					</div>
 				</div>
-				<div class="network-map" aria-hidden="true">
-					<div class="route route-a"></div>
-					<div class="route route-b"></div>
-					<div class="route route-c"></div>
-					<div class="node node-main">
-						<span>Comunidades</span>
-					</div>
-					<div class="node node-gdg">
-						<strong>GDG</strong>
-						<small>dev</small>
-					</div>
-					<div class="node node-tech">
-						<strong>L.Tech</strong>
-						<small>hub</small>
-					</div>
-					<div class="node node-ai">
-						<strong>AI</strong>
-						<small>labs</small>
-					</div>
-					<div class="node node-hacker">
-						<strong>LHC</strong>
-						<small>hack</small>
-					</div>
-					<div class="pulse-dot dot-one"></div>
-					<div class="pulse-dot dot-two"></div>
-					<div class="pulse-dot dot-three"></div>
-				</div>
-				<div class="panel-footer">
-					<span>4 comunidades mapeadas</span>
-					<span>Aberto para organizadores</span>
-				</div>
-			</div>
-		</section>
+			</section>
+		</div>
 
 		<section class="metrics" aria-label="Resumo do projeto">
 			<div>
@@ -139,8 +248,8 @@ const signals = [
 				<span>comunidades iniciais</span>
 			</div>
 			<div>
-				<strong>1</strong>
-				<span>lugar para descobrir tudo</span>
+				<strong>8</strong>
+				<span>Instituições de Ensino</span>
 			</div>
 		</section>
 
@@ -149,10 +258,10 @@ const signals = [
 			<div class="intro-grid">
 				<h2>A cena já existe. O problema é conseguir encontrá-la.</h2>
 				<p>
-					Comunidades nasce para transformar links soltos, grupos fechados e encontros
-					espalhados em um mapa vivo da tecnologia em Londrina. Um hub simples para quem
-					quer participar, organizar, aprender, palestrar ou só descobrir onde as coisas
-					estão acontecendo.
+					Comunidades nasce para transformar links soltos, grupos fechados, encontros
+					espalhados e instituições difíceis de comparar em um mapa vivo da tecnologia em
+					Londrina. Um hub simples para quem quer participar, organizar, aprender, palestrar
+					ou só descobrir onde as coisas estão acontecendo.
 				</p>
 			</div>
 		</section>
@@ -195,6 +304,46 @@ const signals = [
 			</div>
 		</section>
 
+		<section class="section institution-section" id="instituicoes" aria-labelledby="institutions-title">
+			<div class="section-heading">
+				<div>
+					<p class="section-kicker">Instituições de Ensino</p>
+					<h2 id="institutions-title">Onde a formação tech também acontece.</h2>
+				</div>
+				<p>
+					Universidades, institutos e centros de formação entram no mapa porque também
+					abrem portas para estudantes, projetos, pesquisa, eventos e primeiras conexões
+					com a cena local.
+				</p>
+			</div>
+
+			<div class="community-grid institution-grid">
+				{
+					institutions.map((institution) => (
+							<article class={`community-card institution-card accent-${institution.accent}`}>
+								<div class="card-header">
+									<p>{institution.type}</p>
+									{institution.profile && <span>{institution.profile}</span>}
+								</div>
+							<h3>{institution.name}</h3>
+							<p>{institution.description}</p>
+							<div class="tag-row">
+								{institution.tags.map((tag) => (
+									<span>{tag}</span>
+								))}
+							</div>
+							<div class="card-footer">
+								<span>{institution.indexType}</span>
+								<a href="#indicar" aria-label={`Atualizar dados de ${institution.name}`}>
+									Atualizar
+								</a>
+							</div>
+						</article>
+					))
+				}
+			</div>
+		</section>
+
 		<section class="signal-section" id="sinais" aria-labelledby="signals-title">
 			<div class="signal-copy">
 				<p class="section-kicker">Sinais da cidade</p>
@@ -211,16 +360,31 @@ const signals = [
 
 		<section class="section submit-section" id="indicar" aria-labelledby="submit-title">
 			<div class="submit-card">
-				<p class="section-kicker">Aberto para organizadores</p>
-				<h2 id="submit-title">Conhece uma comunidade que deveria estar aqui?</h2>
+				<p class="section-kicker">Aprovação editorial</p>
+				<h2 id="submit-title">Conhece uma comunidade ou Instituição de Ensino que deveria estar aqui?</h2>
 				<p>
-					O próximo passo é abrir um fluxo simples para indicar comunidades, corrigir
-					informações e divulgar próximos encontros. Por enquanto, esta página valida a
-					ideia e o visual do hub.
+					As indicações entram por dois caminhos e passam por revisão antes de aparecer no
+					site. A ideia é manter o mapa aberto para a cidade, mas curado o suficiente para
+					continuar confiável.
 				</p>
-				<a class="button button-primary" href="mailto:hello@comunidades.dev?subject=Indicar comunidade">
-					Indicar comunidade
-				</a>
+				<div class="submit-flow" aria-label="Opções de indicação">
+					<p>
+						<strong>Comunidade</strong>
+						<span>Para grupos, meetups, coletivos, labs e iniciativas recorrentes.</span>
+					</p>
+					<p>
+						<strong>Instituição de Ensino</strong>
+						<span>Para universidades, institutos, centros de formação e cursos relevantes.</span>
+					</p>
+				</div>
+				<div class="submit-actions">
+					<a class="button button-primary" href="mailto:hello@comunidades.dev?subject=Indicar comunidade">
+						Indicar comunidade
+					</a>
+					<a class="button button-secondary" href="mailto:hello@comunidades.dev?subject=Indicar Instituicao de Ensino">
+						Indicar Instituição de Ensino
+					</a>
+				</div>
 			</div>
 		</section>
 	</main>
@@ -244,14 +408,25 @@ const signals = [
 	}
 
 	.site-shell {
+		--page-gutter: clamp(18px, 3.8vw, 40px);
 		position: relative;
-		overflow: hidden;
-		min-height: 100vh;
+		min-height: 100svh;
+		min-height: 100dvh;
+		overflow-x: clip;
 		background:
 			radial-gradient(circle at 16% 8%, rgba(183, 255, 74, 0.32), transparent 26rem),
 			radial-gradient(circle at 84% 10%, rgba(34, 211, 197, 0.26), transparent 24rem),
 			linear-gradient(120deg, rgba(255, 98, 71, 0.08), transparent 28rem),
 			var(--paper);
+	}
+
+	.viewport-stage {
+		position: relative;
+		z-index: 1;
+		display: grid;
+		grid-template-rows: auto minmax(0, 1fr);
+		min-height: 100svh;
+		min-height: 100dvh;
 	}
 
 	.site-shell::before {
@@ -284,7 +459,7 @@ const signals = [
 	.signal-section {
 		position: relative;
 		z-index: 1;
-		width: min(1180px, calc(100% - 40px));
+		width: min(1180px, calc(100% - (var(--page-gutter) * 2)));
 		margin-inline: auto;
 	}
 
@@ -292,7 +467,8 @@ const signals = [
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		padding: 24px 0;
+		min-height: clamp(64px, 8dvh, 84px);
+		padding: clamp(14px, 2dvh, 24px) 0;
 	}
 
 	.brand,
@@ -345,11 +521,11 @@ const signals = [
 
 	.hero {
 		display: grid;
-		grid-template-columns: minmax(0, 0.9fr) minmax(430px, 0.82fr);
-		gap: clamp(34px, 5vw, 86px);
+		grid-template-columns: minmax(0, 0.95fr) minmax(360px, 0.78fr);
+		gap: clamp(30px, 4.8vw, 78px);
 		align-items: center;
-		min-height: calc(100vh - 118px);
-		padding: 28px 0 64px;
+		min-height: 0;
+		padding: clamp(12px, 2.2dvh, 28px) 0 clamp(22px, 4.8dvh, 54px);
 	}
 
 	.hero-copy {
@@ -358,7 +534,7 @@ const signals = [
 
 	.eyebrow,
 	.section-kicker {
-		margin: 0 0 18px;
+		margin: 0 0 clamp(12px, 1.8dvh, 18px);
 		color: var(--steel);
 		font-family: var(--mono);
 		font-size: 0.75rem;
@@ -383,18 +559,18 @@ const signals = [
 
 	h1 {
 		max-width: 790px;
-		margin-bottom: 24px;
-		font-size: clamp(4.25rem, 7.6vw, 7.6rem);
+		margin-bottom: clamp(15px, 2.4dvh, 24px);
+		font-size: clamp(3.65rem, min(7.2vw, 11.5dvh), 7.25rem);
 		font-weight: 800;
 		line-height: 0.88;
 	}
 
 	.hero-lede {
 		max-width: 640px;
-		margin-bottom: 26px;
+		margin-bottom: clamp(18px, 2.6dvh, 26px);
 		color: #31403a;
-		font-size: clamp(1.08rem, 1.7vw, 1.28rem);
-		line-height: 1.62;
+		font-size: clamp(1rem, min(1.55vw, 2.3dvh), 1.24rem);
+		line-height: 1.56;
 	}
 
 	.hero-actions {
@@ -409,7 +585,7 @@ const signals = [
 		gap: 8px;
 		align-items: center;
 		max-width: 660px;
-		margin-top: 28px;
+		margin-top: clamp(18px, 2.8dvh, 28px);
 	}
 
 	.hero-strip span,
@@ -484,13 +660,14 @@ const signals = [
 		color: var(--paper);
 	}
 
-	.network-panel {
+	.index-panel {
 		position: relative;
 		align-self: center;
-		min-height: min(620px, calc(100vh - 190px));
+		height: clamp(380px, 62dvh, 620px);
+		min-height: 0;
 		border: 1px solid rgba(8, 17, 15, 0.24);
 		background:
-			linear-gradient(135deg, rgba(8, 17, 15, 0.96), rgba(20, 31, 27, 0.92)),
+			linear-gradient(135deg, rgba(8, 17, 15, 0.97), rgba(17, 25, 22, 0.94)),
 			var(--ink);
 		box-shadow: var(--shadow);
 		color: var(--paper);
@@ -498,7 +675,7 @@ const signals = [
 		transform: translateY(-8px);
 	}
 
-	.network-panel::before {
+	.index-panel::before {
 		position: absolute;
 		inset: 0;
 		content: "";
@@ -506,13 +683,13 @@ const signals = [
 			linear-gradient(rgba(247, 245, 239, 0.08) 1px, transparent 1px),
 			linear-gradient(90deg, rgba(247, 245, 239, 0.08) 1px, transparent 1px);
 		background-size: 36px 36px;
-		mask-image: radial-gradient(circle at 50% 44%, #000 0 44%, transparent 72%);
+		mask-image: linear-gradient(to bottom, #000, transparent 88%);
 	}
 
-	.network-panel::after {
+	.index-panel::after {
 		position: absolute;
-		inset: auto -8% -20% 12%;
-		height: 260px;
+		inset: auto -12% -24% 22%;
+		height: 280px;
 		content: "";
 		background: radial-gradient(circle, rgba(34, 211, 197, 0.42), transparent 68%);
 		filter: blur(10px);
@@ -542,148 +719,113 @@ const signals = [
 		bottom: 20px;
 	}
 
-	.network-map {
-		position: absolute;
-		inset: 62px 22px;
-	}
-
-	.route {
-		position: absolute;
-		height: 2px;
-		border-radius: 999px;
-		background: linear-gradient(90deg, transparent, var(--cyan), var(--lime), transparent);
-		opacity: 0.78;
-		transform-origin: left center;
-		animation: route-pulse 4.8s ease-in-out infinite;
-	}
-
-	.route-a {
-		top: 47%;
-		left: 19%;
-		width: 64%;
-		transform: rotate(-18deg);
-	}
-
-	.route-b {
-		top: 46%;
-		left: 20%;
-		width: 55%;
-		transform: rotate(28deg);
-		animation-delay: 0.8s;
-	}
-
-	.route-c {
-		top: 46%;
-		left: 23%;
-		width: 52%;
-		transform: rotate(92deg);
-		animation-delay: 1.4s;
-	}
-
-	.node {
+	.index-board {
 		position: absolute;
 		z-index: 2;
+		inset: 72px 22px 84px;
 		display: grid;
-		place-items: center;
-		border: 1px solid rgba(247, 245, 239, 0.22);
-		background: rgba(247, 245, 239, 0.09);
-		backdrop-filter: blur(10px);
-		box-shadow: 0 20px 50px rgba(0, 0, 0, 0.24);
-		text-align: center;
+		grid-template-rows: auto minmax(0, 1fr);
+		gap: clamp(16px, 3dvh, 28px);
+		min-height: 0;
 	}
 
-	.node strong,
-	.node span {
+	.index-stamp {
+		position: absolute;
+		right: 0;
+		bottom: -10px;
+		z-index: -1;
+		color: rgba(247, 245, 239, 0.035);
 		font-family: var(--display);
+		font-size: clamp(12rem, 22vw, 18rem);
 		font-weight: 800;
+		line-height: 0.72;
 	}
 
-	.node small {
-		color: rgba(247, 245, 239, 0.62);
+	.index-heading {
+		display: grid;
+		gap: 10px;
+		max-width: 520px;
+	}
+
+	.index-heading span,
+	.index-type,
+	.index-number {
 		font-family: var(--mono);
-		font-size: 0.62rem;
+		font-size: 0.7rem;
 		font-weight: 600;
 		text-transform: uppercase;
 	}
 
-	.node-main {
-		top: 34%;
-		left: 31%;
-		width: min(42%, 210px);
-		aspect-ratio: 1;
-		border-color: rgba(183, 255, 74, 0.8);
-		background: radial-gradient(circle, rgba(183, 255, 74, 0.28), rgba(247, 245, 239, 0.08) 70%);
-		border-radius: 50%;
-		box-shadow: 0 0 64px rgba(183, 255, 74, 0.22);
+	.index-heading span {
+		color: rgba(247, 245, 239, 0.62);
 	}
 
-	.node-main span {
+	.index-heading strong {
 		color: var(--lime);
-		font-size: clamp(1rem, 2vw, 1.35rem);
+		font-family: var(--display);
+		font-size: clamp(1.75rem, min(2.85vw, 4.5dvh), 2.65rem);
+		font-weight: 800;
+		line-height: 0.98;
 	}
 
-	.node-gdg,
-	.node-tech,
-	.node-ai,
-	.node-hacker {
-		width: 92px;
-		height: 72px;
+	.index-list {
+		display: grid;
+		grid-template-rows: repeat(4, minmax(0, 1fr));
+		gap: 10px;
+		min-height: 0;
 	}
 
-	.node-gdg {
-		top: 8%;
-		left: 6%;
-		border-color: rgba(183, 255, 74, 0.58);
+	.index-row {
+		--accent: var(--lime);
+		position: relative;
+		display: grid;
+		grid-template-columns: 42px minmax(0, 1fr) auto;
+		gap: 14px;
+		align-items: center;
+		min-height: 0;
+		padding: 0 clamp(14px, 2vw, 20px);
+		border: 1px solid rgba(247, 245, 239, 0.14);
+		background: rgba(247, 245, 239, 0.075);
+		color: var(--paper);
+		text-decoration: none;
+		backdrop-filter: blur(14px);
+		transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
 	}
 
-	.node-tech {
-		top: 13%;
-		right: 6%;
-		border-color: rgba(34, 211, 197, 0.58);
-	}
-
-	.node-ai {
-		right: 13%;
-		bottom: 16%;
-		border-color: rgba(115, 87, 255, 0.72);
-	}
-
-	.node-hacker {
-		bottom: 10%;
-		left: 8%;
-		border-color: rgba(255, 98, 71, 0.68);
-	}
-
-	.pulse-dot {
+	.index-row::before {
 		position: absolute;
-		z-index: 1;
-		width: 10px;
-		height: 10px;
-		border-radius: 999px;
-		background: var(--lime);
-		box-shadow: 0 0 0 8px rgba(183, 255, 74, 0.13);
-		animation: float-dot 6s ease-in-out infinite;
+		inset: 0 auto 0 0;
+		width: 4px;
+		content: "";
+		background: var(--accent);
 	}
 
-	.dot-one {
-		top: 25%;
-		left: 46%;
+	.index-row:hover {
+		transform: translateX(4px);
+		border-color: color-mix(in srgb, var(--accent) 58%, transparent);
+		background: rgba(247, 245, 239, 0.12);
 	}
 
-	.dot-two {
-		top: 62%;
-		right: 22%;
-		background: var(--cyan);
-		box-shadow: 0 0 0 8px rgba(34, 211, 197, 0.13);
-		animation-delay: 1.2s;
+	.index-row strong {
+		min-width: 0;
+		font-family: var(--display);
+		font-size: clamp(1.1rem, min(1.85vw, 2.7dvh), 1.45rem);
+		font-weight: 800;
+		line-height: 1;
+		overflow-wrap: anywhere;
 	}
 
-	.dot-three {
-		left: 22%;
-		bottom: 25%;
-		background: var(--coral);
-		box-shadow: 0 0 0 8px rgba(255, 98, 71, 0.13);
-		animation-delay: 2s;
+	.index-number {
+		color: rgba(247, 245, 239, 0.48);
+	}
+
+	.index-type {
+		display: inline-grid;
+		min-width: 54px;
+		min-height: 32px;
+		place-items: center;
+		border: 1px solid color-mix(in srgb, var(--accent) 62%, transparent);
+		color: var(--accent);
 	}
 
 	.metrics {
@@ -741,7 +883,8 @@ const signals = [
 
 	.intro-grid p,
 	.section-heading > p,
-	.submit-card p {
+	.submit-card p,
+	.submit-flow span {
 		color: #31403a;
 		font-size: 1.08rem;
 		line-height: 1.72;
@@ -847,6 +990,10 @@ const signals = [
 	.community-card > p {
 		color: #394942;
 		line-height: 1.58;
+	}
+
+	.institution-card {
+		min-height: 320px;
 	}
 
 	.tag-row {
@@ -959,11 +1106,46 @@ const signals = [
 		margin-bottom: 28px;
 	}
 
+	.submit-flow {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 18px;
+		max-width: 760px;
+		margin: 0 0 24px;
+		padding-top: 6px;
+	}
+
+	.submit-flow p {
+		display: grid;
+		gap: 8px;
+		margin: 0;
+		padding-top: 16px;
+		border-top: 1px solid var(--line);
+	}
+
+	.submit-flow strong {
+		font-family: var(--display);
+		font-size: 1.18rem;
+		line-height: 1;
+	}
+
+	.submit-flow span {
+		display: block;
+		font-size: 0.96rem;
+		line-height: 1.5;
+	}
+
+	.submit-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 12px;
+	}
+
 	.reveal {
 		animation: reveal-up 720ms cubic-bezier(0.22, 1, 0.36, 1) both;
 	}
 
-	.network-panel.reveal {
+	.index-panel.reveal {
 		animation-delay: 140ms;
 	}
 
@@ -978,26 +1160,6 @@ const signals = [
 		}
 	}
 
-	@keyframes route-pulse {
-		0%,
-		100% {
-			opacity: 0.28;
-		}
-		50% {
-			opacity: 0.92;
-		}
-	}
-
-	@keyframes float-dot {
-		0%,
-		100% {
-			transform: translate3d(0, 0, 0);
-		}
-		50% {
-			transform: translate3d(10px, -12px, 0);
-		}
-	}
-
 	@keyframes signal-rise {
 		from {
 			opacity: 0;
@@ -1009,7 +1171,54 @@ const signals = [
 		}
 	}
 
+	@media (max-height: 820px) and (min-width: 1021px) {
+		.hero {
+			gap: clamp(24px, 4vw, 58px);
+			padding-bottom: clamp(16px, 3dvh, 36px);
+		}
+
+		h1 {
+			font-size: clamp(3.35rem, min(6.7vw, 10.2dvh), 6.2rem);
+			line-height: 0.9;
+		}
+
+		.hero-lede {
+			max-width: 610px;
+			line-height: 1.48;
+		}
+
+		.hero-strip {
+			display: none;
+		}
+
+		.index-panel {
+			height: clamp(330px, 57dvh, 500px);
+		}
+
+		.index-board {
+			inset-block: 62px 76px;
+			gap: 14px;
+		}
+
+		.index-heading strong {
+			font-size: clamp(1.45rem, min(2.35vw, 4dvh), 2.15rem);
+		}
+
+		.index-list {
+			gap: 8px;
+		}
+
+		.index-type {
+			min-height: 28px;
+		}
+	}
+
 	@media (max-width: 1020px) {
+		.viewport-stage {
+			min-height: 100svh;
+			min-height: 100dvh;
+		}
+
 		.hero,
 		.intro-grid,
 		.section-heading,
@@ -1018,13 +1227,15 @@ const signals = [
 		}
 
 		.hero {
-			min-height: auto;
-			padding-top: 54px;
+			align-content: start;
+			min-height: 0;
+			padding-top: clamp(28px, 5dvh, 54px);
 		}
 
-		.network-panel {
+		.index-panel {
+			width: min(100%, 640px);
+			height: clamp(320px, 44dvh, 500px);
 			transform: none;
-			min-height: 500px;
 		}
 
 		.community-grid {
@@ -1033,12 +1244,16 @@ const signals = [
 	}
 
 	@media (max-width: 720px) {
+		.site-shell {
+			--page-gutter: 14px;
+		}
+
 		.nav,
 		.hero,
 		.metrics,
 		.section,
 		.signal-section {
-			width: min(100% - 28px, 1180px);
+			width: min(100% - (var(--page-gutter) * 2), 1180px);
 		}
 
 		.nav {
@@ -1058,12 +1273,19 @@ const signals = [
 		}
 
 		h1 {
-			font-size: clamp(3.25rem, 16vw, 4.8rem);
+			max-width: 10.5ch;
+			font-size: clamp(2.72rem, min(14vw, 9.6dvh), 4.5rem);
 			line-height: 0.9;
 		}
 
 		.hero {
-			padding-top: 42px;
+			padding-top: clamp(18px, 3.2dvh, 38px);
+			padding-bottom: clamp(26px, 5dvh, 46px);
+		}
+
+		.hero-lede {
+			font-size: 1rem;
+			line-height: 1.48;
 		}
 
 		.hero-actions,
@@ -1072,7 +1294,7 @@ const signals = [
 		}
 
 		.hero-strip {
-			margin-top: 22px;
+			display: none;
 		}
 
 		.hero-strip span,
@@ -1081,8 +1303,9 @@ const signals = [
 			font-size: 0.62rem;
 		}
 
-		.network-panel {
-			min-height: 430px;
+		.index-panel {
+			height: auto;
+			min-height: clamp(360px, 54dvh, 430px);
 		}
 
 		.panel-topline,
@@ -1092,25 +1315,37 @@ const signals = [
 			font-size: 0.6rem;
 		}
 
-		.network-map {
-			inset: 54px 14px;
+		.index-board {
+			inset: 50px 14px 54px;
+			gap: 12px;
 		}
 
-		.node-main {
-			left: 25%;
-			width: 48%;
+		.index-heading {
+			gap: 7px;
 		}
 
-		.node-gdg,
-		.node-tech,
-		.node-ai,
-		.node-hacker {
-			width: 78px;
-			height: 62px;
+		.index-heading strong {
+			font-size: clamp(1.4rem, min(7vw, 4.4dvh), 2rem);
 		}
 
-		.node strong {
-			font-size: 0.78rem;
+		.index-list {
+			gap: 7px;
+		}
+
+		.index-row {
+			grid-template-columns: 34px minmax(0, 1fr) auto;
+			gap: 9px;
+			padding-inline: 11px;
+		}
+
+		.index-row strong {
+			font-size: 1rem;
+		}
+
+		.index-type {
+			min-width: 44px;
+			min-height: 28px;
+			font-size: 0.6rem;
 		}
 
 		.metrics,
@@ -1140,8 +1375,16 @@ const signals = [
 			min-height: 340px;
 		}
 
+		.institution-card {
+			min-height: 300px;
+		}
+
 		.signal-board {
 			padding: 16px;
+		}
+
+		.submit-flow {
+			grid-template-columns: 1fr;
 		}
 
 		.submit-card::after {
