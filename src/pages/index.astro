@@ -48,8 +48,17 @@ const buildIssueUrl = (baseUrl: string, params: Record<string, string>) => {
 	return url.toString();
 };
 
-const communityUpdateIssueUrl = (name: string) =>
-	`${communityIssueUrl}&title=${encodeURIComponent(`Atualizar comunidade: ${name}`)}`;
+const communityUpdateIssueUrl = (community: (typeof communities)[number]) =>
+	buildIssueUrl(communityIssueUrl, {
+		title: `Atualizar comunidade: ${community.name}`,
+		"request-type": "Atualização de comunidade existente",
+		name: community.name,
+		type: community.type,
+		cadence: community.cadence,
+		status: community.status,
+		description: community.description,
+		tags: community.tags.join(", "),
+	});
 const institutionUpdateIssueUrl = (institution: (typeof institutions)[number]) =>
 	buildIssueUrl(institutionIssueUrl, {
 		title: `Atualizar instituição: ${institution.name}`,
@@ -227,7 +236,7 @@ const ecosystemTracks = [
 							</div>
 							<div class="card-footer">
 								<span>{community.cadence}</span>
-								<a href={communityUpdateIssueUrl(community.name)} aria-label={`Atualizar dados de ${community.name}`}>
+								<a href={communityUpdateIssueUrl(community)} aria-label={`Atualizar dados de ${community.name}`}>
 									Atualizar
 								</a>
 							</div>
