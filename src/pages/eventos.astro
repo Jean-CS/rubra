@@ -16,8 +16,6 @@ const pastEvents = events
 	.filter((event) => getDateKey(event.endDate ?? event.date) < todayKey)
 	.sort((a, b) => b.date.getTime() - a.date.getTime());
 
-const allEvents = [...upcomingEvents, ...pastEvents];
-
 const eventIssueUrl =
 	"https://github.com/jeancs/comunidades/issues/new?template=indicar-evento.yml";
 
@@ -36,11 +34,6 @@ const longDateFormatter = new Intl.DateTimeFormat("pt-BR", {
 
 const weekdayFormatter = new Intl.DateTimeFormat("pt-BR", {
 	weekday: "short",
-	timeZone: "UTC",
-});
-
-const monthFormatter = new Intl.DateTimeFormat("pt-BR", {
-	month: "short",
 	timeZone: "UTC",
 });
 
@@ -69,22 +62,13 @@ const formatEventYear = (date: Date, endDate?: Date) => {
 
 const getEventYearClass = (date: Date) => `year-${date.getUTCFullYear()}`;
 
-const getMonth = (date: Date) => monthFormatter.format(date).replace(".", "");
-
-const activityMonths = Array.from(
-	events.reduce((months, event) => {
-		const month = getMonth(event.date);
-		const existing = months.get(month);
-
-		if (!existing || event.date < existing) months.set(month, event.date);
-
-		return months;
-	}, new Map<string, Date>()),
-)
-	.sort(([, dateA], [, dateB]) => dateA.getTime() - dateB.getTime())
-	.map(([month]) => month);
-
 const pluralizeEvent = (count: number) => `${count} ${count === 1 ? "evento" : "eventos"}`;
+
+const eventYears = events.map((event) => event.date.getUTCFullYear());
+const minEventYear = Math.min(...eventYears);
+const maxEventYear = Math.max(...eventYears);
+const yearRangeLabel =
+	minEventYear === maxEventYear ? String(maxEventYear) : `${minEventYear}-${maxEventYear}`;
 
 const organizerStats = Array.from(
 	events.reduce((organizers, event) => {
@@ -140,24 +124,18 @@ const organizerStats = Array.from(
 				</div>
 			</div>
 
-			<div class="activity-panel" aria-label="Mapa de atividade por evento">
+			<div class="activity-panel" aria-label="Resumo de eventos Rubra">
 				<div class="panel-top">
 					<span>Rubra events</span>
-					<strong>{events.length.toString().padStart(2, "0")}</strong>
+					<strong>{yearRangeLabel}</strong>
 				</div>
-				<div class="contribution-wall" aria-hidden="true">
-					{allEvents.map((event, index) => (
-						<span
-							class={getDateKey(event.endDate ?? event.date) >= todayKey ? "future" : "past"}
-							style={`--delay: ${(index * 0.045).toFixed(3)}s`}
-						></span>
-					))}
+
+				<div class="total-stat">
+					<span>Eventos Rubra</span>
+					<strong>{events.length}</strong>
+					<small>agenda e histórico público</small>
 				</div>
-				<div class="month-strip" aria-label="Meses com eventos">
-					{activityMonths.map((month) => (
-						<span>{month}</span>
-					))}
-				</div>
+
 				<div class="panel-stats">
 					<p>
 						<strong>{upcomingEvents.length}</strong>
@@ -475,7 +453,7 @@ const organizerStats = Array.from(
 		width: calc(100% - var(--panel-shadow));
 		max-width: 100%;
 		min-width: 0;
-		min-height: 520px;
+		min-height: 440px;
 		justify-self: start;
 		padding: clamp(22px, 3vw, 34px);
 		border: 1px solid var(--ink);
@@ -499,8 +477,7 @@ const organizerStats = Array.from(
 	}
 
 	.panel-top,
-	.contribution-wall,
-	.month-strip,
+	.total-stat,
 	.panel-stats {
 		position: relative;
 		z-index: 1;
@@ -510,7 +487,7 @@ const organizerStats = Array.from(
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		margin-bottom: 32px;
+		margin-bottom: clamp(24px, 4vw, 42px);
 		font-family: var(--mono);
 		font-weight: 700;
 		text-transform: uppercase;
@@ -527,43 +504,34 @@ const organizerStats = Array.from(
 		line-height: 1;
 	}
 
-	.contribution-wall {
+	.total-stat {
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(54px, 1fr));
-		gap: 10px;
-		margin-bottom: 18px;
+		gap: 8px;
+		margin-bottom: clamp(28px, 5vw, 54px);
 	}
 
-	.contribution-wall span {
-		aspect-ratio: 1;
-		border: 1px solid rgba(248, 241, 231, 0.18);
-		background: rgba(248, 241, 231, 0.12);
-		animation: tile-in 620ms ease both;
-		animation-delay: var(--delay);
+	.total-stat span {
+		color: rgba(248, 241, 231, 0.68);
+		font-family: var(--mono);
+		font-size: 0.72rem;
+		font-weight: 700;
+		letter-spacing: 0;
+		text-transform: uppercase;
 	}
 
-	.contribution-wall .future {
-		background: var(--lime);
-		box-shadow: 0 0 26px rgba(183, 255, 74, 0.24);
+	.total-stat strong {
+		color: var(--lime);
+		font-family: var(--display);
+		font-size: clamp(6rem, 12vw, 9rem);
+		font-weight: 800;
+		line-height: 0.78;
+		text-shadow: 0 0 34px rgba(183, 255, 74, 0.18);
 	}
 
-	.contribution-wall .past {
-		background: var(--cyan);
-	}
-
-	.month-strip {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 7px;
-		margin-bottom: 34px;
-	}
-
-	.month-strip span {
-		padding: 7px 9px;
-		border: 1px solid rgba(248, 241, 231, 0.18);
+	.total-stat small {
 		color: rgba(248, 241, 231, 0.78);
 		font-family: var(--mono);
-		font-size: 0.68rem;
+		font-size: 0.78rem;
 		font-weight: 700;
 		text-transform: uppercase;
 	}
@@ -571,13 +539,13 @@ const organizerStats = Array.from(
 	.panel-stats {
 		display: grid;
 		grid-template-columns: repeat(3, 1fr);
-		margin-top: auto;
+		gap: 10px;
 		border-top: 1px solid rgba(248, 241, 231, 0.18);
 	}
 
 	.panel-stats p {
 		margin: 0;
-		padding: 18px 12px 0 0;
+		padding: 18px 12px 18px 0;
 	}
 
 	.panel-stats strong {
@@ -966,18 +934,6 @@ const organizerStats = Array.from(
 		color: rgba(22, 15, 11, 0.72);
 	}
 
-	@keyframes tile-in {
-		from {
-			opacity: 0;
-			transform: translateY(10px) scale(0.88);
-		}
-
-		to {
-			opacity: 1;
-			transform: translateY(0) scale(1);
-		}
-	}
-
 	@media (max-width: 980px) {
 		.events-hero,
 		.section-grid,
@@ -1041,17 +997,20 @@ const organizerStats = Array.from(
 			padding: 20px;
 		}
 
-		.contribution-wall {
-			grid-template-columns: repeat(auto-fit, minmax(42px, 1fr));
-			gap: 8px;
+		.panel-top strong {
+			font-size: 1.65rem;
 		}
 
 		.panel-stats {
-			grid-template-columns: 1fr;
+			grid-template-columns: repeat(3, 1fr);
 		}
 
 		.panel-stats strong {
-			font-size: 2.25rem;
+			font-size: 1.9rem;
+		}
+
+		.panel-stats span {
+			font-size: 0.58rem;
 		}
 
 		.upcoming-card,
