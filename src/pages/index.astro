@@ -179,18 +179,6 @@ const ecosystemTracks = [
 			</div>
 		</section>
 
-		<section class="section intro-section">
-			<div class="section-kicker">Por que existe</div>
-			<div class="intro-grid">
-				<h2>A cena já existe. O problema é conseguir encontrá-la.</h2>
-				<p>
-					Rubra nasce para transformar links soltos, grupos fechados, encontros
-					espalhados e instituições difíceis de comparar em um mapa vivo da tecnologia em
-					Londrina e região metropolitana. Um hub para quem estuda, trabalha, organiza, aprende, palestra ou só quer descobrir onde as coisas estão acontecendo na cidade-polo do norte do Paraná.
-				</p>
-			</div>
-		</section>
-
 		<section class="section directory-section" id="comunidades" aria-labelledby="directory-title">
 			<div class="section-heading">
 				<div>
@@ -347,7 +335,6 @@ const ecosystemTracks = [
 
 		<section class="section submit-section" id="indicar" aria-labelledby="submit-title">
 			<div class="submit-card">
-				<p class="section-kicker">Aprovação editorial</p>
 				<h2 id="submit-title">Conhece uma comunidade, Instituição de Ensino ou evento que deveria estar aqui?</h2>
 				<p>
 					As indicações entram pelo GitHub e passam por revisão antes de aparecer no
@@ -875,13 +862,6 @@ const ecosystemTracks = [
 		padding: 92px 0 0;
 	}
 
-	.intro-grid {
-		display: grid;
-		grid-template-columns: minmax(0, 0.95fr) minmax(280px, 0.75fr);
-		gap: clamp(28px, 6vw, 78px);
-		align-items: start;
-	}
-
 	h2 {
 		margin-bottom: 0;
 		font-size: clamp(2.6rem, 6vw, 5.8rem);
@@ -889,7 +869,6 @@ const ecosystemTracks = [
 		line-height: 0.95;
 	}
 
-	.intro-grid p,
 	.section-heading > p,
 	.submit-card p,
 	.submit-flow span,
@@ -1421,7 +1400,6 @@ const ecosystemTracks = [
 		}
 
 		.hero,
-		.intro-grid,
 		.section-heading,
 		.event-section {
 			grid-template-columns: 1fr;
