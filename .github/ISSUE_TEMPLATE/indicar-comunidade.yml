@@ -9,13 +9,12 @@ body:
     attributes:
       value: |
         Obrigado por ajudar a manter o mapa vivo. As informações passam por curadoria manual antes de entrar no site.
-  - type: dropdown
+  - type: input
     id: request-type
     attributes:
       label: Tipo de solicitação
-      options:
-        - Nova comunidade
-        - Atualização de comunidade existente
+      description: Use "Nova comunidade" ou "Atualização de comunidade existente".
+      placeholder: Nova comunidade
     validations:
       required: true
   - type: input
@@ -49,15 +48,12 @@ body:
       placeholder: Meetups e eventos
     validations:
       required: true
-  - type: dropdown
+  - type: input
     id: status
     attributes:
       label: Status
-      options:
-        - Ativa
-        - Nova
-        - Em construção
-        - Pausada
+      description: Use Ativa, Nova, Em construção ou Pausada.
+      placeholder: Ativa
     validations:
       required: true
   - type: textarea

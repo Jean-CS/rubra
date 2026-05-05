@@ -48,14 +48,12 @@ body:
       placeholder: Londrina, PR
     validations:
       required: true
-  - type: dropdown
+  - type: input
     id: format
     attributes:
       label: Formato
-      options:
-        - Presencial
-        - Online
-        - Híbrido
+      description: Use Presencial, Online ou Híbrido.
+      placeholder: Presencial
     validations:
       required: true
   - type: input
@@ -65,13 +63,12 @@ body:
       placeholder: GDG Londrina
     validations:
       required: true
-  - type: dropdown
+  - type: input
     id: organizer-type
     attributes:
       label: Tipo de organização
-      options:
-        - Comunidade
-        - Instituição de Ensino
+      description: Use Comunidade ou Instituição de Ensino.
+      placeholder: Comunidade
     validations:
       required: true
   - type: input
