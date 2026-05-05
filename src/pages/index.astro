@@ -37,10 +37,30 @@ const communityIssueUrl = `${githubIssueBaseUrl}?template=indicar-comunidade.yml
 const institutionIssueUrl = `${githubIssueBaseUrl}?template=indicar-instituicao.yml`;
 const eventIssueUrl = `${githubIssueBaseUrl}?template=indicar-evento.yml`;
 const eventsPageUrl = "/eventos";
+
+const buildIssueUrl = (baseUrl: string, params: Record<string, string>) => {
+	const url = new URL(baseUrl);
+
+	Object.entries(params).forEach(([key, value]) => {
+		url.searchParams.set(key, value);
+	});
+
+	return url.toString();
+};
+
 const communityUpdateIssueUrl = (name: string) =>
 	`${communityIssueUrl}&title=${encodeURIComponent(`Atualizar comunidade: ${name}`)}`;
-const institutionUpdateIssueUrl = (name: string) =>
-	`${institutionIssueUrl}&title=${encodeURIComponent(`Atualizar instituição: ${name}`)}`;
+const institutionUpdateIssueUrl = (institution: (typeof institutions)[number]) =>
+	buildIssueUrl(institutionIssueUrl, {
+		title: `Atualizar instituição: ${institution.name}`,
+		"request-type": "Atualização de instituição existente",
+		name: institution.name,
+		website: institution.website,
+		type: institution.type,
+		profile: institution.profile,
+		description: institution.description,
+		tags: institution.tags.join(", "),
+	});
 
 const eventDateFormatter = new Intl.DateTimeFormat("pt-BR", {
 	day: "2-digit",
@@ -260,7 +280,7 @@ const ecosystemTracks = [
 									</svg>
 								</a>
 								<div class="card-actions">
-									<a href={institutionUpdateIssueUrl(institution.name)} aria-label={`Atualizar dados de ${institution.name}`}>
+									<a href={institutionUpdateIssueUrl(institution)} aria-label={`Atualizar dados de ${institution.name}`}>
 										Atualizar
 									</a>
 								</div>
