@@ -6,9 +6,9 @@ Rubra usa o GitHub como fluxo de contribuição e curadoria. Qualquer pessoa pod
 
 Abra uma Issue usando um dos formulários:
 
-- [Indicar ou atualizar comunidade](https://github.com/jeancs/comunidades/issues/new?template=indicar-comunidade.yml)
-- [Indicar ou atualizar instituição de ensino](https://github.com/jeancs/comunidades/issues/new?template=indicar-instituicao.yml)
-- [Indicar evento](https://github.com/jeancs/comunidades/issues/new?template=indicar-evento.yml)
+- [Indicar ou atualizar comunidade](https://github.com/Jean-CS/rubra/issues/new?template=indicar-comunidade.yml)
+- [Indicar ou atualizar instituição de ensino](https://github.com/Jean-CS/rubra/issues/new?template=indicar-instituicao.yml)
+- [Indicar evento](https://github.com/Jean-CS/rubra/issues/new?template=indicar-evento.yml)
 
 Inclua links verificáveis e uma descrição curta. A curadoria pode ajustar texto, tags e categoria para manter o diretório consistente.
 

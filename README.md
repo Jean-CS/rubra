@@ -27,4 +27,4 @@ pnpm dev
 | `pnpm build`               | Builds the production site to `./dist/`          |
 | `pnpm preview`             | Previews the build locally                       |
 
-Se o repositório final no GitHub não for `jeancs/comunidades`, atualize os links em `src/pages/index.astro`, `.github/ISSUE_TEMPLATE/config.yml` e `CONTRIBUTING.md`.
+Repositório no GitHub: `Jean-CS/rubra`.
