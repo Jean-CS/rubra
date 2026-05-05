@@ -4,6 +4,8 @@ import { z } from "astro/zod";
 
 const accentSchema = z.enum(["violet", "red", "lime", "cyan", "coral"]);
 const tagsSchema = z.array(z.string().min(1)).min(1);
+const eventFormatSchema = z.enum(["Presencial", "Online", "Híbrido"]);
+const organizerTypeSchema = z.enum(["Comunidade", "Instituição de Ensino"]);
 
 const communities = defineCollection({
 	loader: glob({ base: "./src/content/communities", pattern: "**/*.{md,mdx}" }),
@@ -33,4 +35,27 @@ const institutions = defineCollection({
 	}),
 });
 
-export const collections = { communities, institutions };
+const events = defineCollection({
+	loader: glob({ base: "./src/content/events", pattern: "**/*.{md,mdx}" }),
+	schema: z
+		.object({
+			title: z.string().min(1),
+			date: z.coerce.date(),
+			endDate: z.coerce.date().optional(),
+			time: z.string().min(1).optional(),
+			location: z.string().min(1),
+			format: eventFormatSchema,
+			organizerName: z.string().min(1),
+			organizerType: organizerTypeSchema,
+			url: z.string().url(),
+			description: z.string().min(1),
+			tags: tagsSchema,
+			draft: z.boolean().optional().default(false),
+		})
+		.refine(({ date, endDate }) => !endDate || endDate >= date, {
+			message: "endDate deve ser igual ou posterior a date",
+			path: ["endDate"],
+		}),
+});
+
+export const collections = { communities, institutions, events };

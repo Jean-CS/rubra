@@ -1,0 +1,107 @@
+name: Indicar evento
+description: Sugira um evento datado de comunidade ou instituição de ensino ligado à tecnologia em Londrina e região.
+title: "[Evento] "
+labels:
+  - contribuicao
+  - evento
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Obrigado por ajudar a manter a agenda viva. Eventos passam por curadoria manual antes de entrar no site. Inclua um link público para verificação.
+  - type: input
+    id: title
+    attributes:
+      label: Nome do evento
+      placeholder: Meetup de IA em Londrina
+    validations:
+      required: true
+  - type: input
+    id: date
+    attributes:
+      label: Data de início
+      description: Use o formato AAAA-MM-DD.
+      placeholder: "2026-06-15"
+    validations:
+      required: true
+  - type: input
+    id: end-date
+    attributes:
+      label: Data de fim
+      description: Opcional. Use apenas para eventos com mais de um dia, no formato AAAA-MM-DD.
+      placeholder: "2026-06-16"
+    validations:
+      required: false
+  - type: input
+    id: time
+    attributes:
+      label: Horário
+      description: Opcional. Informe como deve aparecer no card.
+      placeholder: "19h"
+    validations:
+      required: false
+  - type: input
+    id: location
+    attributes:
+      label: Local
+      description: Cidade, endereço, campus, plataforma ou outro local público.
+      placeholder: Londrina, PR
+    validations:
+      required: true
+  - type: dropdown
+    id: format
+    attributes:
+      label: Formato
+      options:
+        - Presencial
+        - Online
+        - Híbrido
+    validations:
+      required: true
+  - type: input
+    id: organizer-name
+    attributes:
+      label: Organização responsável
+      placeholder: GDG Londrina
+    validations:
+      required: true
+  - type: dropdown
+    id: organizer-type
+    attributes:
+      label: Tipo de organização
+      options:
+        - Comunidade
+        - Instituição de Ensino
+    validations:
+      required: true
+  - type: input
+    id: url
+    attributes:
+      label: Link público do evento
+      description: Página oficial, Sympla, Meetup, LinkedIn, Instagram, site da instituição ou outra fonte verificável.
+      placeholder: https://...
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Descrição sugerida
+      description: Escreva 1 ou 2 frases objetivas, sem tom promocional exagerado.
+      placeholder: Encontro para pessoas interessadas em...
+    validations:
+      required: true
+  - type: input
+    id: tags
+    attributes:
+      label: Tags
+      description: Informe de 1 a 5 tags separadas por vírgula.
+      placeholder: IA, Meetup, Estudantes
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Como verificar?
+      description: Inclua links adicionais, perfis de organizadores, página da instituição ou contexto local que ajude na curadoria.
+    validations:
+      required: true

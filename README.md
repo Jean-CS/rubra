@@ -4,11 +4,12 @@ Hub estático para mapear comunidades, instituições de ensino, eventos e inici
 
 ## Contribuições
 
-As informações de comunidades e instituições são mantidas no GitHub e passam por curadoria antes de aparecer no site.
+As informações de comunidades, instituições e eventos são mantidas no GitHub e passam por curadoria antes de aparecer no site.
 
 - Para sugerir ou atualizar dados, abra uma Issue pelo fluxo descrito em [CONTRIBUTING.md](CONTRIBUTING.md).
-- Dados publicados ficam em `src/content/communities/` e `src/content/institutions/`.
+- Dados publicados ficam em `src/content/communities/`, `src/content/institutions/` e `src/content/events/`.
 - O build valida os campos obrigatórios com Astro Content Collections.
+- Eventos publicados na home precisam ter data e link público. Próximos eventos aparecem primeiro; eventos já encerrados aparecem no histórico.
 
 ## Desenvolvimento
 

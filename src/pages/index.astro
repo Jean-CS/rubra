@@ -17,13 +17,50 @@ const institutions = sortByName(
 	),
 );
 
+const getDateKey = (date: Date) => date.toISOString().slice(0, 10);
+const todayKey = getDateKey(new Date());
+
+const publishedEvents = (
+	await getCollection("events", ({ data }) => data.draft !== true)
+)
+	.map(({ data }) => data);
+
+const upcomingEvents = publishedEvents
+	.filter((event) => {
+		const eventEnd = event.endDate ?? event.date;
+		return getDateKey(eventEnd) >= todayKey;
+	})
+	.sort((a, b) => a.date.getTime() - b.date.getTime());
+
 const githubIssueBaseUrl = "https://github.com/jeancs/comunidades/issues/new";
 const communityIssueUrl = `${githubIssueBaseUrl}?template=indicar-comunidade.yml`;
 const institutionIssueUrl = `${githubIssueBaseUrl}?template=indicar-instituicao.yml`;
+const eventIssueUrl = `${githubIssueBaseUrl}?template=indicar-evento.yml`;
+const eventsPageUrl = "/eventos";
 const communityUpdateIssueUrl = (name: string) =>
 	`${communityIssueUrl}&title=${encodeURIComponent(`Atualizar comunidade: ${name}`)}`;
 const institutionUpdateIssueUrl = (name: string) =>
 	`${institutionIssueUrl}&title=${encodeURIComponent(`Atualizar instituição: ${name}`)}`;
+
+const eventDateFormatter = new Intl.DateTimeFormat("pt-BR", {
+	day: "2-digit",
+	month: "short",
+	timeZone: "UTC",
+});
+
+const eventWeekdayFormatter = new Intl.DateTimeFormat("pt-BR", {
+	weekday: "short",
+	timeZone: "UTC",
+});
+
+const formatEventDate = (date: Date, endDate?: Date) => {
+	const start = eventDateFormatter.format(date).replace(".", "");
+	const end = endDate ? eventDateFormatter.format(endDate).replace(".", "") : null;
+
+	return end && end !== start ? `${start} a ${end}` : start;
+};
+
+const getEventDelay = (index: number) => `${(index * 0.1).toFixed(1)}s`;
 
 const ecosystemTracks = [
 	{
@@ -39,10 +76,10 @@ const ecosystemTracks = [
 		href: "#instituicoes",
 	},
 	{
-		name: "Eventos e sinais",
+		name: "Agenda",
 		indexType: "EVT",
 		accent: "violet",
-		href: "#sinais",
+		href: "#agenda",
 	},
 	{
 		name: "Novas iniciativas",
@@ -52,15 +89,6 @@ const ecosystemTracks = [
 	},
 ];
 
-const signals = [
-	"Call for papers",
-	"Agenda compartilhada",
-	"Novas comunidades",
-	"Instituições de Ensino",
-	"Meetups em Londrina",
-	"Grupos para estudantes",
-	"Eventos de IA",
-];
 ---
 
 <Layout>
@@ -74,7 +102,8 @@ const signals = [
 				<div class="nav-links">
 					<a href="#comunidades">Comunidades</a>
 					<a href="#instituicoes">Ensino</a>
-					<a href="#sinais">Sinais</a>
+					<a href="#agenda">Agenda</a>
+					<a href={eventsPageUrl}>Eventos</a>
 					<a href="#indicar">Indicar</a>
 				</div>
 			</nav>
@@ -82,7 +111,8 @@ const signals = [
 			<section class="hero" aria-labelledby="hero-title">
 				<div class="hero-copy reveal">
 					<p class="eyebrow">Londrina e região · Hub tech do norte do PR</p>
-					<h1 id="hero-title">A cena tech de Londrina, em um só lugar.</h1>
+					<p class="hero-subheadline">A cena tech de Londrina</p>
+					<h1 id="hero-title">Em um só lugar.</h1>
 					<p class="hero-lede">
 						Rubra reúne comunidades, Instituições de Ensino, eventos e pessoas de tecnologia.
 					</p>
@@ -142,6 +172,10 @@ const signals = [
 			<div>
 				<strong>{institutions.length}</strong>
 				<span>Instituições de Ensino</span>
+			</div>
+			<div>
+				<strong>{publishedEvents.length}</strong>
+				<span>eventos mapeados</span>
 			</div>
 		</section>
 
@@ -249,30 +283,74 @@ const signals = [
 			</div>
 		</section>
 
-		<section class="signal-section" id="sinais" aria-labelledby="signals-title">
-			<div class="signal-copy">
-				<p class="section-kicker">Sinais da região</p>
-				<h2 id="signals-title">Acompanhe</h2>
+		<section class="event-section" id="agenda" aria-labelledby="events-title">
+			<div class="event-copy">
+				<p class="section-kicker">Agenda</p>
+				<h2 id="events-title">Próximos eventos</h2>
 				<p>
-					Um resumo dos movimentos que ajudam a cena local a se encontrar: chamadas abertas,
-					agendas compartilhadas, novas comunidades, meetups e oportunidades para estudantes.
+					Encontros datados de comunidades e Instituições de Ensino da cena tech de
+					Londrina e região, publicados depois de curadoria manual.
 				</p>
+				<div class="event-copy-actions">
+					<a class="button button-secondary" href={eventIssueUrl}>Indicar evento</a>
+					<a class="button button-primary" href={eventsPageUrl}>Ver histórico</a>
+				</div>
 			</div>
-			<div class="signal-board" aria-label="Sinais do ecossistema">
+			<div class="event-board" aria-label="Agenda de eventos">
 				{
-					signals.map((signal, index) => (
-						<span style={`--delay: ${index * 0.12}s`}>{signal}</span>
-					))
+					upcomingEvents.length > 0 ? (
+						upcomingEvents.map((event, index) => (
+							<article class="event-card" style={`--delay: ${getEventDelay(index)}`}>
+								<div class="event-date">
+									<strong>{formatEventDate(event.date, event.endDate)}</strong>
+									<span>{eventWeekdayFormatter.format(event.date).replace(".", "")}</span>
+								</div>
+								<div class="event-body">
+									<div class="event-meta">
+										<span>{event.format}</span>
+										{event.time && <span>{event.time}</span>}
+										<span>{event.location}</span>
+									</div>
+									<h3>
+										<a href={event.url} target="_blank" rel="noopener noreferrer">
+											{event.title}
+										</a>
+									</h3>
+									<p>{event.description}</p>
+									<div class="event-footer">
+										<span>
+											{event.organizerName} · {event.organizerType}
+										</span>
+										<div class="tag-row event-tags">
+											{event.tags.map((tag) => (
+												<span>{tag}</span>
+											))}
+										</div>
+									</div>
+								</div>
+							</article>
+						))
+					) : (
+						<div class="empty-events">
+							<strong>Nenhum próximo evento publicado ainda.</strong>
+							<p>Indique um evento datado com link público para a curadoria revisar.</p>
+							<a class="button button-primary" href={eventIssueUrl}>Indicar evento</a>
+						</div>
+					)
 				}
+				<div class="event-archive-link">
+					<span>{publishedEvents.length} eventos mapeados</span>
+					<a href={eventsPageUrl}>Abrir agenda completa</a>
+				</div>
 			</div>
 		</section>
 
 		<section class="section submit-section" id="indicar" aria-labelledby="submit-title">
 			<div class="submit-card">
 				<p class="section-kicker">Aprovação editorial</p>
-				<h2 id="submit-title">Conhece uma comunidade ou Instituição de Ensino que deveria estar aqui?</h2>
+				<h2 id="submit-title">Conhece uma comunidade, Instituição de Ensino ou evento que deveria estar aqui?</h2>
 				<p>
-					As indicações entram por dois caminhos e passam por revisão antes de aparecer no
+					As indicações entram pelo GitHub e passam por revisão antes de aparecer no
 					site. A ideia é manter o mapa aberto para Londrina e região, mas curado o
 					suficiente para continuar confiável.
 				</p>
@@ -285,6 +363,10 @@ const signals = [
 						<strong>Instituição de Ensino</strong>
 						<span>Para universidades, institutos, centros de formação e cursos relevantes.</span>
 					</p>
+					<p>
+						<strong>Evento</strong>
+						<span>Para encontros datados com página pública e relação clara com tecnologia.</span>
+					</p>
 				</div>
 				<div class="submit-actions">
 					<a class="button button-primary" href={communityIssueUrl}>
@@ -292,6 +374,9 @@ const signals = [
 					</a>
 					<a class="button button-secondary" href={institutionIssueUrl}>
 						Indicar Instituição de Ensino
+					</a>
+					<a class="button button-secondary" href={eventIssueUrl}>
+						Indicar evento
 					</a>
 				</div>
 			</div>
@@ -367,7 +452,7 @@ const signals = [
 	.hero,
 	.metrics,
 	.section,
-	.signal-section {
+	.event-section {
 		position: relative;
 		z-index: 1;
 		width: min(1180px, calc(100% - (var(--page-gutter) * 2)));
@@ -390,6 +475,7 @@ const signals = [
 
 	.brand {
 		gap: 10px;
+		color: var(--ink);
 		font-family: var(--display);
 		font-size: 1.04rem;
 		font-weight: 800;
@@ -470,11 +556,21 @@ const signals = [
 	}
 
 	h1 {
-		max-width: 790px;
+		max-width: 8.6ch;
 		margin-bottom: clamp(15px, 2.4dvh, 24px);
-		font-size: clamp(3.65rem, min(7.2vw, 11.5dvh), 7.25rem);
+		font-size: clamp(4.35rem, min(9.2vw, 13dvh), 8.75rem);
 		font-weight: 800;
 		line-height: 0.88;
+	}
+
+	.hero-subheadline {
+		max-width: 13ch;
+		margin-bottom: clamp(8px, 1.3dvh, 14px);
+		font-family: var(--display);
+		font-size: clamp(2rem, min(4.2vw, 6.5dvh), 4.25rem);
+		font-weight: 800;
+		line-height: 0.92;
+		text-wrap: balance;
 	}
 
 	.hero-lede {
@@ -742,7 +838,7 @@ const signals = [
 
 	.metrics {
 		display: grid;
-		grid-template-columns: repeat(3, 1fr);
+		grid-template-columns: repeat(4, 1fr);
 		border: 1px solid var(--ink);
 		background: var(--ink);
 		box-shadow: 6px 6px 0 var(--lime);
@@ -796,7 +892,9 @@ const signals = [
 	.intro-grid p,
 	.section-heading > p,
 	.submit-card p,
-	.submit-flow span {
+	.submit-flow span,
+	.empty-events p,
+	.event-body p {
 		color: #4a3c31;
 		font-size: 1.08rem;
 		line-height: 1.72;
@@ -989,7 +1087,7 @@ const signals = [
 		stroke-width: 1.9;
 	}
 
-	.signal-section {
+	.event-section {
 		display: grid;
 		grid-template-columns: minmax(430px, 0.36fr) minmax(0, 1fr);
 		gap: clamp(36px, 6vw, 88px);
@@ -997,70 +1095,172 @@ const signals = [
 		padding-top: 110px;
 	}
 
-	.signal-copy {
+	.event-copy {
 		position: relative;
 		z-index: 2;
 		min-width: 0;
 	}
 
-	.signal-copy h2 {
-		max-width: 7ch;
+	.event-copy h2 {
+		max-width: 9ch;
 		margin-bottom: 18px;
 		font-size: clamp(2.8rem, 4.8vw, 5.1rem);
 		overflow-wrap: normal;
 		text-wrap: balance;
 	}
 
-	.signal-copy p:not(.section-kicker) {
+	.event-copy p:not(.section-kicker) {
 		max-width: 420px;
-		margin: 0;
+		margin: 0 0 22px;
 		color: #4a3c31;
 		font-size: 1.02rem;
 		line-height: 1.62;
 		text-wrap: pretty;
 	}
 
-	.signal-board {
-		position: relative;
+	.event-copy-actions {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 12px;
-		align-content: flex-start;
-		justify-content: flex-end;
+		gap: 10px;
+	}
+
+	.event-board {
+		position: relative;
+		display: grid;
+		gap: 14px;
 		min-height: 0;
-		margin-top: clamp(52px, 7vw, 92px);
+		margin-top: clamp(28px, 4vw, 62px);
 		padding: clamp(20px, 3vw, 30px) 0 0;
 		border-top: 2px solid var(--ink);
 	}
 
-	.signal-board span {
+	.event-card {
 		position: relative;
-		display: inline-flex;
-		align-items: center;
-		min-height: 44px;
-		padding: 0 15px;
-		border: 1px solid var(--ink);
-		background: var(--paper);
+		display: grid;
+		grid-template-columns: minmax(96px, 0.22fr) minmax(0, 1fr);
+		gap: clamp(16px, 2.4vw, 28px);
+		padding: clamp(18px, 2.6vw, 26px);
+		border: 1px solid var(--line);
+		background: rgba(248, 241, 231, 0.82);
 		color: var(--ink);
-		font-family: var(--mono);
-		font-size: 0.75rem;
-		font-weight: 600;
-		text-transform: uppercase;
-		box-shadow: 4px 4px 0 var(--ink);
+		backdrop-filter: blur(18px);
 		animation: signal-rise 700ms ease both;
 		animation-delay: var(--delay);
 	}
 
-	.signal-board span:nth-child(3n + 1) {
+	.event-card::before {
+		position: absolute;
+		inset: 0 0 auto;
+		height: 5px;
+		content: "";
+		background: var(--violet);
+	}
+
+	.event-date {
+		display: grid;
+		align-content: start;
+		gap: 7px;
+		min-width: 0;
+	}
+
+	.event-date strong {
+		font-family: var(--display);
+		font-size: clamp(1.7rem, 2.6vw, 2.55rem);
+		font-weight: 800;
+		line-height: 0.95;
+		text-transform: lowercase;
+	}
+
+	.event-date span,
+	.event-meta span,
+	.event-footer > span {
+		color: var(--steel);
+		font-family: var(--mono);
+		font-size: 0.68rem;
+		font-weight: 600;
+		text-transform: uppercase;
+	}
+
+	.event-body h3 {
+		margin-bottom: 12px;
+		font-size: clamp(1.55rem, 2.2vw, 2.1rem);
+		font-weight: 800;
+		line-height: 1;
+	}
+
+	.event-body h3 a {
+		text-decoration: none;
+	}
+
+	.event-body h3 a:hover {
+		text-decoration: underline;
+		text-decoration-thickness: 2px;
+		text-underline-offset: 4px;
+	}
+
+	.event-meta {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 7px;
+		margin-bottom: 14px;
+	}
+
+	.event-meta span {
+		padding: 6px 8px;
+		border: 1px solid var(--line);
+		background: rgba(255, 255, 255, 0.34);
+		color: #4a3c31;
+	}
+
+	.event-footer {
+		display: grid;
+		gap: 10px;
+		margin-top: 18px;
+	}
+
+	.event-tags {
+		margin-top: 0;
+		padding-top: 0;
+	}
+
+	.event-archive-link {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 14px;
+		padding: 16px 18px;
+		border: 1px solid var(--ink);
+		background: var(--ink);
+		box-shadow: 5px 5px 0 var(--cyan);
+		color: var(--paper);
+	}
+
+	.event-archive-link span,
+	.event-archive-link a {
+		font-family: var(--mono);
+		font-size: 0.72rem;
+		font-weight: 700;
+		text-transform: uppercase;
+	}
+
+	.event-archive-link a {
+		color: var(--lime);
+		text-underline-offset: 4px;
+	}
+
+	.empty-events {
+		padding: clamp(24px, 4vw, 38px);
+		border: 1px solid var(--ink);
 		background: var(--lime);
+		box-shadow: 5px 5px 0 var(--ink);
 	}
 
-	.signal-board span:nth-child(3n + 2) {
-		box-shadow: 4px 4px 0 var(--cyan);
-	}
-
-	.signal-board span:nth-child(3n) {
-		box-shadow: 4px 4px 0 var(--red);
+	.empty-events strong {
+		display: block;
+		margin-bottom: 10px;
+		font-family: var(--display);
+		font-size: clamp(1.8rem, 3vw, 2.55rem);
+		line-height: 0.98;
 	}
 
 	.submit-section {
@@ -1105,9 +1305,9 @@ const signals = [
 
 	.submit-flow {
 		display: grid;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
+		grid-template-columns: repeat(3, minmax(0, 1fr));
 		gap: 18px;
-		max-width: 760px;
+		max-width: 820px;
 		margin: 0 0 24px;
 		padding-top: 6px;
 	}
@@ -1175,8 +1375,12 @@ const signals = [
 		}
 
 		h1 {
-			font-size: clamp(3.35rem, min(6.7vw, 10.2dvh), 6.2rem);
+			font-size: clamp(3.9rem, min(8vw, 11.2dvh), 7.2rem);
 			line-height: 0.9;
+		}
+
+		.hero-subheadline {
+			font-size: clamp(1.8rem, min(3.8vw, 5.4dvh), 3.45rem);
 		}
 
 		.hero-lede {
@@ -1219,7 +1423,7 @@ const signals = [
 		.hero,
 		.intro-grid,
 		.section-heading,
-		.signal-section {
+		.event-section {
 			grid-template-columns: 1fr;
 		}
 
@@ -1238,6 +1442,14 @@ const signals = [
 		.community-grid {
 			grid-template-columns: repeat(2, minmax(0, 1fr));
 		}
+
+		.metrics {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+
+		.metrics div:nth-child(2n) {
+			border-right: 0;
+		}
 	}
 
 	@media (max-width: 720px) {
@@ -1249,7 +1461,7 @@ const signals = [
 		.hero,
 		.metrics,
 		.section,
-		.signal-section {
+		.event-section {
 			width: min(100% - (var(--page-gutter) * 2), 1180px);
 		}
 
@@ -1270,9 +1482,15 @@ const signals = [
 		}
 
 		h1 {
-			max-width: 10.5ch;
-			font-size: clamp(2.72rem, min(14vw, 9.6dvh), 4.5rem);
+			max-width: 8ch;
+			font-size: clamp(3.55rem, min(18vw, 10.5dvh), 5.4rem);
 			line-height: 0.9;
+		}
+
+		.hero-subheadline {
+			max-width: 11ch;
+			font-size: clamp(1.8rem, min(9.4vw, 6.8dvh), 3.05rem);
+			line-height: 0.95;
 		}
 
 		.hero {
@@ -1360,7 +1578,7 @@ const signals = [
 		}
 
 		.section,
-		.signal-section {
+		.event-section {
 			padding-top: 72px;
 		}
 
@@ -1376,8 +1594,12 @@ const signals = [
 			min-height: 300px;
 		}
 
-		.signal-board {
+		.event-board {
 			padding: 16px;
+		}
+
+		.event-card {
+			grid-template-columns: 1fr;
 		}
 
 		.submit-flow {

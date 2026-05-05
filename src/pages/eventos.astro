@@ -1,0 +1,1080 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "../layouts/Layout.astro";
+
+const getDateKey = (date: Date) => date.toISOString().slice(0, 10);
+const todayKey = getDateKey(new Date());
+
+const events = (await getCollection("events", ({ data }) => data.draft !== true))
+	.map(({ data }) => data);
+
+const upcomingEvents = events
+	.filter((event) => getDateKey(event.endDate ?? event.date) >= todayKey)
+	.sort((a, b) => a.date.getTime() - b.date.getTime());
+
+const pastEvents = events
+	.filter((event) => getDateKey(event.endDate ?? event.date) < todayKey)
+	.sort((a, b) => b.date.getTime() - a.date.getTime());
+
+const allEvents = [...upcomingEvents, ...pastEvents];
+
+const eventIssueUrl =
+	"https://github.com/jeancs/comunidades/issues/new?template=indicar-evento.yml";
+
+const shortDateFormatter = new Intl.DateTimeFormat("pt-BR", {
+	day: "2-digit",
+	month: "short",
+	timeZone: "UTC",
+});
+
+const longDateFormatter = new Intl.DateTimeFormat("pt-BR", {
+	day: "2-digit",
+	month: "short",
+	year: "numeric",
+	timeZone: "UTC",
+});
+
+const weekdayFormatter = new Intl.DateTimeFormat("pt-BR", {
+	weekday: "short",
+	timeZone: "UTC",
+});
+
+const monthFormatter = new Intl.DateTimeFormat("pt-BR", {
+	month: "short",
+	timeZone: "UTC",
+});
+
+const formatDate = (date: Date) => shortDateFormatter.format(date).replace(".", "");
+const formatLongDate = (date: Date) => longDateFormatter.format(date).replace(".", "");
+
+const formatEventDate = (date: Date, endDate?: Date) => {
+	const start = formatDate(date);
+	const end = endDate ? formatDate(endDate) : null;
+
+	if (!end || end === start) return start;
+
+	const sameMonth =
+		date.getUTCFullYear() === endDate.getUTCFullYear() &&
+		date.getUTCMonth() === endDate.getUTCMonth();
+
+	return sameMonth ? `${date.getUTCDate()} a ${end}` : `${start} a ${end}`;
+};
+
+const formatEventYear = (date: Date, endDate?: Date) => {
+	const startYear = date.getUTCFullYear();
+	const endYear = endDate?.getUTCFullYear();
+
+	return endYear && endYear !== startYear ? `${startYear}/${endYear}` : String(startYear);
+};
+
+const getEventYearClass = (date: Date) => `year-${date.getUTCFullYear()}`;
+
+const getMonth = (date: Date) => monthFormatter.format(date).replace(".", "");
+
+const activityMonths = Array.from(
+	events.reduce((months, event) => {
+		const month = getMonth(event.date);
+		const existing = months.get(month);
+
+		if (!existing || event.date < existing) months.set(month, event.date);
+
+		return months;
+	}, new Map<string, Date>()),
+)
+	.sort(([, dateA], [, dateB]) => dateA.getTime() - dateB.getTime())
+	.map(([month]) => month);
+
+const pluralizeEvent = (count: number) => `${count} ${count === 1 ? "evento" : "eventos"}`;
+
+const organizerStats = Array.from(
+	events.reduce((organizers, event) => {
+		const current = organizers.get(event.organizerName) ?? {
+			name: event.organizerName,
+			count: 0,
+			nextCount: 0,
+			lastDate: event.date,
+		};
+
+		current.count += 1;
+		if (getDateKey(event.endDate ?? event.date) >= todayKey) current.nextCount += 1;
+		if (event.date > current.lastDate) current.lastDate = event.date;
+		organizers.set(event.organizerName, current);
+
+		return organizers;
+	}, new Map<string, { name: string; count: number; nextCount: number; lastDate: Date }>()),
+).map(([, value]) => value)
+	.sort((a, b) => b.count - a.count || a.name.localeCompare(b.name, "pt-BR"));
+---
+
+<Layout>
+	<main class="events-shell">
+		<nav class="nav" aria-label="Navegação principal">
+			<a class="brand" href="/">
+				<span class="brand-mark" aria-hidden="true">R</span>
+				<span>Rubra</span>
+			</a>
+			<div class="nav-links">
+				<a href="/#comunidades">Comunidades</a>
+				<a href="/#instituicoes">Ensino</a>
+				<a href="/#agenda">Agenda</a>
+				<a href={eventIssueUrl}>Indicar</a>
+			</div>
+		</nav>
+
+		<section class="events-hero" aria-labelledby="events-title">
+			<div class="hero-copy">
+				<p class="eyebrow">Agenda / histórico vivo</p>
+				<h1 id="events-title">
+					<span>Eventos</span>
+					<span>que provam</span>
+					<span>movimento.</span>
+				</h1>
+				<p>
+					Um registro público dos encontros que mantêm a cena tech de Londrina ativa:
+					o que vem pela frente, o que já aconteceu e quais comunidades estão puxando
+					a agenda.
+				</p>
+				<div class="hero-actions">
+					<a class="button button-primary" href={eventIssueUrl}>Indicar evento</a>
+					<a class="button button-secondary" href="/#agenda">Voltar para a home</a>
+				</div>
+			</div>
+
+			<div class="activity-panel" aria-label="Mapa de atividade por evento">
+				<div class="panel-top">
+					<span>Rubra events</span>
+					<strong>{events.length.toString().padStart(2, "0")}</strong>
+				</div>
+				<div class="contribution-wall" aria-hidden="true">
+					{allEvents.map((event, index) => (
+						<span
+							class={getDateKey(event.endDate ?? event.date) >= todayKey ? "future" : "past"}
+							style={`--delay: ${(index * 0.045).toFixed(3)}s`}
+						></span>
+					))}
+				</div>
+				<div class="month-strip" aria-label="Meses com eventos">
+					{activityMonths.map((month) => (
+						<span>{month}</span>
+					))}
+				</div>
+				<div class="panel-stats">
+					<p>
+						<strong>{upcomingEvents.length}</strong>
+						<span>próximos</span>
+					</p>
+					<p>
+						<strong>{pastEvents.length}</strong>
+						<span>realizados</span>
+					</p>
+					<p>
+						<strong>{organizerStats.length}</strong>
+						<span>organizadores</span>
+					</p>
+				</div>
+			</div>
+		</section>
+
+		<section class="section-grid" aria-label="Resumo da agenda">
+			<div class="upcoming-panel">
+				<div class="panel-heading">
+					<p class="eyebrow">Próximos</p>
+					<h2>Na fila</h2>
+				</div>
+				{
+					upcomingEvents.length > 0 ? (
+						<div class="upcoming-list">
+							{upcomingEvents.map((event) => (
+								<a class="upcoming-card" href={event.url} target="_blank" rel="noopener noreferrer">
+									<span>{formatEventDate(event.date, event.endDate)}</span>
+									<strong>{event.title}</strong>
+									<small>{event.location}</small>
+								</a>
+							))}
+						</div>
+					) : (
+						<div class="empty-state">
+							<strong>Sem próximos eventos publicados.</strong>
+							<a href={eventIssueUrl}>Indicar o próximo</a>
+						</div>
+					)
+				}
+			</div>
+
+			<div class="organizer-panel">
+				<div class="panel-heading">
+					<p class="eyebrow">Comunidades</p>
+					<h2>Quem movimenta</h2>
+				</div>
+				<div class="organizer-list">
+					{organizerStats.map((organizer, index) => (
+						<div class="organizer-row">
+							<span>{String(index + 1).padStart(2, "0")}</span>
+							<strong>{organizer.name}</strong>
+							<div class="organizer-meta">
+								<span>{pluralizeEvent(organizer.count)}</span>
+								<span>Mais recente em {formatLongDate(organizer.lastDate)}</span>
+							</div>
+						</div>
+					))}
+				</div>
+			</div>
+		</section>
+
+		<section class="archive-section" aria-labelledby="archive-title">
+			<div class="archive-heading">
+				<div>
+					<p class="eyebrow">Arquivo</p>
+					<h2 id="archive-title">Histórico completo</h2>
+				</div>
+			</div>
+
+			<div class="archive-grid">
+				{pastEvents.map((event) => (
+					<article class:list={["archive-card", getEventYearClass(event.date)]}>
+						<div class="date-block">
+							<span class="date-year">{formatEventYear(event.date, event.endDate)}</span>
+							<strong>{formatEventDate(event.date, event.endDate)}</strong>
+							<span>{weekdayFormatter.format(event.date).replace(".", "")}</span>
+						</div>
+						<div class="archive-body">
+							<div class="event-meta">
+								<span>{event.organizerName}</span>
+								<span>{event.format}</span>
+								{event.time && <span>{event.time}</span>}
+							</div>
+							<h3>
+								<a href={event.url} target="_blank" rel="noopener noreferrer">
+									{event.title}
+								</a>
+							</h3>
+							<p>{event.description}</p>
+							<footer>
+								<span class="event-location">{event.location}</span>
+								<div class="event-topics" aria-label="Temas do evento">
+									{event.tags.map((tag) => (
+										<small>{tag}</small>
+									))}
+								</div>
+							</footer>
+						</div>
+					</article>
+				))}
+			</div>
+		</section>
+	</main>
+</Layout>
+
+<style>
+	:root {
+		--ink: #160f0b;
+		--paper: #f8f1e7;
+		--mist: #eadfce;
+		--lime: #b7ff4a;
+		--cyan: #22d3c5;
+		--coral: #ff6247;
+		--red: #e53935;
+		--violet: #6f5ae8;
+		--coffee: #4b2117;
+		--steel: #766a5e;
+		--line: rgba(22, 15, 11, 0.14);
+		--display: "Bricolage Grotesque", "IBM Plex Sans", sans-serif;
+		--body: "IBM Plex Sans", system-ui, sans-serif;
+		--mono: "IBM Plex Mono", ui-monospace, monospace;
+	}
+
+	.events-shell {
+		--page-gutter: clamp(18px, 3.8vw, 42px);
+		position: relative;
+		min-height: 100dvh;
+		overflow-x: clip;
+		background:
+			linear-gradient(90deg, rgba(22, 15, 11, 0.055) 1px, transparent 1px),
+			linear-gradient(rgba(22, 15, 11, 0.055) 1px, transparent 1px),
+			radial-gradient(circle at 18% 8%, rgba(183, 255, 74, 0.34), transparent 24rem),
+			radial-gradient(circle at 84% 3%, rgba(34, 211, 197, 0.22), transparent 22rem),
+			linear-gradient(150deg, rgba(229, 57, 53, 0.16), transparent 30rem),
+			var(--paper);
+		background-size: 42px 42px, 42px 42px, auto, auto, auto, auto;
+		color: var(--ink);
+	}
+
+	.events-shell *,
+	.events-shell *::before,
+	.events-shell *::after {
+		box-sizing: border-box;
+	}
+
+	.nav,
+	.events-hero,
+	.section-grid,
+	.archive-section {
+		position: relative;
+		z-index: 1;
+		width: min(1180px, calc(100% - (var(--page-gutter) * 2)));
+		margin-inline: auto;
+	}
+
+	.nav {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		min-height: 80px;
+		padding: 16px 0;
+	}
+
+	.brand,
+	.nav-links,
+	.hero-actions,
+	.event-meta,
+	.archive-card footer,
+	.event-topics {
+		display: flex;
+		align-items: center;
+	}
+
+	.brand {
+		gap: 10px;
+		color: var(--ink);
+		font-family: var(--display);
+		font-size: 1.04rem;
+		font-weight: 800;
+		text-decoration: none;
+	}
+
+	.brand-mark {
+		display: grid;
+		width: 34px;
+		height: 34px;
+		place-items: center;
+		border: 1px solid var(--ink);
+		background: var(--lime);
+		box-shadow: 4px 4px 0 var(--ink);
+		font-family: var(--mono);
+		font-size: 0.85rem;
+	}
+
+	.nav-links {
+		gap: 8px;
+		padding: 6px;
+		border: 1px solid var(--line);
+		background: rgba(248, 241, 231, 0.76);
+		backdrop-filter: blur(16px);
+	}
+
+	.nav-links a {
+		padding: 10px 12px;
+		color: var(--steel);
+		font-size: 0.88rem;
+		font-weight: 700;
+		text-decoration: none;
+		transition: background 160ms ease, color 160ms ease;
+	}
+
+	.nav-links a:hover {
+		background: var(--ink);
+		color: var(--paper);
+	}
+
+	.events-hero {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(320px, 520px);
+		gap: clamp(28px, 4.8vw, 72px);
+		align-items: start;
+		padding: clamp(28px, 7vw, 92px) 0 clamp(42px, 8vw, 110px);
+	}
+
+	.hero-copy {
+		min-width: 0;
+	}
+
+	h1,
+	h2,
+	h3,
+	p {
+		margin-top: 0;
+	}
+
+	h1,
+	h2,
+	h3 {
+		font-family: var(--display);
+		letter-spacing: 0;
+	}
+
+	.eyebrow {
+		margin: 0 0 14px;
+		color: var(--steel);
+		font-family: var(--mono);
+		font-size: 0.74rem;
+		font-weight: 700;
+		text-transform: uppercase;
+	}
+
+	h1 {
+		max-width: min(8.8ch, 100%);
+		margin-bottom: 22px;
+		font-size: clamp(3.65rem, 6.25vw, 7.15rem);
+		font-weight: 800;
+		line-height: 0.86;
+		overflow-wrap: break-word;
+		text-wrap: balance;
+	}
+
+	h1 span {
+		display: block;
+	}
+
+	.hero-copy > p:not(.eyebrow),
+	.archive-heading > p {
+		max-width: 620px;
+		color: #4a3c31;
+		font-size: clamp(1.02rem, 1.6vw, 1.25rem);
+		line-height: 1.6;
+	}
+
+	.hero-actions {
+		flex-wrap: wrap;
+		gap: 12px;
+		margin-top: 26px;
+	}
+
+	.button {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-height: 48px;
+		padding: 0 18px;
+		border: 1px solid var(--ink);
+		font-weight: 800;
+		text-decoration: none;
+		transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
+	}
+
+	.button:hover {
+		transform: translateY(-2px);
+	}
+
+	.button-primary {
+		background: var(--lime);
+		box-shadow: 5px 5px 0 var(--ink);
+	}
+
+	.button-secondary {
+		background: rgba(248, 241, 231, 0.72);
+	}
+
+	.button-secondary:hover {
+		background: var(--ink);
+		color: var(--paper);
+	}
+
+	.activity-panel {
+		--panel-shadow: 10px;
+		position: relative;
+		width: calc(100% - var(--panel-shadow));
+		max-width: 100%;
+		min-width: 0;
+		min-height: 520px;
+		justify-self: start;
+		padding: clamp(22px, 3vw, 34px);
+		border: 1px solid var(--ink);
+		background:
+			linear-gradient(135deg, rgba(22, 15, 11, 0.98), rgba(75, 33, 23, 0.96)),
+			var(--ink);
+		box-shadow: var(--panel-shadow) var(--panel-shadow) 0 var(--coral);
+		color: var(--paper);
+		overflow: hidden;
+	}
+
+	.activity-panel::before {
+		position: absolute;
+		inset: 0;
+		content: "";
+		background-image:
+			linear-gradient(rgba(248, 241, 231, 0.08) 1px, transparent 1px),
+			linear-gradient(90deg, rgba(248, 241, 231, 0.08) 1px, transparent 1px);
+		background-size: 34px 34px;
+		mask-image: linear-gradient(to bottom, #000, transparent 88%);
+	}
+
+	.panel-top,
+	.contribution-wall,
+	.month-strip,
+	.panel-stats {
+		position: relative;
+		z-index: 1;
+	}
+
+	.panel-top {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 32px;
+		font-family: var(--mono);
+		font-weight: 700;
+		text-transform: uppercase;
+	}
+
+	.panel-top span {
+		color: rgba(248, 241, 231, 0.68);
+		font-size: 0.72rem;
+	}
+
+	.panel-top strong {
+		color: var(--lime);
+		font-size: 2.4rem;
+		line-height: 1;
+	}
+
+	.contribution-wall {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(54px, 1fr));
+		gap: 10px;
+		margin-bottom: 18px;
+	}
+
+	.contribution-wall span {
+		aspect-ratio: 1;
+		border: 1px solid rgba(248, 241, 231, 0.18);
+		background: rgba(248, 241, 231, 0.12);
+		animation: tile-in 620ms ease both;
+		animation-delay: var(--delay);
+	}
+
+	.contribution-wall .future {
+		background: var(--lime);
+		box-shadow: 0 0 26px rgba(183, 255, 74, 0.24);
+	}
+
+	.contribution-wall .past {
+		background: var(--cyan);
+	}
+
+	.month-strip {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 7px;
+		margin-bottom: 34px;
+	}
+
+	.month-strip span {
+		padding: 7px 9px;
+		border: 1px solid rgba(248, 241, 231, 0.18);
+		color: rgba(248, 241, 231, 0.78);
+		font-family: var(--mono);
+		font-size: 0.68rem;
+		font-weight: 700;
+		text-transform: uppercase;
+	}
+
+	.panel-stats {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		margin-top: auto;
+		border-top: 1px solid rgba(248, 241, 231, 0.18);
+	}
+
+	.panel-stats p {
+		margin: 0;
+		padding: 18px 12px 0 0;
+	}
+
+	.panel-stats strong {
+		display: block;
+		color: var(--lime);
+		font-family: var(--display);
+		font-size: clamp(2.1rem, 4vw, 3.6rem);
+		line-height: 1;
+	}
+
+	.panel-stats span {
+		color: rgba(248, 241, 231, 0.68);
+		font-family: var(--mono);
+		font-size: 0.68rem;
+		font-weight: 700;
+		text-transform: uppercase;
+	}
+
+	.section-grid {
+		display: grid;
+		grid-template-columns: minmax(0, 0.78fr) minmax(320px, 0.52fr);
+		gap: 18px;
+	}
+
+	.upcoming-panel,
+	.organizer-panel {
+		border: 1px solid var(--ink);
+		background: rgba(248, 241, 231, 0.82);
+		backdrop-filter: blur(18px);
+	}
+
+	.panel-heading {
+		padding: 22px;
+		border-bottom: 1px solid var(--line);
+	}
+
+	h2 {
+		margin: 0;
+		font-size: clamp(2.4rem, 4.8vw, 4.8rem);
+		font-weight: 800;
+		line-height: 0.92;
+	}
+
+	.upcoming-list,
+	.organizer-list {
+		display: grid;
+	}
+
+	.upcoming-card {
+		display: grid;
+		grid-template-columns: minmax(96px, 0.18fr) minmax(0, 1fr);
+		gap: 16px;
+		padding: 18px 22px;
+		border-bottom: 1px solid var(--line);
+		text-decoration: none;
+		transition: background 160ms ease;
+	}
+
+	.upcoming-card:hover {
+		background: rgba(183, 255, 74, 0.18);
+	}
+
+	.upcoming-card span,
+	.upcoming-card small,
+	.organizer-row > span,
+	.organizer-meta,
+	.event-meta span,
+	.event-location,
+	.event-topics small,
+	.date-block span {
+		font-family: var(--mono);
+		font-size: 0.68rem;
+		font-weight: 700;
+		text-transform: uppercase;
+	}
+
+	.upcoming-card span {
+		color: var(--red);
+	}
+
+	.upcoming-card strong {
+		font-family: var(--display);
+		font-size: clamp(1.35rem, 2.4vw, 2rem);
+		line-height: 1;
+	}
+
+	.upcoming-card small {
+		grid-column: 2;
+		color: var(--steel);
+	}
+
+	.organizer-row {
+		display: grid;
+		grid-template-columns: 40px minmax(0, 1fr);
+		gap: 10px;
+		padding: 16px 22px;
+		border-bottom: 1px solid var(--line);
+	}
+
+	.organizer-row > span {
+		color: var(--red);
+	}
+
+	.organizer-row strong {
+		font-family: var(--display);
+		font-size: 1.25rem;
+		line-height: 1;
+	}
+
+	.organizer-meta {
+		display: grid;
+		gap: 3px;
+		grid-column: 2;
+		color: var(--steel);
+		line-height: 1.35;
+	}
+
+	.organizer-meta span {
+		display: block;
+	}
+
+	.empty-state {
+		padding: 24px;
+	}
+
+	.empty-state strong {
+		display: block;
+		margin-bottom: 12px;
+		font-family: var(--display);
+		font-size: 1.6rem;
+		line-height: 1;
+	}
+
+	.empty-state a {
+		font-weight: 800;
+		text-underline-offset: 4px;
+	}
+
+	.archive-section {
+		padding: clamp(72px, 9vw, 118px) 0 96px;
+	}
+
+	.archive-heading {
+		display: grid;
+		grid-template-columns: minmax(0, 0.8fr) minmax(260px, 0.45fr);
+		gap: 28px;
+		align-items: end;
+		margin-bottom: 22px;
+	}
+
+	.archive-grid {
+		position: relative;
+		display: grid;
+		align-items: start;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		column-gap: 34px;
+		row-gap: 18px;
+		padding-bottom: clamp(36px, 5vw, 64px);
+	}
+
+	.archive-grid::before {
+		position: absolute;
+		inset: 4px calc(50% - 1px) 0;
+		width: 2px;
+		content: "";
+		background: linear-gradient(
+			to bottom,
+			rgba(229, 57, 53, 0.58),
+			rgba(22, 15, 11, 0.14) 34%,
+			rgba(22, 15, 11, 0.06)
+		);
+	}
+
+	.archive-card {
+		--year-accent: var(--red);
+		--year-accent-soft: rgba(229, 57, 53, 0.1);
+		--year-accent-border: rgba(229, 57, 53, 0.34);
+		position: relative;
+		z-index: 1;
+		display: grid;
+		grid-template-columns: minmax(96px, 0.2fr) minmax(0, 1fr);
+		gap: 18px;
+		padding: 18px;
+		border: 1px solid var(--line);
+		background: rgba(248, 241, 231, 0.76);
+		backdrop-filter: blur(18px);
+		transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+	}
+
+	.archive-card.year-2026 {
+		--year-accent: #e53935;
+		--year-accent-soft: rgba(229, 57, 53, 0.11);
+		--year-accent-border: rgba(229, 57, 53, 0.38);
+	}
+
+	.archive-card.year-2025 {
+		--year-accent: #008f83;
+		--year-accent-soft: rgba(34, 211, 197, 0.14);
+		--year-accent-border: rgba(0, 143, 131, 0.34);
+	}
+
+	.archive-card.year-2024 {
+		--year-accent: #745400;
+		--year-accent-soft: rgba(255, 193, 7, 0.16);
+		--year-accent-border: rgba(116, 84, 0, 0.32);
+	}
+
+	.archive-card.year-2023 {
+		--year-accent: #315fd6;
+		--year-accent-soft: rgba(49, 95, 214, 0.12);
+		--year-accent-border: rgba(49, 95, 214, 0.32);
+	}
+
+	.archive-card:nth-child(even) {
+		margin-top: clamp(36px, 5vw, 64px);
+	}
+
+	.archive-card::before {
+		position: absolute;
+		inset: 0 0 auto;
+		height: 4px;
+		content: "";
+		background: var(--year-accent);
+	}
+
+	.archive-card::after {
+		position: absolute;
+		top: 28px;
+		width: 12px;
+		height: 12px;
+		border: 2px solid var(--paper);
+		border-radius: 50%;
+		content: "";
+		background: var(--year-accent);
+		box-shadow: 0 0 0 1px rgba(22, 15, 11, 0.22);
+	}
+
+	.archive-card:nth-child(odd)::after {
+		right: -23px;
+	}
+
+	.archive-card:nth-child(even)::after {
+		left: -23px;
+	}
+
+	.archive-card:hover {
+		transform: translateY(-3px);
+		border-color: rgba(22, 15, 11, 0.34);
+		box-shadow: 0 18px 50px rgba(55, 27, 15, 0.12);
+	}
+
+	.date-block {
+		display: grid;
+		align-content: start;
+		justify-items: start;
+		gap: 8px;
+		padding-top: 2px;
+	}
+
+	.date-block .date-year {
+		padding: 5px 8px;
+		border: 1px solid var(--year-accent-border);
+		background: var(--year-accent-soft);
+		color: var(--year-accent);
+		font-size: 0.72rem;
+		line-height: 1;
+	}
+
+	.date-block strong {
+		font-family: var(--display);
+		font-size: clamp(1.45rem, 2.4vw, 2.15rem);
+		line-height: 0.95;
+		text-transform: lowercase;
+	}
+
+	.date-block span {
+		color: var(--steel);
+	}
+
+	.event-meta {
+		flex-wrap: wrap;
+		gap: 0;
+		margin-bottom: 12px;
+	}
+
+	.event-meta span {
+		position: relative;
+		display: inline-flex;
+		align-items: center;
+		min-height: 22px;
+		color: var(--steel);
+		line-height: 1;
+	}
+
+	.event-meta span:first-child {
+		color: var(--ink);
+		font-size: 0.74rem;
+	}
+
+	.event-meta span:first-child::after {
+		width: 28px;
+		height: 2px;
+		margin: 0 10px;
+		content: "";
+		background: var(--year-accent);
+		transform: translateY(1px);
+	}
+
+	.event-meta span:not(:first-child) + span::before {
+		margin: 0 8px;
+		color: rgba(22, 15, 11, 0.26);
+		content: "/";
+	}
+
+	.archive-card h3 {
+		margin-bottom: 10px;
+		font-size: clamp(1.45rem, 2.4vw, 2rem);
+		line-height: 1;
+	}
+
+	.archive-card h3 a {
+		text-decoration: none;
+	}
+
+	.archive-card h3 a:hover {
+		text-decoration: underline;
+		text-decoration-thickness: 2px;
+		text-underline-offset: 4px;
+	}
+
+	.archive-card p {
+		margin-bottom: 16px;
+		color: #4a3c31;
+		line-height: 1.55;
+	}
+
+	.archive-card footer {
+		position: relative;
+		justify-content: space-between;
+		gap: 14px;
+		padding-top: 14px;
+		border-top: 1px solid rgba(22, 15, 11, 0.09);
+	}
+
+	.event-location {
+		position: relative;
+		max-width: 44%;
+		padding-left: 13px;
+		color: var(--steel);
+		line-height: 1.35;
+	}
+
+	.event-location::before {
+		position: absolute;
+		top: 0.46em;
+		left: 0;
+		width: 5px;
+		height: 5px;
+		content: "";
+		background: var(--year-accent);
+		opacity: 0.72;
+	}
+
+	.event-topics {
+		flex-wrap: wrap;
+		justify-content: flex-end;
+		gap: 6px;
+		max-width: 58%;
+	}
+
+	.event-topics small {
+		display: inline-flex;
+		align-items: center;
+		min-height: 24px;
+		padding: 4px 7px;
+		border: 1px solid rgba(22, 15, 11, 0.1);
+		background: rgba(255, 255, 255, 0.2);
+		color: rgba(22, 15, 11, 0.62);
+		font-size: 0.62rem;
+		line-height: 1;
+		transition: border-color 160ms ease, color 160ms ease;
+	}
+
+	.archive-card:hover .event-topics small {
+		border-color: rgba(22, 15, 11, 0.18);
+		color: rgba(22, 15, 11, 0.72);
+	}
+
+	@keyframes tile-in {
+		from {
+			opacity: 0;
+			transform: translateY(10px) scale(0.88);
+		}
+
+		to {
+			opacity: 1;
+			transform: translateY(0) scale(1);
+		}
+	}
+
+	@media (max-width: 980px) {
+		.events-hero,
+		.section-grid,
+		.archive-heading {
+			grid-template-columns: 1fr;
+		}
+
+		.archive-grid {
+			grid-template-columns: 1fr;
+			padding-bottom: 0;
+		}
+
+		.archive-grid::before {
+			display: none;
+		}
+
+		.archive-card:nth-child(even) {
+			margin-top: 0;
+		}
+
+		.archive-card::after {
+			display: none;
+		}
+
+		.activity-panel {
+			width: calc(100% - var(--panel-shadow));
+			min-height: auto;
+			justify-self: start;
+		}
+	}
+
+	@media (max-width: 720px) {
+		.events-shell {
+			--page-gutter: clamp(20px, 6vw, 28px);
+		}
+
+		.nav {
+			align-items: flex-start;
+			flex-direction: column;
+			gap: 16px;
+		}
+
+		.nav-links {
+			width: 100%;
+			overflow-x: auto;
+		}
+
+		h1 {
+			max-width: 100%;
+			font-size: clamp(2.82rem, 12.4vw, 4.6rem);
+			line-height: 0.9;
+		}
+
+		.hero-copy > p:not(.eyebrow) {
+			font-size: 1rem;
+			line-height: 1.55;
+		}
+
+		.activity-panel {
+			--panel-shadow: 6px;
+			padding: 20px;
+		}
+
+		.contribution-wall {
+			grid-template-columns: repeat(auto-fit, minmax(42px, 1fr));
+			gap: 8px;
+		}
+
+		.panel-stats {
+			grid-template-columns: 1fr;
+		}
+
+		.panel-stats strong {
+			font-size: 2.25rem;
+		}
+
+		.upcoming-card,
+		.archive-card {
+			grid-template-columns: 1fr;
+		}
+
+		.upcoming-card small {
+			grid-column: auto;
+		}
+
+		.archive-card footer {
+			align-items: flex-start;
+			flex-direction: column;
+		}
+
+		.event-location,
+		.event-topics {
+			max-width: 100%;
+		}
+
+		.event-topics {
+			justify-content: flex-start;
+		}
+	}
+</style>
