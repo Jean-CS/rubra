@@ -9,13 +9,12 @@ body:
     attributes:
       value: |
         Obrigado por ajudar a manter o mapa vivo. As informações passam por curadoria manual antes de entrar no site.
-  - type: dropdown
+  - type: input
     id: request-type
     attributes:
       label: Tipo de solicitação
-      options:
-        - Nova instituição
-        - Atualização de instituição existente
+      description: Use "Nova instituição" ou "Atualização de instituição existente".
+      placeholder: Nova instituição
     validations:
       required: true
   - type: input
@@ -40,17 +39,12 @@ body:
       placeholder: Universidade, Instituto, Formação técnica
     validations:
       required: true
-  - type: dropdown
+  - type: input
     id: profile
     attributes:
       label: Perfil
-      options:
-        - Federal
-        - Estadual
-        - Municipal
-        - Privada
-        - Sistema S
-        - Comunitária
+      description: Use Federal, Estadual, Municipal, Privada, Sistema S ou Comunitária.
+      placeholder: Federal
     validations:
       required: true
   - type: textarea
