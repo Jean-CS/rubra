@@ -8,7 +8,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Obrigado por ajudar a manter a agenda viva. Eventos passam por curadoria manual antes de entrar no site. Inclua um link público para verificação.
+        Obrigado por ajudar a manter a agenda viva. Eventos passam por curadoria manual antes de entrar no site. Inclua um link público se houver.
   - type: input
     id: title
     attributes:
@@ -78,10 +78,10 @@ body:
     id: url
     attributes:
       label: Link público do evento
-      description: Página oficial, Sympla, Meetup, LinkedIn, Instagram, site da instituição ou outra fonte verificável.
+      description: Opcional. Página oficial, Sympla, Meetup, LinkedIn, Instagram, site da instituição ou outra fonte verificável.
       placeholder: https://...
     validations:
-      required: true
+      required: false
   - type: textarea
     id: description
     attributes:

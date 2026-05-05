@@ -10,11 +10,11 @@ Abra uma Issue usando um dos formulários:
 - [Indicar ou atualizar instituição de ensino](https://github.com/Jean-CS/rubra/issues/new?template=indicar-instituicao.yml)
 - [Indicar evento](https://github.com/Jean-CS/rubra/issues/new?template=indicar-evento.yml)
 
-Inclua links verificáveis e uma descrição curta. A curadoria pode ajustar texto, tags e categoria para manter o diretório consistente.
+Inclua links verificáveis quando houver e uma descrição curta. A curadoria pode ajustar texto, tags e categoria para manter o diretório consistente.
 
 ## Critérios de curadoria
 
-Entradas devem ter relação clara com tecnologia em Londrina ou região metropolitana. Comunidades precisam ter algum sinal público de atividade, como eventos, grupo aberto, página pública ou organizadores identificáveis. Instituições precisam ter presença local ou atuação relevante para formação, pesquisa, extensão, carreira ou tecnologia. Eventos precisam ter data, organizador identificado e link público para verificação.
+Entradas devem ter relação clara com tecnologia em Londrina ou região metropolitana. Comunidades precisam ter algum sinal público de atividade, como eventos, grupo aberto, página pública ou organizadores identificáveis. Instituições precisam ter presença local ou atuação relevante para formação, pesquisa, extensão, carreira ou tecnologia. Eventos precisam ter data, organizador identificado e contexto suficiente para verificação.
 
 Não aceitamos descrições puramente promocionais, dados sem fonte mínima, spam, conteúdo discriminatório ou iniciativas sem relação com o ecossistema local.
 
@@ -95,4 +95,4 @@ Depois de revisar uma Issue:
 
 Para preparar uma entrada sem publicar ainda, adicione `draft: true` ao frontmatter. Entradas em draft são validadas, mas não aparecem no site.
 
-A curadoria pode ajustar título, descrição, tags, categoria e organizador antes de publicar. Para eventos, não publique indicações sem link público verificável.
+A curadoria pode ajustar título, descrição, tags, categoria e organizador antes de publicar. Para eventos, publique apenas quando houver informação suficiente para verificar a indicação.
