@@ -10,6 +10,16 @@ Rubra é um hub estático que mapeia comunidades, instituições de ensino, even
 
 O projeto existe para reduzir links perdidos, grupos fechados e descobertas por acaso. A ideia é manter um mapa público, bonito e confiável do que já está acontecendo no ecossistema local.
 
+## Visão
+
+Muita gente em Londrina quer aprender, participar, conhecer pessoas e crescer na tecnologia, mas ainda descobre comunidades por acaso. Em eventos do GDG Londrina, comunidade ativa desde 2023, ainda aparecem estudantes ouvindo falar do grupo pela primeira vez porque alguém comentou em uma conversa aleatória.
+
+Isso não deveria depender de sorte. Londrina tem [mais de 580 mil habitantes](https://www.casacivil.pr.gov.br/Noticia/Populacao-do-Parana-cresce-acima-da-media-nacional-e-ganha-658-mil-habitantes) e é a segunda maior cidade do Paraná, atrás apenas de Curitiba. A cidade reúne dezenas de instituições de ensino com cursos ligados à tecnologia; considerando várias turmas por instituição e cerca de 30 estudantes por turma, o potencial passa facilmente de mil novas pessoas entrando nesse ecossistema a cada ano.
+
+A visão do Rubra é tornar esse ecossistema visível. Comunidades precisam ser fáceis de encontrar para que mais pessoas possam participar, criar rede, desenvolver habilidades técnicas, praticar comunicação, colaborar, pedir ajuda, se inspirar e também puxar novas iniciativas.
+
+O objetivo maior é ajudar Londrina a ocupar melhor o espaço que seu tamanho já sugere: ser uma referência em atividade comunitária de tecnologia no Paraná, fortalecendo a cidade como um hub logo atrás da capital.
+
 ## O que tem no Rubra
 
 - Diretório de comunidades de tecnologia de Londrina e região.
