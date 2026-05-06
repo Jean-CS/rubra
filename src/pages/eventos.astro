@@ -111,7 +111,7 @@ const organizerStats = Array.from(
 		<main>
 			<section class="events-hero" aria-labelledby="events-title">
 				<div class="hero-copy">
-					<p class="eyebrow">Agenda / histórico vivo</p>
+					<p class="eyebrow">Agenda</p>
 					<h1 id="events-title">
 					<span>Eventos</span>
 					<span>que provam</span>
@@ -129,13 +129,12 @@ const organizerStats = Array.from(
 			</div>
 
 			<div class="activity-panel" aria-label="Resumo de eventos Rubra">
-				<div class="panel-top">
-					<span>Rubra events</span>
+				<div class="panel-top panel-top-year">
 					<strong>{yearRangeLabel}</strong>
 				</div>
 
 				<div class="total-stat">
-					<span>Eventos Rubra</span>
+					<span>Eventos realizados</span>
 					<strong>{events.length}</strong>
 					<small>agenda e histórico público</small>
 				</div>
@@ -497,6 +496,10 @@ const organizerStats = Array.from(
 		font-family: var(--mono);
 		font-weight: 700;
 		text-transform: uppercase;
+	}
+
+	.panel-top-year {
+		justify-content: flex-end;
 	}
 
 	.panel-top span {
