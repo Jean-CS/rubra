@@ -2,6 +2,7 @@
 import { getCollection } from "astro:content";
 import Layout from "../layouts/Layout.astro";
 import SiteFooter from "../components/SiteFooter.astro";
+import SiteHeader from "../components/SiteHeader.astro";
 import { formatEventDate, weekdayFormatter } from "../lib/eventDates";
 
 const sortByName = <T extends { name: string }>(items: T[]) =>
@@ -41,6 +42,13 @@ const eventIssueUrl = `${githubIssueBaseUrl}?template=indicar-evento.yml`;
 const feedbackIssueUrl = `${githubIssueBaseUrl}?template=feedback.yml`;
 const bugIssueUrl = `${githubIssueBaseUrl}?template=bug.yml`;
 const eventsPageUrl = "/eventos";
+const headerLinks = [
+	{ href: "#comunidades", label: "Comunidades", accent: "lime" },
+	{ href: "#instituicoes", label: "Ensino", accent: "cyan" },
+	{ href: "#agenda", label: "Agenda", accent: "violet" },
+	{ href: eventsPageUrl, label: "Eventos", accent: "coral" },
+	{ href: "#participar", label: "Participar", accent: "lime" },
+] as const;
 
 const buildIssueUrl = (baseUrl: string, params: Record<string, string>) => {
 	const url = new URL(baseUrl);
@@ -108,21 +116,7 @@ const ecosystemTracks = [
 
 <Layout>
 	<div class="site-shell">
-		<header class="site-header">
-			<nav class="nav" aria-label="Navegação principal">
-				<a class="brand" href="/">
-					<span class="brand-mark" aria-hidden="true">R</span>
-					<span>Rubra</span>
-				</a>
-				<div class="nav-links">
-					<a href="#comunidades">Comunidades</a>
-					<a href="#instituicoes">Ensino</a>
-					<a href="#agenda">Agenda</a>
-					<a href={eventsPageUrl}>Eventos</a>
-					<a href="#participar">Participar</a>
-				</div>
-			</nav>
-		</header>
+		<SiteHeader links={headerLinks} />
 
 		<main>
 			<section class="hero" aria-labelledby="hero-title">

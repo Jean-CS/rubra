@@ -2,6 +2,7 @@
 import { getCollection } from "astro:content";
 import Layout from "../layouts/Layout.astro";
 import SiteFooter from "../components/SiteFooter.astro";
+import SiteHeader from "../components/SiteHeader.astro";
 import {
 	formatEventDate,
 	formatLongEventDate,
@@ -24,6 +25,12 @@ const pastEvents = events
 
 const eventIssueUrl =
 	"https://github.com/Jean-CS/rubra/issues/new?template=indicar-evento.yml";
+const headerLinks = [
+	{ href: "/#comunidades", label: "Comunidades", accent: "lime" },
+	{ href: "/#instituicoes", label: "Ensino", accent: "cyan" },
+	{ href: "/#agenda", label: "Agenda", accent: "violet" },
+	{ href: eventIssueUrl, label: "Indicar", accent: "coral" },
+] as const;
 
 const formatEventYear = (date: Date, endDate?: Date) => {
 	const startYear = date.getUTCFullYear();
@@ -64,20 +71,7 @@ const organizerStats = Array.from(
 
 <Layout>
 	<div class="events-shell">
-		<header class="site-header">
-			<nav class="nav" aria-label="Navegação principal">
-				<a class="brand" href="/">
-					<span class="brand-mark" aria-hidden="true">R</span>
-					<span>Rubra</span>
-				</a>
-				<div class="nav-links">
-					<a href="/#comunidades">Comunidades</a>
-					<a href="/#instituicoes">Ensino</a>
-					<a href="/#agenda">Agenda</a>
-					<a href={eventIssueUrl}>Indicar</a>
-				</div>
-			</nav>
-		</header>
+		<SiteHeader links={headerLinks} />
 
 		<main>
 			<section class="events-hero" aria-labelledby="events-title">
