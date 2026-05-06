@@ -3,7 +3,6 @@
 ![Astro](https://img.shields.io/badge/Astro-6-FF5D01?style=flat-square&logo=astro&logoColor=white)
 ![pnpm](https://img.shields.io/badge/pnpm-ready-F69220?style=flat-square&logo=pnpm&logoColor=white)
 ![Node](https://img.shields.io/badge/Node-%3E%3D22.12-339933?style=flat-square&logo=nodedotjs&logoColor=white)
-[![Deploy with Vercel](https://img.shields.io/badge/Vercel-deploy-000000?style=flat-square&logo=vercel&logoColor=white)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FJean-CS%2Frubra)
 
 A porta de entrada para a cena tech de Londrina.
 
