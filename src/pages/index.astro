@@ -38,6 +38,8 @@ const githubIssueBaseUrl = "https://github.com/Jean-CS/rubra/issues/new";
 const communityIssueUrl = `${githubIssueBaseUrl}?template=indicar-comunidade.yml`;
 const institutionIssueUrl = `${githubIssueBaseUrl}?template=indicar-instituicao.yml`;
 const eventIssueUrl = `${githubIssueBaseUrl}?template=indicar-evento.yml`;
+const feedbackIssueUrl = `${githubIssueBaseUrl}?template=feedback.yml`;
+const bugIssueUrl = `${githubIssueBaseUrl}?template=bug.yml`;
 const eventsPageUrl = "/eventos";
 
 const buildIssueUrl = (baseUrl: string, params: Record<string, string>) => {
@@ -98,7 +100,7 @@ const ecosystemTracks = [
 		name: "Novas iniciativas",
 		indexType: "NEW",
 		accent: "coral",
-		href: "#indicar",
+		href: "#participar",
 	},
 ];
 
@@ -117,7 +119,7 @@ const ecosystemTracks = [
 					<a href="#instituicoes">Ensino</a>
 					<a href="#agenda">Agenda</a>
 					<a href={eventsPageUrl}>Eventos</a>
-					<a href="#indicar">Indicar</a>
+					<a href="#participar">Participar</a>
 				</div>
 			</nav>
 		</header>
@@ -126,14 +128,18 @@ const ecosystemTracks = [
 			<section class="hero" aria-labelledby="hero-title">
 				<div class="hero-copy reveal">
 					<p class="eyebrow">Londrina e região · Hub tech do norte do PR</p>
-					<p class="hero-subheadline">A cena tech de Londrina</p>
-					<h1 id="hero-title">Em um só lugar.</h1>
+					<h1 id="hero-title">
+						<span>A porta de entrada</span>
+						<span>para a cena tech</span>
+						<span>de Londrina.</span>
+					</h1>
 					<p class="hero-lede">
-						Rubra reúne comunidades, Instituições de Ensino, eventos e pessoas de tecnologia.
+						Rubra torna visíveis comunidades, Instituições de Ensino, eventos e
+						iniciativas que movimentam a tecnologia em Londrina e região.
 					</p>
 					<div class="hero-actions">
 						<a class="button button-primary" href="#comunidades">Explorar o mapa</a>
-						<a class="button button-secondary" href="#indicar">Indicar iniciativa</a>
+						<a class="button button-secondary" href="#participar">Contribuir com o hub</a>
 					</div>
 					<div class="hero-strip" aria-label="Partes do ecossistema mapeadas">
 						<span>Mapeando agora</span>
@@ -169,7 +175,7 @@ const ecosystemTracks = [
 					</div>
 					<div class="panel-footer">
 						<span>{communities.length + institutions.length} entradas mapeadas</span>
-						<span>Aberto para novas indicações</span>
+						<span>Aberto a sugestões e críticas</span>
 					</div>
 				</div>
 			</section>
@@ -190,6 +196,32 @@ const ecosystemTracks = [
 			<div>
 				<strong>{publishedEvents.length}</strong>
 				<span>eventos mapeados</span>
+			</div>
+		</section>
+
+		<section class="positioning-section" aria-labelledby="positioning-title">
+			<div class="positioning-copy">
+				<p class="section-kicker">Hub comunitário</p>
+				<h2 id="positioning-title">Não é um catálogo fechado.</h2>
+				<p>
+					Rubra é um hub comunitário em evolução contínua. O mapa melhora quando
+					quem vive, organiza, estuda, trabalha e participa da tecnologia local
+					aponta ausências, questiona critérios e sugere caminhos melhores.
+				</p>
+			</div>
+			<div class="positioning-points" aria-label="Como Rubra evolui">
+				<p>
+					<strong>Curadoria</strong>
+					<span>Entradas passam por revisão para manter contexto, confiança e relação local.</span>
+				</p>
+				<p>
+					<strong>Feedback</strong>
+					<span>Críticas sobre conteúdo, navegação, tom, acessibilidade e visual são parte do projeto.</span>
+				</p>
+				<p>
+					<strong>Representação</strong>
+					<span>O hub deve mudar quando a comunidade mostrar um retrato melhor do ecossistema.</span>
+				</p>
 			</div>
 		</section>
 
@@ -347,15 +379,16 @@ const ecosystemTracks = [
 			</div>
 		</section>
 
-		<section class="section submit-section" id="indicar" aria-labelledby="submit-title">
+		<section class="section submit-section" id="participar" aria-labelledby="submit-title">
+			<span id="indicar" class="anchor-alias" aria-hidden="true"></span>
 			<div class="submit-card">
-				<h2 id="submit-title">Conhece uma comunidade, Instituição de Ensino ou evento que deveria estar aqui?</h2>
+				<h2 id="submit-title">Participe da evolução do Rubra.</h2>
 				<p>
-					As indicações entram pelo GitHub e passam por revisão antes de aparecer no
-					site. A ideia é manter o mapa aberto para Londrina e região, mas curado o
-					suficiente para continuar confiável.
+					As contribuições entram pelo GitHub. Você pode indicar conteúdo,
+					atualizar dados, reportar problemas ou propor mudanças na forma como o
+					hub representa a cena tech de Londrina e região.
 				</p>
-				<div class="submit-flow" aria-label="Opções de indicação">
+				<div class="submit-flow" aria-label="Opções de participação">
 					<p>
 						<strong>Comunidade</strong>
 						<span>Para grupos, meetups, coletivos, labs e iniciativas recorrentes.</span>
@@ -368,6 +401,14 @@ const ecosystemTracks = [
 						<strong>Evento</strong>
 						<span>Para encontros datados com página pública e relação clara com tecnologia.</span>
 					</p>
+					<p>
+						<strong>Sugestão ou crítica</strong>
+						<span>Para melhorias de conteúdo, curadoria, navegação, tom, acessibilidade ou visual.</span>
+					</p>
+					<p>
+						<strong>Problema ou bug</strong>
+						<span>Para links quebrados, dados incorretos, falhas de layout ou comportamento inesperado.</span>
+					</p>
 				</div>
 				<div class="submit-actions">
 					<a class="button button-primary" href={communityIssueUrl}>
@@ -378,6 +419,12 @@ const ecosystemTracks = [
 					</a>
 					<a class="button button-secondary" href={eventIssueUrl}>
 						Indicar evento
+					</a>
+					<a class="button button-secondary" href={feedbackIssueUrl}>
+						Sugerir melhoria
+					</a>
+					<a class="button button-secondary" href={bugIssueUrl}>
+						Reportar problema
 					</a>
 				</div>
 				</div>
@@ -445,6 +492,7 @@ const ecosystemTracks = [
 	.nav,
 	.hero,
 	.metrics,
+	.positioning-section,
 	.section,
 	.event-section {
 		position: relative;
@@ -550,21 +598,15 @@ const ecosystemTracks = [
 	}
 
 	h1 {
-		max-width: 8.6ch;
+		max-width: 12ch;
 		margin-bottom: clamp(15px, 2.4dvh, 24px);
-		font-size: clamp(4.35rem, min(9.2vw, 13dvh), 8.75rem);
-		font-weight: 800;
-		line-height: 0.88;
-	}
-
-	.hero-subheadline {
-		max-width: 13ch;
-		margin-bottom: clamp(8px, 1.3dvh, 14px);
-		font-family: var(--display);
-		font-size: clamp(2rem, min(4.2vw, 6.5dvh), 4.25rem);
+		font-size: clamp(3.45rem, min(6.9vw, 10.4dvh), 5rem);
 		font-weight: 800;
 		line-height: 0.92;
-		text-wrap: balance;
+	}
+
+	h1 span {
+		display: block;
 	}
 
 	.hero-lede {
@@ -765,7 +807,7 @@ const ecosystemTracks = [
 	.index-heading strong {
 		color: var(--lime);
 		font-family: var(--display);
-		font-size: clamp(1.75rem, min(2.85vw, 4.5dvh), 2.65rem);
+		font-size: clamp(1.75rem, min(2.85vw, 4.5dvh), 2rem);
 		font-weight: 800;
 		line-height: 0.98;
 	}
@@ -877,6 +919,8 @@ const ecosystemTracks = [
 	}
 
 	.section-heading > p,
+	.positioning-copy p,
+	.positioning-points span,
 	.submit-card p,
 	.submit-flow span,
 	.empty-events p,
@@ -892,6 +936,99 @@ const ecosystemTracks = [
 		gap: 32px;
 		align-items: end;
 		margin-bottom: 28px;
+	}
+
+	.positioning-section {
+		display: grid;
+		grid-template-columns: minmax(0, 0.82fr) minmax(360px, 0.68fr);
+		gap: clamp(24px, 5vw, 64px);
+		align-items: stretch;
+		margin-top: clamp(64px, 8vw, 96px);
+		border: 1px solid var(--ink);
+		background:
+			linear-gradient(rgba(248, 241, 231, 0.075) 1px, transparent 1px),
+			linear-gradient(90deg, rgba(248, 241, 231, 0.075) 1px, transparent 1px),
+			linear-gradient(135deg, rgba(22, 15, 11, 0.98), rgba(75, 33, 23, 0.96));
+		background-size: 34px 34px, 34px 34px, auto;
+		box-shadow: 7px 7px 0 var(--coral);
+		color: var(--paper);
+		overflow: hidden;
+		padding: clamp(26px, 5vw, 56px);
+	}
+
+	.positioning-section::after {
+		position: absolute;
+		right: clamp(18px, 4vw, 48px);
+		bottom: clamp(-18px, -2vw, -8px);
+		content: "aberto";
+		color: rgba(248, 241, 231, 0.04);
+		font-family: var(--display);
+		font-size: clamp(5rem, 13vw, 11rem);
+		font-weight: 800;
+		line-height: 0.8;
+		pointer-events: none;
+	}
+
+	.positioning-copy,
+	.positioning-points {
+		position: relative;
+		z-index: 1;
+	}
+
+	.positioning-copy .section-kicker {
+		color: rgba(248, 241, 231, 0.68);
+	}
+
+	.positioning-copy h2 {
+		max-width: 7.8ch;
+		color: var(--lime);
+	}
+
+	.positioning-copy p {
+		max-width: 660px;
+		margin: 22px 0 0;
+		color: rgba(248, 241, 231, 0.78);
+	}
+
+	.positioning-points {
+		display: grid;
+		gap: 12px;
+		align-content: center;
+	}
+
+	.positioning-points p {
+		display: grid;
+		gap: 8px;
+		margin: 0;
+		padding: 18px 18px 18px 18px;
+		border-left: 4px solid var(--accent);
+		background: rgba(248, 241, 231, 0.07);
+	}
+
+	.positioning-points p:nth-child(1) {
+		--accent: var(--lime);
+	}
+
+	.positioning-points p:nth-child(2) {
+		--accent: var(--cyan);
+	}
+
+	.positioning-points p:nth-child(3) {
+		--accent: var(--coral);
+	}
+
+	.positioning-points strong {
+		color: var(--accent);
+		font-family: var(--display);
+		font-size: 1.2rem;
+		line-height: 1;
+	}
+
+	.positioning-points span {
+		max-width: 440px;
+		color: rgba(248, 241, 231, 0.72);
+		font-size: 0.98rem;
+		line-height: 1.5;
 	}
 
 	.community-grid {
@@ -1249,7 +1386,13 @@ const ecosystemTracks = [
 	}
 
 	.submit-section {
+		position: relative;
 		padding-bottom: 92px;
+	}
+
+	.anchor-alias {
+		position: absolute;
+		inset-block-start: 0;
 	}
 
 	.submit-card {
@@ -1360,12 +1503,8 @@ const ecosystemTracks = [
 		}
 
 		h1 {
-			font-size: clamp(3.9rem, min(8vw, 11.2dvh), 7.2rem);
-			line-height: 0.9;
-		}
-
-		.hero-subheadline {
-			font-size: clamp(1.8rem, min(3.8vw, 5.4dvh), 3.45rem);
+			font-size: clamp(3.25rem, min(6.4vw, 9.4dvh), 6.25rem);
+			line-height: 0.93;
 		}
 
 		.hero-lede {
@@ -1401,6 +1540,7 @@ const ecosystemTracks = [
 
 	@media (max-width: 1020px) {
 		.hero,
+		.positioning-section,
 		.section-heading,
 		.event-section {
 			grid-template-columns: 1fr;
@@ -1439,6 +1579,7 @@ const ecosystemTracks = [
 		.nav,
 		.hero,
 		.metrics,
+		.positioning-section,
 		.section,
 		.event-section {
 			width: min(100% - (var(--page-gutter) * 2), 1180px);
@@ -1452,7 +1593,8 @@ const ecosystemTracks = [
 
 		.nav-links {
 			width: 100%;
-			justify-content: space-between;
+			flex-wrap: wrap;
+			justify-content: flex-start;
 		}
 
 		.nav-links a {
@@ -1461,14 +1603,8 @@ const ecosystemTracks = [
 		}
 
 		h1 {
-			max-width: 8ch;
-			font-size: clamp(3.55rem, min(18vw, 10.5dvh), 5.4rem);
-			line-height: 0.9;
-		}
-
-		.hero-subheadline {
-			max-width: 11ch;
-			font-size: clamp(1.8rem, min(9.4vw, 6.8dvh), 3.05rem);
+			max-width: 11.5ch;
+			font-size: clamp(2.95rem, min(13.8vw, 8.4dvh), 4.55rem);
 			line-height: 0.95;
 		}
 
@@ -1583,6 +1719,16 @@ const ecosystemTracks = [
 
 		.submit-flow {
 			grid-template-columns: 1fr;
+		}
+
+		.positioning-section {
+			width: min(100% - 36px, 1180px);
+			padding: 24px 20px;
+			box-shadow: 5px 5px 0 var(--coral);
+		}
+
+		.positioning-points p {
+			padding-right: 16px;
 		}
 
 		.submit-card::after {

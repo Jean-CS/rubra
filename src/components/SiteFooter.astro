@@ -5,6 +5,8 @@ const githubIssueBaseUrl = `${githubRepoUrl}/issues/new`;
 const communityIssueUrl = `${githubIssueBaseUrl}?template=indicar-comunidade.yml`;
 const institutionIssueUrl = `${githubIssueBaseUrl}?template=indicar-instituicao.yml`;
 const eventIssueUrl = `${githubIssueBaseUrl}?template=indicar-evento.yml`;
+const feedbackIssueUrl = `${githubIssueBaseUrl}?template=feedback.yml`;
+const bugIssueUrl = `${githubIssueBaseUrl}?template=bug.yml`;
 
 const exploreLinks = [
 	{ href: "/#comunidades", label: "Comunidades" },
@@ -17,6 +19,8 @@ const contributionLinks = [
 	{ href: communityIssueUrl, label: "Indicar comunidade" },
 	{ href: institutionIssueUrl, label: "Indicar Instituição de Ensino" },
 	{ href: eventIssueUrl, label: "Indicar evento" },
+	{ href: feedbackIssueUrl, label: "Sugerir melhoria" },
+	{ href: bugIssueUrl, label: "Reportar problema" },
 ];
 ---
 
@@ -31,8 +35,8 @@ const contributionLinks = [
 				<p class="footer-kicker">Londrina e região</p>
 				<p>
 					Rubra organiza comunidades, Instituições de Ensino e eventos para quem
-					quer encontrar gente, aprender, palestrar ou colocar uma iniciativa local
-					no mapa.
+					quer encontrar gente, aprender, palestrar e ajudar a cena tech local a
+					se enxergar melhor.
 				</p>
 			</div>
 		</div>
@@ -57,7 +61,7 @@ const contributionLinks = [
 			<nav aria-label="Projeto Rubra">
 				<h3>Projeto</h3>
 				<a href={githubRepoUrl}>GitHub</a>
-				<a href="/#indicar">Curadoria</a>
+				<a href="/#participar">Curadoria</a>
 				<a href="/eventos">Histórico público</a>
 			</nav>
 		</div>
