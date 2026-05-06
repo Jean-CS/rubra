@@ -1,0 +1,38 @@
+name: Sugestão, feedback ou crítica
+description: Proponha uma melhoria para o Rubra como hub comunitário em evolução.
+title: "[Feedback] "
+labels:
+  - contribuicao
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Rubra é um hub comunitário em evolução contínua. Use este espaço para sugerir melhorias, apontar problemas, questionar critérios ou fazer críticas construtivas.
+  - type: textarea
+    id: feedback
+    attributes:
+      label: O que você quer sugerir, questionar ou criticar?
+      description: Descreva a ideia, o problema percebido ou o ponto de vista que você quer trazer.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Contexto
+      description: Explique de onde vem essa percepção. Pode ser uma experiência usando o site, uma lacuna no ecossistema, um exemplo de outro projeto ou uma necessidade da comunidade.
+    validations:
+      required: false
+  - type: textarea
+    id: expected-change
+    attributes:
+      label: Que mudança você gostaria de ver?
+      description: Se tiver uma proposta concreta, descreva como Rubra poderia melhorar.
+    validations:
+      required: false
+  - type: textarea
+    id: references
+    attributes:
+      label: Referências ou links úteis
+      description: Inclua links, prints, exemplos ou materiais que ajudem a entender a sugestão.
+    validations:
+      required: false

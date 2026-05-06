@@ -1,0 +1,58 @@
+name: Reportar problema
+description: Informe algo quebrado, incorreto ou inesperado no Rubra.
+title: "[Bug] "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Obrigado por ajudar a melhorar o Rubra. Use este formulário para reportar links quebrados, problemas de layout, dados incorretos, erros de navegação ou qualquer comportamento inesperado.
+  - type: textarea
+    id: problem
+    attributes:
+      label: O que aconteceu?
+      description: Descreva o problema de forma objetiva.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: O que você esperava que acontecesse?
+      description: Explique qual seria o comportamento ou informação correta.
+    validations:
+      required: true
+  - type: input
+    id: location
+    attributes:
+      label: Onde aconteceu?
+      description: Informe a página, URL, seção, card ou conteúdo relacionado.
+      placeholder: https://rubra.dev/...
+    validations:
+      required: false
+  - type: textarea
+    id: steps
+    attributes:
+      label: Como reproduzir?
+      description: Liste os passos para chegar ao problema, se for possível reproduzir.
+      placeholder: |
+        1. Acesse...
+        2. Clique em...
+        3. Veja o erro...
+    validations:
+      required: false
+  - type: input
+    id: device
+    attributes:
+      label: Navegador ou dispositivo
+      description: Opcional. Ajuda em problemas visuais ou de navegação.
+      placeholder: Chrome no Android, Safari no iPhone, Firefox no desktop...
+    validations:
+      required: false
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Prints, links ou contexto adicional
+      description: Inclua qualquer material que ajude a entender o problema.
+    validations:
+      required: false

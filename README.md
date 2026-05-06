@@ -12,6 +12,14 @@ A visão é simples: ajudar mais gente a participar, criar rede, desenvolver hab
 
 Hoje, o projeto começa como um hub estático e curado para mapear comunidades, instituições de ensino e eventos. O nome homenageia a terra roxa, a memória avermelhada do café e o orgulho pé vermelho da cidade.
 
+## Um hub comunitário
+
+Rubra não é um catálogo fechado nem um retrato definitivo da cena tech local. É um hub comunitário em evolução contínua.
+
+A melhor versão do Rubra depende de sugestões, feedback e crítica de quem vive, organiza, estuda, trabalha e participa da tecnologia em Londrina e região. Ideias sobre conteúdo, curadoria, navegação, dados, tom, acessibilidade, visual, novos recortes do ecossistema ou problemas na experiência são bem-vindas.
+
+O projeto deve mudar quando a comunidade mostrar caminhos melhores. Contribuir não significa apenas indicar uma comunidade, instituição ou evento: também significa questionar critérios, apontar ausências, sugerir melhorias e ajudar Rubra a representar melhor o ecossistema que quer fortalecer.
+
 ## Por que existe
 
 Muita gente em Londrina quer aprender, participar, conhecer pessoas e crescer na tecnologia, mas ainda descobre comunidades por acaso. Em eventos do GDG Londrina, comunidade ativa desde 2023, ainda aparecem estudantes ouvindo falar do grupo pela primeira vez porque alguém comentou em uma conversa aleatória.
@@ -22,17 +30,19 @@ O objetivo maior é ajudar Londrina a ocupar melhor o espaço que seu tamanho j�
 
 ## Como participar
 
-As informações publicadas no site vivem neste repositório e passam por revisão editorial. Qualquer pessoa pode sugerir uma nova entrada ou pedir atualização de dados existentes.
+As informações publicadas no site vivem neste repositório e passam por revisão editorial. Qualquer pessoa pode sugerir uma nova entrada, pedir atualização de dados existentes ou propor uma melhoria para o hub.
 
 Abra uma issue usando o formulário certo:
 
-| Tipo de indicação | Link |
+| Tipo de participação | Link |
 | --- | --- |
 | Comunidade | [Indicar ou atualizar comunidade](https://github.com/Jean-CS/rubra/issues/new?template=indicar-comunidade.yml) |
 | Instituição de ensino | [Indicar ou atualizar instituição](https://github.com/Jean-CS/rubra/issues/new?template=indicar-instituicao.yml) |
 | Evento | [Indicar evento](https://github.com/Jean-CS/rubra/issues/new?template=indicar-evento.yml) |
+| Sugestão, feedback ou crítica | [Propor melhoria para o Rubra](https://github.com/Jean-CS/rubra/issues/new?template=feedback.yml) |
+| Problema ou bug | [Reportar problema](https://github.com/Jean-CS/rubra/issues/new?template=bug.yml) |
 
-Inclua links verificáveis sempre que possível. A curadoria pode ajustar descrição, categoria, tags e outros campos para manter o diretório consistente.
+Para indicações de conteúdo, inclua links verificáveis sempre que possível. Para sugestões e críticas, explique o contexto e a mudança que você gostaria de ver. Para bugs, descreva o que aconteceu e como reproduzir. A curadoria pode ajustar descrição, categoria, tags e outros campos para manter o diretório consistente.
 
 Para detalhes do processo, leia [CONTRIBUTING.md](CONTRIBUTING.md).
 
