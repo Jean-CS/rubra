@@ -1,6 +1,7 @@
 ---
 import { getCollection } from "astro:content";
 import Layout from "../layouts/Layout.astro";
+import SiteFooter from "../components/SiteFooter.astro";
 
 const sortByName = <T extends { name: string }>(items: T[]) =>
 	items.sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
@@ -399,6 +400,7 @@ const ecosystemTracks = [
 				</div>
 			</section>
 		</main>
+		<SiteFooter />
 	</div>
 </Layout>
 

@@ -1,0 +1,324 @@
+---
+const currentYear = new Date().getFullYear();
+const githubRepoUrl = "https://github.com/Jean-CS/rubra";
+const githubIssueBaseUrl = `${githubRepoUrl}/issues/new`;
+const communityIssueUrl = `${githubIssueBaseUrl}?template=indicar-comunidade.yml`;
+const institutionIssueUrl = `${githubIssueBaseUrl}?template=indicar-instituicao.yml`;
+const eventIssueUrl = `${githubIssueBaseUrl}?template=indicar-evento.yml`;
+
+const exploreLinks = [
+	{ href: "/#comunidades", label: "Comunidades" },
+	{ href: "/#instituicoes", label: "Ensino" },
+	{ href: "/#agenda", label: "Agenda" },
+	{ href: "/eventos", label: "Eventos" },
+];
+
+const contributionLinks = [
+	{ href: communityIssueUrl, label: "Indicar comunidade" },
+	{ href: institutionIssueUrl, label: "Indicar Instituição de Ensino" },
+	{ href: eventIssueUrl, label: "Indicar evento" },
+];
+---
+
+<footer class="site-footer" aria-label="Rodapé Rubra">
+	<div class="footer-plate">
+		<div class="footer-main">
+			<div class="footer-copy">
+				<a class="footer-brand" href="/" aria-label="Rubra">
+					<span class="footer-brand-mark" aria-hidden="true">R</span>
+					<span>Rubra</span>
+				</a>
+				<p class="footer-kicker">Londrina e região</p>
+				<p>
+					Rubra organiza comunidades, Instituições de Ensino e eventos para quem
+					quer encontrar gente, aprender, palestrar ou colocar uma iniciativa local
+					no mapa.
+				</p>
+			</div>
+		</div>
+
+		<div class="footer-links">
+			<nav aria-label="Explorar Rubra">
+				<h3>Explorar</h3>
+				{
+					exploreLinks.map((link) => (
+						<a href={link.href}>{link.label}</a>
+					))
+				}
+			</nav>
+			<nav aria-label="Contribuir com Rubra">
+				<h3>Contribuir</h3>
+				{
+					contributionLinks.map((link) => (
+						<a href={link.href}>{link.label}</a>
+					))
+				}
+			</nav>
+			<nav aria-label="Projeto Rubra">
+				<h3>Projeto</h3>
+				<a href={githubRepoUrl}>GitHub</a>
+				<a href="/#indicar">Curadoria</a>
+				<a href="/eventos">Histórico público</a>
+			</nav>
+		</div>
+
+		<div class="footer-bottom">
+			<p>Mapa comunitário em atualização contínua.</p>
+			<p>Rubra · {currentYear}</p>
+		</div>
+	</div>
+</footer>
+
+<style>
+	.site-footer {
+		--footer-ink: var(--ink, #160f0b);
+		--footer-paper: var(--paper, #f8f1e7);
+		--footer-mist: var(--mist, #eadfce);
+		--footer-lime: var(--lime, #b7ff4a);
+		--footer-cyan: var(--cyan, #22d3c5);
+		--footer-coral: var(--coral, #ff6247);
+		--footer-red: var(--red, #e53935);
+		--footer-violet: var(--violet, #6f5ae8);
+		--footer-steel: var(--steel, #766a5e);
+		--footer-display: var(--display, "Bricolage Grotesque", "IBM Plex Sans", sans-serif);
+		--footer-body: var(--body, "IBM Plex Sans", system-ui, sans-serif);
+		--footer-mono: var(--mono, "IBM Plex Mono", ui-monospace, monospace);
+		position: relative;
+		z-index: 1;
+		width: min(1180px, calc(100% - (var(--page-gutter, 40px) * 2)));
+		margin: clamp(34px, 5vw, 70px) auto 0;
+		padding-bottom: clamp(16px, 2.8vw, 32px);
+		color: var(--footer-paper);
+		font-family: var(--footer-body);
+	}
+
+	.footer-plate {
+		position: relative;
+		border: 1px solid rgba(248, 241, 231, 0.18);
+		background:
+			linear-gradient(rgba(248, 241, 231, 0.07) 1px, transparent 1px),
+			linear-gradient(90deg, rgba(248, 241, 231, 0.07) 1px, transparent 1px),
+			radial-gradient(circle at 80% 18%, rgba(34, 211, 197, 0.24), transparent 19rem),
+			linear-gradient(135deg, rgba(22, 15, 11, 0.98), rgba(75, 33, 23, 0.97) 58%, rgba(22, 15, 11, 0.98));
+		background-size: 34px 34px, 34px 34px, auto, auto;
+		box-shadow: 8px 8px 0 var(--footer-ink);
+		overflow: hidden;
+	}
+
+	.footer-plate::before {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		content: "";
+		background:
+			linear-gradient(120deg, transparent 0 47%, rgba(183, 255, 74, 0.22) 47% 47.18%, transparent 47.18%),
+			linear-gradient(28deg, transparent 0 72%, rgba(255, 98, 71, 0.24) 72% 72.2%, transparent 72.2%);
+		opacity: 0.8;
+	}
+
+	.footer-plate::after {
+		position: absolute;
+		right: clamp(18px, 4vw, 54px);
+		bottom: clamp(-32px, -3vw, -18px);
+		content: "R";
+		color: rgba(248, 241, 231, 0.035);
+		font-family: var(--footer-display);
+		font-size: clamp(11rem, 22vw, 20rem);
+		font-weight: 800;
+		line-height: 0.72;
+	}
+
+	.footer-main,
+	.footer-links,
+	.footer-bottom {
+		position: relative;
+		z-index: 1;
+	}
+
+	.footer-main {
+		padding: clamp(26px, 5vw, 58px);
+	}
+
+	.footer-copy {
+		max-width: 820px;
+	}
+
+	.footer-brand {
+		display: inline-flex;
+		align-items: center;
+		gap: 10px;
+		margin-bottom: clamp(28px, 4vw, 52px);
+		color: var(--footer-paper);
+		font-family: var(--footer-display);
+		font-size: 1.08rem;
+		font-weight: 800;
+		text-decoration: none;
+	}
+
+	.footer-brand-mark {
+		display: grid;
+		width: 36px;
+		height: 36px;
+		place-items: center;
+		border: 1px solid var(--footer-paper);
+		background: var(--footer-lime);
+		box-shadow: 4px 4px 0 var(--footer-paper);
+		color: var(--footer-ink);
+		font-family: var(--footer-mono);
+		font-size: 0.88rem;
+	}
+
+	.footer-kicker {
+		margin: 0 0 12px;
+		color: rgba(248, 241, 231, 0.66);
+		font-family: var(--footer-mono);
+		font-size: 0.72rem;
+		font-weight: 700;
+		text-transform: uppercase;
+	}
+
+	.footer-copy p:last-child {
+		max-width: 680px;
+		margin: 0;
+		color: rgba(248, 241, 231, 0.78);
+		font-size: clamp(1rem, 1.5vw, 1.16rem);
+		line-height: 1.56;
+	}
+
+	.footer-links {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		border-top: 1px solid rgba(248, 241, 231, 0.16);
+	}
+
+	.footer-links nav {
+		display: grid;
+		align-content: start;
+		gap: 10px;
+		min-height: 190px;
+		padding: clamp(20px, 3vw, 30px) clamp(22px, 4vw, 58px);
+		border-right: 1px solid rgba(248, 241, 231, 0.14);
+	}
+
+	.footer-links nav:last-child {
+		border-right: 0;
+	}
+
+	.footer-links h3 {
+		margin: 0 0 8px;
+		color: rgba(248, 241, 231, 0.58);
+		font-family: var(--footer-mono);
+		font-size: 0.68rem;
+		font-weight: 700;
+		text-transform: uppercase;
+	}
+
+	.footer-links a {
+		position: relative;
+		width: fit-content;
+		color: var(--footer-paper);
+		font-weight: 800;
+		text-decoration: none;
+		transition: color 160ms ease, transform 160ms ease;
+	}
+
+	.footer-links a::before {
+		display: inline-block;
+		width: 20px;
+		height: 2px;
+		margin-right: 8px;
+		content: "";
+		background: var(--footer-lime);
+		transform: translateY(-0.25em);
+		transition: width 160ms ease, background 160ms ease;
+	}
+
+	.footer-links nav:nth-child(2) a::before {
+		background: var(--footer-cyan);
+	}
+
+	.footer-links nav:nth-child(3) a::before {
+		background: var(--footer-coral);
+	}
+
+	.footer-links a:hover {
+		color: var(--footer-lime);
+		transform: translateX(3px);
+	}
+
+	.footer-links nav:nth-child(2) a:hover {
+		color: var(--footer-cyan);
+	}
+
+	.footer-links nav:nth-child(3) a:hover {
+		color: var(--footer-coral);
+	}
+
+	.footer-links a:hover::before {
+		width: 30px;
+	}
+
+	.footer-bottom {
+		display: flex;
+		justify-content: space-between;
+		gap: 18px;
+		padding: 18px clamp(22px, 4vw, 58px);
+		border-top: 1px solid rgba(248, 241, 231, 0.16);
+		color: rgba(248, 241, 231, 0.58);
+		font-family: var(--footer-mono);
+		font-size: 0.68rem;
+		font-weight: 700;
+		text-transform: uppercase;
+	}
+
+	.footer-bottom p {
+		margin: 0;
+	}
+
+	@media (max-width: 720px) {
+		.site-footer {
+			width: min(100% - (var(--page-gutter, 18px) * 2), 1180px);
+			margin-top: 22px;
+		}
+
+		.footer-plate {
+			box-shadow: 5px 5px 0 var(--footer-ink);
+		}
+
+		.footer-main {
+			padding: 22px;
+		}
+
+		.footer-brand {
+			margin-bottom: 34px;
+		}
+
+		.footer-links {
+			grid-template-columns: 1fr;
+		}
+
+		.footer-links nav {
+			min-height: auto;
+			padding: 22px;
+			border-right: 0;
+			border-bottom: 1px solid rgba(248, 241, 231, 0.14);
+		}
+
+		.footer-links nav:last-child {
+			border-bottom: 0;
+		}
+
+		.footer-bottom {
+			align-items: flex-start;
+			flex-direction: column;
+			padding: 18px 22px;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.footer-links a,
+		.footer-links a::before {
+			transition: none;
+		}
+	}
+</style>
