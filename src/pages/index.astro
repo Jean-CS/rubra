@@ -121,8 +121,8 @@ const ecosystemTracks = [
 ---
 
 <Layout>
-	<main class="site-shell">
-		<div class="viewport-stage">
+	<div class="site-shell">
+		<header class="site-header">
 			<nav class="nav" aria-label="Navegação principal">
 				<a class="brand" href="/">
 					<span class="brand-mark" aria-hidden="true">R</span>
@@ -136,7 +136,9 @@ const ecosystemTracks = [
 					<a href="#indicar">Indicar</a>
 				</div>
 			</nav>
+		</header>
 
+		<main>
 			<section class="hero" aria-labelledby="hero-title">
 				<div class="hero-copy reveal">
 					<p class="eyebrow">Londrina e região · Hub tech do norte do PR</p>
@@ -187,11 +189,10 @@ const ecosystemTracks = [
 					</div>
 				</div>
 			</section>
-		</div>
 
-		<section class="metrics" aria-label="Resumo do projeto">
-			<div>
-				<strong>1,1M+</strong>
+			<section class="metrics" aria-label="Resumo do projeto">
+				<div>
+					<strong>1,1M+</strong>
 				<span>pessoas na região metropolitana</span>
 			</div>
 			<div>
@@ -395,9 +396,10 @@ const ecosystemTracks = [
 						Indicar evento
 					</a>
 				</div>
-			</div>
-		</section>
-	</main>
+				</div>
+			</section>
+		</main>
+	</div>
 </Layout>
 
 <style>
@@ -430,15 +432,6 @@ const ecosystemTracks = [
 			radial-gradient(circle at 84% 10%, rgba(34, 211, 197, 0.2), transparent 24rem),
 			linear-gradient(120deg, rgba(159, 47, 28, 0.14), transparent 28rem),
 			var(--paper);
-	}
-
-	.viewport-stage {
-		position: relative;
-		z-index: 1;
-		display: grid;
-		grid-template-rows: auto minmax(0, 1fr);
-		min-height: 100svh;
-		min-height: 100dvh;
 	}
 
 	.site-shell::before {
@@ -1423,11 +1416,6 @@ const ecosystemTracks = [
 	}
 
 	@media (max-width: 1020px) {
-		.viewport-stage {
-			min-height: 100svh;
-			min-height: 100dvh;
-		}
-
 		.hero,
 		.section-heading,
 		.event-section {

@@ -91,24 +91,27 @@ const organizerStats = Array.from(
 ---
 
 <Layout>
-	<main class="events-shell">
-		<nav class="nav" aria-label="Navegação principal">
-			<a class="brand" href="/">
-				<span class="brand-mark" aria-hidden="true">R</span>
-				<span>Rubra</span>
-			</a>
-			<div class="nav-links">
-				<a href="/#comunidades">Comunidades</a>
-				<a href="/#instituicoes">Ensino</a>
-				<a href="/#agenda">Agenda</a>
-				<a href={eventIssueUrl}>Indicar</a>
-			</div>
-		</nav>
+	<div class="events-shell">
+		<header class="site-header">
+			<nav class="nav" aria-label="Navegação principal">
+				<a class="brand" href="/">
+					<span class="brand-mark" aria-hidden="true">R</span>
+					<span>Rubra</span>
+				</a>
+				<div class="nav-links">
+					<a href="/#comunidades">Comunidades</a>
+					<a href="/#instituicoes">Ensino</a>
+					<a href="/#agenda">Agenda</a>
+					<a href={eventIssueUrl}>Indicar</a>
+				</div>
+			</nav>
+		</header>
 
-		<section class="events-hero" aria-labelledby="events-title">
-			<div class="hero-copy">
-				<p class="eyebrow">Agenda / histórico vivo</p>
-				<h1 id="events-title">
+		<main>
+			<section class="events-hero" aria-labelledby="events-title">
+				<div class="hero-copy">
+					<p class="eyebrow">Agenda / histórico vivo</p>
+					<h1 id="events-title">
 					<span>Eventos</span>
 					<span>que provam</span>
 					<span>movimento.</span>
@@ -238,9 +241,10 @@ const organizerStats = Array.from(
 						</div>
 					</article>
 				))}
-			</div>
-		</section>
-	</main>
+				</div>
+			</section>
+		</main>
+	</div>
 </Layout>
 
 <style>
