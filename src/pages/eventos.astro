@@ -2,6 +2,11 @@
 import { getCollection } from "astro:content";
 import Layout from "../layouts/Layout.astro";
 import SiteFooter from "../components/SiteFooter.astro";
+import {
+	formatEventDate,
+	formatLongEventDate,
+	weekdayFormatter,
+} from "../lib/eventDates";
 
 const getDateKey = (date: Date) => date.toISOString().slice(0, 10);
 const todayKey = getDateKey(new Date());
@@ -19,40 +24,6 @@ const pastEvents = events
 
 const eventIssueUrl =
 	"https://github.com/Jean-CS/rubra/issues/new?template=indicar-evento.yml";
-
-const shortDateFormatter = new Intl.DateTimeFormat("pt-BR", {
-	day: "2-digit",
-	month: "short",
-	timeZone: "UTC",
-});
-
-const longDateFormatter = new Intl.DateTimeFormat("pt-BR", {
-	day: "2-digit",
-	month: "short",
-	year: "numeric",
-	timeZone: "UTC",
-});
-
-const weekdayFormatter = new Intl.DateTimeFormat("pt-BR", {
-	weekday: "short",
-	timeZone: "UTC",
-});
-
-const formatDate = (date: Date) => shortDateFormatter.format(date).replace(".", "");
-const formatLongDate = (date: Date) => longDateFormatter.format(date).replace(".", "");
-
-const formatEventDate = (date: Date, endDate?: Date) => {
-	const start = formatDate(date);
-	const end = endDate ? formatDate(endDate) : null;
-
-	if (!end || end === start) return start;
-
-	const sameMonth =
-		date.getUTCFullYear() === endDate.getUTCFullYear() &&
-		date.getUTCMonth() === endDate.getUTCMonth();
-
-	return sameMonth ? `${date.getUTCDate()} a ${end}` : `${start} a ${end}`;
-};
 
 const formatEventYear = (date: Date, endDate?: Date) => {
 	const startYear = date.getUTCFullYear();
@@ -194,7 +165,7 @@ const organizerStats = Array.from(
 							<strong>{organizer.name}</strong>
 							<div class="organizer-meta">
 								<span>{pluralizeEvent(organizer.count)}</span>
-								<span>Mais recente em {formatLongDate(organizer.lastDate)}</span>
+								<span>Mais recente em {formatLongEventDate(organizer.lastDate)}</span>
 							</div>
 						</div>
 					))}

@@ -2,6 +2,7 @@
 import { getCollection } from "astro:content";
 import Layout from "../layouts/Layout.astro";
 import SiteFooter from "../components/SiteFooter.astro";
+import { formatEventDate, weekdayFormatter } from "../lib/eventDates";
 
 const sortByName = <T extends { name: string }>(items: T[]) =>
 	items.sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
@@ -71,24 +72,6 @@ const institutionUpdateIssueUrl = (institution: (typeof institutions)[number]) =
 		description: institution.description,
 		tags: institution.tags.join(", "),
 	});
-
-const eventDateFormatter = new Intl.DateTimeFormat("pt-BR", {
-	day: "2-digit",
-	month: "short",
-	timeZone: "UTC",
-});
-
-const eventWeekdayFormatter = new Intl.DateTimeFormat("pt-BR", {
-	weekday: "short",
-	timeZone: "UTC",
-});
-
-const formatEventDate = (date: Date, endDate?: Date) => {
-	const start = eventDateFormatter.format(date).replace(".", "");
-	const end = endDate ? eventDateFormatter.format(endDate).replace(".", "") : null;
-
-	return end && end !== start ? `${start} a ${end}` : start;
-};
 
 const getEventDelay = (index: number) => `${(index * 0.1).toFixed(1)}s`;
 
@@ -322,7 +305,7 @@ const ecosystemTracks = [
 							<article class="event-card" style={`--delay: ${getEventDelay(index)}`}>
 								<div class="event-date">
 									<strong>{formatEventDate(event.date, event.endDate)}</strong>
-									<span>{eventWeekdayFormatter.format(event.date).replace(".", "")}</span>
+									<span>{weekdayFormatter.format(event.date).replace(".", "")}</span>
 								</div>
 								<div class="event-body">
 									<div class="event-meta">
@@ -1134,7 +1117,6 @@ const ecosystemTracks = [
 		min-height: 0;
 		margin-top: clamp(28px, 4vw, 62px);
 		padding: clamp(20px, 3vw, 30px) 0 0;
-		border-top: 2px solid var(--ink);
 	}
 
 	.event-card {
