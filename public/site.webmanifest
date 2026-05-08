@@ -1,0 +1,22 @@
+{
+	"name": "Rubra",
+	"short_name": "Rubra",
+	"description": "A porta de entrada para a cena tech de Londrina.",
+	"lang": "pt-BR",
+	"start_url": "/",
+	"display": "standalone",
+	"background_color": "#F8F1E7",
+	"theme_color": "#F8F1E7",
+	"icons": [
+		{
+			"src": "/android-chrome-192x192.png",
+			"sizes": "192x192",
+			"type": "image/png"
+		},
+		{
+			"src": "/android-chrome-512x512.png",
+			"sizes": "512x512",
+			"type": "image/png"
+		}
+	]
+}

@@ -1,6 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Rubra">
-	<rect width="128" height="128" rx="20" fill="#160f0b" />
-	<path d="M18 95c18-9 35-12 51-9 15 3 28 2 41-5v25H18V95Z" fill="#e53935" />
-	<path d="M41 95V30h30c16 0 26 8 26 22 0 10-5 17-14 20l18 23H78L62 75h-1v20H41Zm20-36h9c5 0 8-3 8-7s-3-7-8-7h-9v14Z" fill="#f8f1e7" />
-	<path d="M96 22c7 7 8 16 2 25-8-6-10-15-2-25Z" fill="#b9d15b" />
+	<rect x="30" y="30" width="82" height="82" fill="#160f0b" />
+	<rect x="16" y="16" width="82" height="82" fill="#b7ff4a" stroke="#160f0b" stroke-width="4" />
+	<text
+		x="57"
+		y="73"
+		fill="#160f0b"
+		font-family="Bricolage Grotesque, IBM Plex Sans, Arial, sans-serif"
+		font-size="43"
+		font-weight="800"
+		text-anchor="middle"
+		dominant-baseline="middle"
+	>R</text>
 </svg>
