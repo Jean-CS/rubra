@@ -1,0 +1,199 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "../layouts/Layout.astro";
+import SiteFooter from "../components/SiteFooter.astro";
+import SiteHeader from "../components/SiteHeader.astro";
+import "../styles/rubra-index-pages.css";
+
+const sortByName = <T extends { name: string }>(items: T[]) =>
+	items.sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
+
+const institutions = sortByName(
+	(await getCollection("institutions", ({ data }) => data.draft !== true)).map(
+		({ data }) => data,
+	),
+);
+
+const events = (await getCollection("events", ({ data }) => data.draft !== true)).map(
+	({ data }) => data,
+);
+
+const githubIssueBaseUrl = "https://github.com/Jean-CS/rubra/issues/new";
+const institutionIssueUrl = `${githubIssueBaseUrl}?template=indicar-instituicao.yml`;
+const eventIssueUrl = `${githubIssueBaseUrl}?template=indicar-evento.yml`;
+
+const headerLinks = [
+	{ href: "/comunidades", label: "Comunidades", accent: "lime" },
+	{ href: "/instituicoes", label: "Ensino", accent: "cyan" },
+	{ href: "/eventos", label: "Eventos", accent: "coral" },
+	{ href: "/sobre", label: "Sobre", accent: "violet" },
+	{ href: institutionIssueUrl, label: "Indicar", accent: "cyan" },
+] as const;
+
+const buildIssueUrl = (baseUrl: string, params: Record<string, string>) => {
+	const url = new URL(baseUrl);
+
+	Object.entries(params).forEach(([key, value]) => {
+		url.searchParams.set(key, value);
+	});
+
+	return url.toString();
+};
+
+const institutionUpdateIssueUrl = (institution: (typeof institutions)[number]) =>
+	buildIssueUrl(institutionIssueUrl, {
+		title: `Atualizar instituição: ${institution.name}`,
+		"request-type": "Atualização de instituição existente",
+		name: institution.name,
+		website: institution.website,
+		type: institution.type,
+		profile: institution.profile,
+		description: institution.description,
+		tags: institution.tags.join(", "),
+	});
+
+const institutionEventCount = events.filter(
+	(event) => event.organizerType === "Instituição de Ensino",
+).length;
+const profiles = Array.from(new Set(institutions.map(({ profile }) => profile))).sort((a, b) =>
+	a.localeCompare(b, "pt-BR"),
+);
+---
+
+<Layout
+	title="Instituições de ensino em tecnologia em Londrina | Rubra"
+	description="Mapa curado de instituições de ensino ligadas à formação, pesquisa, extensão, carreira e eventos de tecnologia em Londrina e região."
+>
+	<div class="index-page institution-index">
+		<SiteHeader links={headerLinks} />
+
+		<main class="index-main">
+			<section class="catalog-hero" aria-labelledby="institutions-title">
+				<div class="hero-copy">
+					<p class="eyebrow">Ensino e formação tech</p>
+					<h1 id="institutions-title">
+						<span>Onde a base</span>
+						<span>também vira rede.</span>
+					</h1>
+					<p>
+						Instituições entram no mapa porque são portas de entrada para estudantes,
+						pesquisa, extensão, carreira, eventos e conexões que ajudam a cena tech de
+						Londrina a se renovar.
+					</p>
+					<div class="hero-actions">
+						<a class="button button-primary" href={institutionIssueUrl}>Indicar instituição</a>
+						<a class="button button-secondary" href="/comunidades">Ver comunidades</a>
+					</div>
+				</div>
+
+				<aside class="signal-board" aria-label="Resumo das instituições mapeadas">
+					<div class="board-topline">
+						<span>Mapa de formação</span>
+						<span>EDU / TECH</span>
+					</div>
+					<div class="board-main">
+						<strong>{institutions.length}</strong>
+						<span>instituições com relação direta com tecnologia</span>
+						<div class="signal-lines" aria-hidden="true">
+							<span>Formação</span>
+							<span>Eventos</span>
+							<span>Carreira</span>
+						</div>
+					</div>
+					<div class="board-footline">
+						<span>{profiles.length} perfis</span>
+						<span>{institutionEventCount} eventos</span>
+					</div>
+				</aside>
+			</section>
+
+			<section class="section-band" aria-labelledby="education-context-title">
+				<div>
+					<p class="section-kicker">Papel no ecossistema</p>
+					<h2 id="education-context-title">A cena local também se forma dentro e ao redor das salas.</h2>
+				</div>
+				<div class="metric-stack" aria-label="Resumo de instituições">
+					<p>
+						<strong>{institutions.length}</strong>
+						<span>instituições mapeadas</span>
+					</p>
+					<p>
+						<strong>{profiles.length}</strong>
+						<span>perfis institucionais</span>
+					</p>
+					<p>
+						<strong>{institutionEventCount}</strong>
+						<span>eventos institucionais registrados</span>
+					</p>
+				</div>
+			</section>
+
+			<section class="entity-section" aria-labelledby="institution-list-title">
+				<div class="section-heading">
+					<div>
+						<p class="section-kicker">Diretório regional</p>
+						<h2 id="institution-list-title">Instituições mapeadas</h2>
+					</div>
+					<p>
+						O recorte privilegia instituições que ajudam pessoas a estudar, experimentar,
+						trabalhar, pesquisar ou participar de tecnologia na região.
+					</p>
+				</div>
+
+				<div class="entity-list">
+					{
+						institutions.map((institution, index) => (
+							<article class={`entity-card accent-${institution.accent}`}>
+								<span class="entity-index">{String(index + 1).padStart(2, "0")}</span>
+								<div class="entity-body">
+									<p class="meta-label">{institution.type}</p>
+									<h3>{institution.name}</h3>
+									<p>{institution.description}</p>
+									<div class="tag-row" aria-label={`Temas de ${institution.name}`}>
+										{institution.tags.map((tag) => (
+											<span>{tag}</span>
+										))}
+									</div>
+								</div>
+								<aside class="entity-side" aria-label={`Detalhes de ${institution.name}`}>
+									<dl>
+										<div>
+											<dt>Perfil</dt>
+											<dd>{institution.profile}</dd>
+										</div>
+										<div>
+											<dt>Tipo</dt>
+											<dd>{institution.type}</dd>
+										</div>
+									</dl>
+									<div class="side-links">
+										<a href={institution.website} target="_blank" rel="noopener noreferrer">
+											Site oficial
+										</a>
+										<a href={institutionUpdateIssueUrl(institution)}>Atualizar dados</a>
+									</div>
+								</aside>
+							</article>
+						))
+					}
+				</div>
+
+				<section class="cta-panel" aria-labelledby="missing-institution-title">
+					<div>
+						<h2 id="missing-institution-title">Faltou uma instituição importante para a cena tech?</h2>
+						<p>
+							Indique universidades, institutos, centros de formação, cursos e espaços de
+							ensino que conectam pessoas com tecnologia em Londrina e região.
+						</p>
+					</div>
+					<div class="cta-actions">
+						<a class="button button-primary" href={institutionIssueUrl}>Indicar instituição</a>
+						<a class="button button-secondary" href={eventIssueUrl}>Indicar evento</a>
+					</div>
+				</section>
+			</section>
+		</main>
+
+		<SiteFooter />
+	</div>
+</Layout>

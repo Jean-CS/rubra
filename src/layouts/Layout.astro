@@ -1,3 +1,15 @@
+---
+interface Props {
+	title?: string;
+	description?: string;
+}
+
+const {
+	title = "Rubra | Tech em Londrina",
+	description = "Rubra torna visíveis comunidades, Instituições de Ensino, eventos e iniciativas de tecnologia em Londrina e região em um hub comunitário em evolução contínua.",
+} = Astro.props;
+---
+
 <!doctype html>
 <html lang="pt-BR">
 	<head>
@@ -5,10 +17,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="icon" href="/favicon.ico" />
-		<meta
-			name="description"
-			content="Rubra torna visíveis comunidades, Instituições de Ensino, eventos e iniciativas de tecnologia em Londrina e região em um hub comunitário em evolução contínua."
-		/>
+		<meta name="description" content={description} />
 		<meta name="theme-color" content="#F8F1E7" />
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -17,7 +26,7 @@
 			rel="stylesheet"
 		/>
 		<meta name="generator" content={Astro.generator} />
-		<title>Rubra | Tech em Londrina</title>
+		<title>{title}</title>
 	</head>
 	<body>
 		<slot />

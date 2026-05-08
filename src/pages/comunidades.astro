@@ -1,0 +1,209 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "../layouts/Layout.astro";
+import SiteFooter from "../components/SiteFooter.astro";
+import SiteHeader from "../components/SiteHeader.astro";
+import "../styles/rubra-index-pages.css";
+
+const sortByName = <T extends { name: string }>(items: T[]) =>
+	items.sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
+
+const communities = sortByName(
+	(await getCollection("communities", ({ data }) => data.draft !== true)).map(
+		({ data }) => data,
+	),
+);
+
+const events = (await getCollection("events", ({ data }) => data.draft !== true)).map(
+	({ data }) => data,
+);
+
+const githubIssueBaseUrl = "https://github.com/Jean-CS/rubra/issues/new";
+const communityIssueUrl = `${githubIssueBaseUrl}?template=indicar-comunidade.yml`;
+const eventIssueUrl = `${githubIssueBaseUrl}?template=indicar-evento.yml`;
+
+const headerLinks = [
+	{ href: "/comunidades", label: "Comunidades", accent: "lime" },
+	{ href: "/instituicoes", label: "Ensino", accent: "cyan" },
+	{ href: "/eventos", label: "Eventos", accent: "coral" },
+	{ href: "/sobre", label: "Sobre", accent: "violet" },
+	{ href: communityIssueUrl, label: "Indicar", accent: "lime" },
+] as const;
+
+const buildIssueUrl = (baseUrl: string, params: Record<string, string>) => {
+	const url = new URL(baseUrl);
+
+	Object.entries(params).forEach(([key, value]) => {
+		url.searchParams.set(key, value);
+	});
+
+	return url.toString();
+};
+
+const communityUpdateIssueUrl = (community: (typeof communities)[number]) =>
+	buildIssueUrl(communityIssueUrl, {
+		title: `Atualizar comunidade: ${community.name}`,
+		"request-type": "Atualização de comunidade existente",
+		name: community.name,
+		type: community.type,
+		cadence: community.cadence,
+		status: community.status,
+		description: community.description,
+		tags: community.tags.join(", "),
+	});
+
+const eventCountsByOrganizer = events.reduce((counts, event) => {
+	counts.set(event.organizerName, (counts.get(event.organizerName) ?? 0) + 1);
+	return counts;
+}, new Map<string, number>());
+
+const activeCommunities = communities.filter(({ status }) =>
+	status.toLocaleLowerCase("pt-BR").includes("ativa"),
+);
+const allTags = Array.from(new Set(communities.flatMap(({ tags }) => tags))).sort((a, b) =>
+	a.localeCompare(b, "pt-BR"),
+);
+---
+
+<Layout
+	title="Comunidades tech em Londrina | Rubra"
+	description="Mapa curado de comunidades, meetups, coletivos e iniciativas recorrentes de tecnologia em Londrina e região."
+>
+	<div class="index-page community-index">
+		<SiteHeader links={headerLinks} />
+
+		<main class="index-main">
+			<section class="catalog-hero" aria-labelledby="communities-title">
+				<div class="hero-copy">
+					<p class="eyebrow">Comunidades tech em Londrina</p>
+					<h1 id="communities-title">
+						<span>Gente que faz</span>
+						<span>a cena aparecer.</span>
+					</h1>
+					<p>
+						Um índice público de grupos, meetups, coletivos e iniciativas recorrentes
+						para quem quer aprender, trocar experiência, palestrar, organizar ou
+						encontrar seu primeiro círculo na tecnologia local.
+					</p>
+					<div class="hero-actions">
+						<a class="button button-primary" href={communityIssueUrl}>Indicar comunidade</a>
+						<a class="button button-secondary" href="/eventos">Ver eventos</a>
+					</div>
+				</div>
+
+				<aside class="signal-board" aria-label="Resumo das comunidades mapeadas">
+					<div class="board-topline">
+						<span>Radar comunitário</span>
+						<span>LDN / REG</span>
+					</div>
+					<div class="board-main">
+						<strong>{communities.length}</strong>
+						<span>comunidades e iniciativas mapeadas</span>
+						<div class="signal-lines" aria-hidden="true">
+							<span>Ativas</span>
+							<span>Meetups</span>
+							<span>Curadoria</span>
+						</div>
+					</div>
+					<div class="board-footline">
+						<span>{activeCommunities.length} ativas</span>
+						<span>{allTags.length} temas</span>
+					</div>
+				</aside>
+			</section>
+
+			<section class="section-band" aria-labelledby="community-context-title">
+				<div>
+					<p class="section-kicker">Por que mapear</p>
+					<h2 id="community-context-title">A descoberta ainda depende demais do acaso.</h2>
+				</div>
+				<div class="metric-stack" aria-label="Resumo do diretório">
+					<p>
+						<strong>{communities.length}</strong>
+						<span>entradas revisadas</span>
+					</p>
+					<p>
+						<strong>{activeCommunities.length}</strong>
+						<span>comunidades ativas</span>
+					</p>
+					<p>
+						<strong>{events.length}</strong>
+						<span>eventos ligados ao ecossistema</span>
+					</p>
+				</div>
+			</section>
+
+			<section class="entity-section" aria-labelledby="community-list-title">
+				<div class="section-heading">
+					<div>
+						<p class="section-kicker">Diretório regional</p>
+						<h2 id="community-list-title">Comunidades mapeadas</h2>
+					</div>
+					<p>
+						Cada entrada pode ser corrigida pela comunidade. O objetivo é manter um
+						retrato útil, verificável e atualizado da cena local.
+					</p>
+				</div>
+
+				<div class="entity-list">
+					{
+						communities.map((community, index) => {
+							const eventCount = eventCountsByOrganizer.get(community.name) ?? 0;
+
+							return (
+								<article class={`entity-card accent-${community.accent}`}>
+									<span class="entity-index">{String(index + 1).padStart(2, "0")}</span>
+									<div class="entity-body">
+										<p class="meta-label">{community.type}</p>
+										<h3>{community.name}</h3>
+										<p>{community.description}</p>
+										<div class="tag-row" aria-label={`Temas de ${community.name}`}>
+											{community.tags.map((tag) => (
+												<span>{tag}</span>
+											))}
+										</div>
+									</div>
+									<aside class="entity-side" aria-label={`Detalhes de ${community.name}`}>
+										<dl>
+											<div>
+												<dt>Status</dt>
+												<dd>{community.status}</dd>
+											</div>
+											<div>
+												<dt>Ritmo</dt>
+												<dd>{community.cadence}</dd>
+											</div>
+											<div>
+												<dt>Eventos no Rubra</dt>
+												<dd>{eventCount || "A mapear"}</dd>
+											</div>
+										</dl>
+										<div class="side-links">
+											<a href={communityUpdateIssueUrl(community)}>Atualizar dados</a>
+										</div>
+									</aside>
+								</article>
+							);
+						})
+					}
+				</div>
+
+				<section class="cta-panel" aria-labelledby="missing-community-title">
+					<div>
+						<h2 id="missing-community-title">Sabe de uma comunidade que não está aqui?</h2>
+						<p>
+							Indique grupos, meetups, coletivos, labs, canais recorrentes ou iniciativas
+							com relação clara com tecnologia em Londrina e região.
+						</p>
+					</div>
+					<div class="cta-actions">
+						<a class="button button-primary" href={communityIssueUrl}>Indicar comunidade</a>
+						<a class="button button-secondary" href={eventIssueUrl}>Indicar evento</a>
+					</div>
+				</section>
+			</section>
+		</main>
+
+		<SiteFooter />
+	</div>
+</Layout>

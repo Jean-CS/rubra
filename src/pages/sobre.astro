@@ -1,0 +1,146 @@
+---
+import Layout from "../layouts/Layout.astro";
+import SiteFooter from "../components/SiteFooter.astro";
+import SiteHeader from "../components/SiteHeader.astro";
+import "../styles/rubra-index-pages.css";
+
+const githubRepoUrl = "https://github.com/Jean-CS/rubra";
+const githubIssueBaseUrl = `${githubRepoUrl}/issues/new`;
+const feedbackIssueUrl = `${githubIssueBaseUrl}?template=feedback.yml`;
+const communityIssueUrl = `${githubIssueBaseUrl}?template=indicar-comunidade.yml`;
+const institutionIssueUrl = `${githubIssueBaseUrl}?template=indicar-instituicao.yml`;
+const eventIssueUrl = `${githubIssueBaseUrl}?template=indicar-evento.yml`;
+
+const headerLinks = [
+	{ href: "/comunidades", label: "Comunidades", accent: "lime" },
+	{ href: "/instituicoes", label: "Ensino", accent: "cyan" },
+	{ href: "/eventos", label: "Eventos", accent: "coral" },
+	{ href: "/sobre", label: "Sobre", accent: "violet" },
+	{ href: feedbackIssueUrl, label: "Sugerir", accent: "lime" },
+] as const;
+---
+
+<Layout
+	title="Sobre o Rubra | Tech em Londrina"
+	description="Entenda o Rubra: um hub aberto e curado para mapear comunidades, instituições e eventos de tecnologia em Londrina e região."
+>
+	<div class="index-page about-index">
+		<SiteHeader links={headerLinks} />
+
+		<main class="index-main">
+			<section class="catalog-hero" aria-labelledby="about-title">
+				<div class="hero-copy">
+					<p class="eyebrow">Sobre o Rubra</p>
+					<h1 id="about-title">
+						<span>Um mapa aberto</span>
+						<span>para uma cena viva.</span>
+					</h1>
+					<p>
+						Rubra existe para tornar visível a cena tech de Londrina e região:
+						comunidades, encontros, instituições, iniciativas e oportunidades que muita
+						gente ainda descobre por acaso.
+					</p>
+					<div class="hero-actions">
+						<a class="button button-primary" href={feedbackIssueUrl}>Sugerir melhoria</a>
+						<a class="button button-secondary" href={githubRepoUrl}>Ver GitHub</a>
+					</div>
+				</div>
+
+				<aside class="signal-board" aria-label="Princípios do Rubra">
+					<div class="board-topline">
+						<span>Projeto comunitário</span>
+						<span>Aberto / Curado</span>
+					</div>
+					<div class="board-main">
+						<strong>3</strong>
+						<span>partes do ecossistema mapeadas no início</span>
+						<div class="signal-lines" aria-hidden="true">
+							<span>Comunidades</span>
+							<span>Ensino</span>
+							<span>Eventos</span>
+						</div>
+					</div>
+					<div class="board-footline">
+						<span>Incompleto por desenho</span>
+						<span>Revisão manual</span>
+					</div>
+				</aside>
+			</section>
+
+			<section class="about-grid" aria-label="Detalhes do projeto">
+				<aside class="about-panel">
+					<p class="section-kicker">Síntese</p>
+					<h2>A porta de entrada para a cena tech de Londrina.</h2>
+					<p>
+						O Rubra não tenta ser dono da cena. Ele organiza sinais públicos para que
+						mais pessoas encontrem onde participar, aprender, ensinar e contribuir.
+					</p>
+					<div class="cta-actions">
+						<a class="button button-primary" href="/comunidades">Explorar comunidades</a>
+						<a class="button button-secondary" href="/eventos">Ver eventos</a>
+					</div>
+				</aside>
+
+				<div class="principles">
+					<section class="principle accent-lime">
+						<h3>Por que existe</h3>
+						<p>
+							Muita coisa boa acontece em Londrina, mas ainda circula por links soltos,
+							grupos fechados e conversas que não chegam em quem está entrando agora.
+							O Rubra reduz essa dependência de sorte.
+						</p>
+					</section>
+
+					<section class="principle accent-cyan">
+						<h3>Como funciona a curadoria</h3>
+						<p>
+							As entradas passam por revisão editorial antes de aparecer no site. O
+							critério central é ter relação clara com tecnologia em Londrina ou região,
+							com contexto mínimo para verificação.
+						</p>
+						<ol class="numbered-rules">
+							<li>
+								<span>01</span>
+								Conteúdo precisa ajudar pessoas a encontrar comunidades, formação, eventos
+								ou iniciativas locais.
+							</li>
+							<li>
+								<span>02</span>
+								Descrições podem ser ajustadas para evitar propaganda e manter consistência.
+							</li>
+							<li>
+								<span>03</span>
+								Correções, críticas e ausências são tratadas como parte normal do projeto.
+							</li>
+						</ol>
+					</section>
+
+					<section class="principle accent-coral">
+						<h3>O que entra no mapa</h3>
+						<p>
+							Comunidades, meetups, coletivos, instituições de ensino, eventos datados e
+							iniciativas com relação prática com tecnologia, formação, carreira,
+							pesquisa, produto ou cultura técnica na região.
+						</p>
+						<div class="cta-actions">
+							<a class="text-link" href={communityIssueUrl}>Indicar comunidade</a>
+							<a class="text-link" href={institutionIssueUrl}>Indicar instituição</a>
+							<a class="text-link" href={eventIssueUrl}>Indicar evento</a>
+						</div>
+					</section>
+
+					<section class="principle accent-violet">
+						<h3>O que não é</h3>
+						<p>
+							Rubra não é ranking, agenda oficial, associação formal, vitrine de anúncios
+							nem retrato definitivo da cidade. É infraestrutura comunitária em evolução,
+							feita para melhorar quando a comunidade aponta um caminho mais justo.
+						</p>
+					</section>
+				</div>
+			</section>
+		</main>
+
+		<SiteFooter />
+	</div>
+</Layout>
