@@ -2,12 +2,19 @@
 interface Props {
 	title?: string;
 	description?: string;
+	image?: string;
+	imageAlt?: string;
 }
 
 const {
-	title = "Rubra | Tech em Londrina",
+	title = "Rubra | A porta de entrada para a cena tech de Londrina",
 	description = "Rubra torna visíveis comunidades, Instituições de Ensino, eventos e iniciativas de tecnologia em Londrina e região em um hub comunitário em evolução contínua.",
+	image = "/rubra-opengraph.png",
+	imageAlt = "Rubra, mapa aberto da cena tech de Londrina com comunidades, ensino, eventos e pessoas.",
 } = Astro.props;
+
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
+const imageUrl = new URL(image, Astro.site);
 ---
 
 <!doctype html>
@@ -19,6 +26,24 @@ const {
 		<link rel="icon" href="/favicon.ico" />
 		<meta name="description" content={description} />
 		<meta name="theme-color" content="#F8F1E7" />
+		<link rel="canonical" href={canonicalUrl} />
+		<meta property="og:site_name" content="Rubra" />
+		<meta property="og:type" content="website" />
+		<meta property="og:locale" content="pt_BR" />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:url" content={canonicalUrl} />
+		<meta property="og:image" content={imageUrl} />
+		<meta property="og:image:secure_url" content={imageUrl} />
+		<meta property="og:image:type" content="image/png" />
+		<meta property="og:image:width" content="1731" />
+		<meta property="og:image:height" content="909" />
+		<meta property="og:image:alt" content={imageAlt} />
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:title" content={title} />
+		<meta name="twitter:description" content={description} />
+		<meta name="twitter:image" content={imageUrl} />
+		<meta name="twitter:image:alt" content={imageAlt} />
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link

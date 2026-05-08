@@ -17,6 +17,9 @@ pnpm-debug.log*
 .env
 .env.production
 
+# internal planning notes
+docs/internal/
+
 # macOS-specific files
 .DS_Store
 
