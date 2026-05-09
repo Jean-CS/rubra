@@ -18,7 +18,7 @@
 .index-page {
 	--page-gutter: clamp(18px, 3.8vw, 42px);
 	position: relative;
-	min-height: 100dvh;
+	min-height: 100svh;
 	overflow-x: clip;
 	background:
 		linear-gradient(90deg, rgba(22, 15, 11, 0.055) 1px, transparent 1px),
@@ -87,7 +87,7 @@
 	max-width: 13ch;
 	margin: 0 0 clamp(16px, 2vw, 24px);
 	font-family: var(--display);
-	font-size: clamp(3.1rem, min(7vw, 10dvh), 5.8rem);
+	font-size: clamp(3.1rem, min(7vw, 10svh), 5.8rem);
 	font-weight: 800;
 	letter-spacing: 0;
 	line-height: 0.92;
