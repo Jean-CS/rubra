@@ -1,6 +1,6 @@
 ---
 name: triagem-indicacao
-description: Triage and act on a Rubra contribution issue (indicar-comunidade, indicar-instituicao, indicar-evento). Researches the suggested entity, applies editorial adjustments, posts a curation comment on the issue, and opens a PR adding or updating the Markdown entry. Use when the user references a Rubra contribution issue (e.g. "evaluate issue #N", "triage this indicação", "review this community/institution/event suggestion") or pastes a github.com/Jean-CS/rubra/issues/N URL.
+description: Triage and act on a Rubra contribution issue (indicar-comunidade, indicar-instituicao, indicar-evento). Researches the suggested entity, applies editorial adjustments, posts a curation comment on the issue, and opens a PR adding or updating the Markdown entry. Use when the user references a Rubra contribution issue (e.g. "evaluate issue #N", "triage this indicação", "review this community/institution/event suggestion") or pastes an issue URL from this repo.
 ---
 
 # Triagem de indicação no Rubra
@@ -11,7 +11,7 @@ Esta skill executa a triagem completa de uma indicação: pesquisa, ajustes edit
 
 ## Pré-requisitos
 
-- Conta GitHub `Jean-CS` ativa no `gh` (não use `jean-sotnas`). Verifique com `gh auth status`.
+- `gh` autenticado com permissão de escrita no repositório. Verifique com `gh auth status`.
 - Working tree limpo (`git status`) antes de criar a branch.
 
 ## Etapas
@@ -19,7 +19,7 @@ Esta skill executa a triagem completa de uma indicação: pesquisa, ajustes edit
 ### 1. Ler a issue e identificar o tipo
 
 ```sh
-gh issue view <N> --repo Jean-CS/rubra
+gh issue view <N>
 ```
 
 Identifique se é comunidade, instituição ou evento. Cada um tem um schema diferente em `src/content.config.ts` — releia esse arquivo se houver qualquer dúvida sobre campos obrigatórios, enums permitidos (`accent`, `format`, `organizerType`) ou validações.
@@ -87,7 +87,7 @@ Antes de abrir o PR, poste um comentário público de curadoria na issue. Estrut
 - **Ajustes editoriais aplicados:** explique cada mudança em relação ao formulário original (nome, tipo, tags, accent, descrição). Esse comentário é o registro público da decisão editorial — não pule.
 
 ```sh
-gh issue comment <N> --repo Jean-CS/rubra --body "$(cat <<'EOF'
+gh issue comment <N> --body "$(cat <<'EOF'
 ...
 EOF
 )"
@@ -107,7 +107,7 @@ Closes #N. <1-2 frases de contexto>
 
 ```sh
 git push -u origin <branch>
-gh pr create --repo Jean-CS/rubra --base main --head <branch> \
+gh pr create --base main --head <branch> \
   --title "Add <Nome canônico> community" \
   --body "$(cat <<'EOF'
 ## Summary
