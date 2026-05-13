@@ -76,9 +76,29 @@ const hasMeta = data.modality || data.duration;
 							<span aria-hidden="true">◈</span>{data.modality}
 						</span>
 					)}
+					{data.shift && (
+						<span class="meta-badge">
+							<span aria-hidden="true">◷</span>{data.shift}
+						</span>
+					)}
 					{data.duration && (
 						<span class="meta-badge">
 							<span aria-hidden="true">⏱</span>{data.duration}
+						</span>
+					)}
+					{data.workload && (
+						<span class="meta-badge">
+							<span aria-hidden="true">◉</span>{data.workload}
+						</span>
+					)}
+					{data.tuition && (
+						<span class={`meta-badge${data.tuition === "Gratuito" ? " meta-badge--free" : ""}`}>
+							<span aria-hidden="true">◈</span>{data.tuition}
+						</span>
+					)}
+					{typeof data.mec_grade === "number" && (
+						<span class="mec-badge">
+							MEC {"★".repeat(data.mec_grade)}{"☆".repeat(5 - data.mec_grade)}
 						</span>
 					)}
 				</div>
@@ -270,6 +290,26 @@ const hasMeta = data.modality || data.duration;
 		font-weight: 600;
 		color: var(--steel, #766a5e);
 		line-height: 1;
+	}
+
+	.meta-badge--free {
+		border-color: color-mix(in srgb, var(--lime, #b7ff4a) 50%, transparent);
+		background: color-mix(in srgb, var(--lime, #b7ff4a) 12%, transparent);
+		color: color-mix(in srgb, var(--lime, #b7ff4a) 30%, var(--ink, #160f0b));
+	}
+
+	.mec-badge {
+		display: inline-flex;
+		align-items: center;
+		padding: 5px 12px;
+		border: 1px solid color-mix(in srgb, var(--accent-color) 45%, transparent);
+		background: color-mix(in srgb, var(--accent-color) 10%, transparent);
+		font-family: var(--mono, "IBM Plex Mono", monospace);
+		font-size: 0.7rem;
+		font-weight: 700;
+		color: color-mix(in srgb, var(--accent-color) 70%, var(--ink, #160f0b));
+		line-height: 1;
+		letter-spacing: 0.03em;
 	}
 
 	.detail-description {
