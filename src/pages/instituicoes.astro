@@ -9,9 +9,10 @@ const sortByName = <T extends { name: string }>(items: T[]) =>
 	items.sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
 
 const institutions = sortByName(
-	(await getCollection("institutions", ({ data }) => data.draft !== true)).map(
-		({ data }) => data,
-	),
+	(await getCollection("institutions", ({ data }) => data.draft !== true)).map((entry) => ({
+		id: entry.id,
+		...entry.data,
+	})),
 );
 
 const events = (await getCollection("events", ({ data }) => data.draft !== true)).map(
@@ -147,7 +148,7 @@ const profiles = Array.from(new Set(institutions.map(({ profile }) => profile)))
 								<span class="entity-index">{String(index + 1).padStart(2, "0")}</span>
 								<div class="entity-body">
 									<p class="meta-label">{institution.type}</p>
-									<h3>{institution.name}</h3>
+									<h3><a href={`/instituicoes/${institution.id}`}>{institution.name}</a></h3>
 									<p>{institution.description}</p>
 									<div class="tag-row" aria-label={`Temas de ${institution.name}`}>
 										{institution.tags.map((tag) => (

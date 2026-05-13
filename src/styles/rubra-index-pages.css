@@ -374,6 +374,14 @@
 	line-height: 1;
 }
 
+.entity-body h3 a {
+	text-decoration: none;
+}
+
+.entity-body h3 a:hover {
+	text-decoration: underline;
+}
+
 .entity-body p {
 	max-width: 760px;
 	margin: 0;

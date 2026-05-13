@@ -1,0 +1,363 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "../../layouts/Layout.astro";
+import SiteFooter from "../../components/SiteFooter.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+
+export async function getStaticPaths() {
+	const institutions = await getCollection("institutions", ({ data }) => !data.draft);
+	const allCourses = await getCollection("courses", ({ data }) => !data.draft);
+
+	return institutions.map((entry) => {
+		const institutionCourses = allCourses.filter((course) =>
+			course.id.startsWith(`${entry.id}/`),
+		);
+		return {
+			params: { id: entry.id },
+			props: { entry, courses: institutionCourses },
+		};
+	});
+}
+
+const { entry, courses } = Astro.props;
+const { data } = entry;
+
+const githubIssueBaseUrl = "https://github.com/Jean-CS/rubra/issues/new";
+const institutionIssueUrl = `${githubIssueBaseUrl}?template=indicar-instituicao.yml`;
+
+const updateIssueUrl = new URL(institutionIssueUrl);
+updateIssueUrl.searchParams.set("title", `Atualizar instituição: ${data.name}`);
+updateIssueUrl.searchParams.set("request-type", "Atualização de instituição existente");
+updateIssueUrl.searchParams.set("name", data.name);
+updateIssueUrl.searchParams.set("website", data.website);
+updateIssueUrl.searchParams.set("type", data.type);
+updateIssueUrl.searchParams.set("profile", data.profile);
+updateIssueUrl.searchParams.set("description", data.description);
+updateIssueUrl.searchParams.set("tags", data.tags.join(", "));
+
+const headerLinks = [
+	{ href: "/comunidades", label: "Comunidades", accent: "lime" },
+	{ href: "/instituicoes", label: "Ensino", accent: "cyan" },
+	{ href: "/eventos", label: "Eventos", accent: "coral" },
+	{ href: "/sobre", label: "Sobre", accent: "violet" },
+	{ href: `${githubIssueBaseUrl}?template=indicar-instituicao.yml`, label: "Indicar", accent: "cyan" },
+] as const;
+---
+
+<Layout
+	title={`${data.name} | Instituição | Rubra`}
+	description={data.description}
+>
+	<div class={`detail-page accent-${data.accent}`}>
+		<SiteHeader links={headerLinks} />
+
+		<main class="detail-main">
+			<header class="detail-header">
+				<div class="detail-header-text">
+					<p class="detail-eyebrow">
+						<a href="/instituicoes">Ensino e formação</a>
+					</p>
+					<h1>{data.name}</h1>
+					<p class="detail-description">{data.description}</p>
+				</div>
+				<aside class="detail-header-meta">
+					<dl>
+						<div>
+							<dt>Tipo</dt>
+							<dd>{data.type}</dd>
+						</div>
+						<div>
+							<dt>Perfil</dt>
+							<dd>{data.profile}</dd>
+						</div>
+					</dl>
+				</aside>
+			</header>
+
+			<div class="detail-body">
+				<section class="detail-section" aria-labelledby="profile-title">
+					<h2 id="profile-title" class="section-label">Perfil</h2>
+					<p class="detail-prose">{data.profile}</p>
+				</section>
+
+				{courses.length > 0 && (
+					<section class="detail-section" aria-labelledby="courses-title">
+						<h2 id="courses-title" class="section-label">Cursos e programas</h2>
+						<ul class="course-list">
+							{courses.map((course) => {
+								const courseSlug = course.id.split("/")[1];
+								return (
+									<li class="course-item">
+										<a href={`/instituicoes/${entry.id}/${courseSlug}`} class="course-link">
+											<span class="course-name">{course.data.name}</span>
+											<span class="course-level">{course.data.level}</span>
+											<span class="course-arrow" aria-hidden="true">→</span>
+										</a>
+									</li>
+								);
+							})}
+						</ul>
+					</section>
+				)}
+
+				<section class="detail-section" aria-labelledby="links-title">
+					<h2 id="links-title" class="section-label">Links</h2>
+					<div class="link-row">
+						<a href={data.website} target="_blank" rel="noopener noreferrer" class="detail-link">
+							Site oficial →
+						</a>
+						{data.links?.map((link) => (
+							<a href={link.url} target="_blank" rel="noopener noreferrer" class="detail-link">
+								{link.label} →
+							</a>
+						))}
+					</div>
+				</section>
+
+				<section class="detail-section" aria-labelledby="tags-title">
+					<h2 id="tags-title" class="section-label">Tags</h2>
+					<div class="tag-row">
+						{data.tags.map((tag) => <span class="tag">{tag}</span>)}
+					</div>
+				</section>
+
+				<div class="detail-action">
+					<a href={updateIssueUrl.toString()} class="action-link">
+						Atualizar dados desta instituição →
+					</a>
+				</div>
+			</div>
+		</main>
+
+		<SiteFooter />
+	</div>
+</Layout>
+
+<style>
+	.detail-page {
+		--page-gutter: clamp(18px, 3.8vw, 42px);
+		--accent-color: var(--cyan, #22d3c5);
+		position: relative;
+		min-height: 100dvh;
+		overflow-x: clip;
+		background:
+			linear-gradient(90deg, rgba(22, 15, 11, 0.055) 1px, transparent 1px),
+			linear-gradient(rgba(22, 15, 11, 0.055) 1px, transparent 1px),
+			var(--paper, #f8f1e7);
+		background-size: 42px 42px, 42px 42px, auto;
+		color: var(--ink, #160f0b);
+		font-family: var(--body, "IBM Plex Sans", system-ui, sans-serif);
+	}
+
+	.detail-page *,
+	.detail-page *::before,
+	.detail-page *::after {
+		box-sizing: border-box;
+	}
+
+	.detail-page.accent-lime { --accent-color: var(--lime, #b7ff4a); }
+	.detail-page.accent-cyan { --accent-color: var(--cyan, #22d3c5); }
+	.detail-page.accent-coral { --accent-color: var(--coral, #ff6247); }
+	.detail-page.accent-violet { --accent-color: var(--violet, #6f5ae8); }
+	.detail-page.accent-red { --accent-color: var(--red, #e53935); }
+
+	.detail-main {
+		position: relative;
+		z-index: 1;
+		width: min(860px, calc(100% - (var(--page-gutter) * 2)));
+		margin-inline: auto;
+		padding-block: clamp(28px, 5vw, 64px);
+	}
+
+	.detail-header {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto;
+		gap: clamp(20px, 4vw, 48px);
+		align-items: start;
+		padding-bottom: clamp(28px, 4vw, 48px);
+		border-bottom: 2px solid var(--accent-color);
+		margin-bottom: clamp(28px, 4vw, 48px);
+	}
+
+	.detail-eyebrow {
+		margin: 0 0 12px;
+		color: var(--steel, #766a5e);
+		font-family: var(--mono, "IBM Plex Mono", monospace);
+		font-size: 0.74rem;
+		font-weight: 600;
+	}
+
+	.detail-eyebrow a {
+		color: inherit;
+		text-decoration: none;
+	}
+
+	.detail-eyebrow a:hover {
+		text-decoration: underline;
+	}
+
+	h1 {
+		margin: 0 0 16px;
+		font-family: var(--display, "Bricolage Grotesque", sans-serif);
+		font-size: clamp(2rem, 5vw, 3.2rem);
+		font-weight: 800;
+		line-height: 1;
+	}
+
+	.detail-description {
+		margin: 0;
+		max-width: 640px;
+		color: var(--steel, #766a5e);
+		line-height: 1.6;
+	}
+
+	.detail-header-meta dl {
+		margin: 0;
+		display: grid;
+		gap: 16px;
+	}
+
+	.detail-header-meta dt {
+		margin: 0 0 2px;
+		color: var(--steel, #766a5e);
+		font-family: var(--mono, "IBM Plex Mono", monospace);
+		font-size: 0.68rem;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+	}
+
+	.detail-header-meta dd {
+		margin: 0;
+		font-weight: 600;
+		font-size: 0.9rem;
+	}
+
+	.detail-body {
+		display: grid;
+		gap: clamp(28px, 4vw, 48px);
+	}
+
+	.detail-section {
+		border-top: 1px solid rgba(22, 15, 11, 0.14);
+		padding-top: clamp(20px, 3vw, 32px);
+	}
+
+	.section-label {
+		margin: 0 0 16px;
+		color: var(--steel, #766a5e);
+		font-family: var(--mono, "IBM Plex Mono", monospace);
+		font-size: 0.74rem;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+	}
+
+	.detail-prose {
+		margin: 0;
+		line-height: 1.6;
+	}
+
+	.course-list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: grid;
+		gap: 4px;
+	}
+
+	.course-link {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		padding: 12px 0;
+		color: inherit;
+		text-decoration: none;
+		border-bottom: 1px solid rgba(22, 15, 11, 0.08);
+		transition: color 160ms ease;
+	}
+
+	.course-link:hover {
+		color: var(--accent-color);
+	}
+
+	.course-name {
+		font-weight: 600;
+		flex: 1;
+	}
+
+	.course-level {
+		font-family: var(--mono, "IBM Plex Mono", monospace);
+		font-size: 0.74rem;
+		color: var(--steel, #766a5e);
+	}
+
+	.course-arrow {
+		color: var(--steel, #766a5e);
+		transition: transform 160ms ease;
+	}
+
+	.course-link:hover .course-arrow {
+		transform: translateX(4px);
+		color: var(--accent-color);
+	}
+
+	.link-row {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+	}
+
+	.detail-link {
+		display: inline-block;
+		padding: 8px 14px;
+		border: 1px solid rgba(22, 15, 11, 0.2);
+		color: inherit;
+		font-size: 0.88rem;
+		font-weight: 600;
+		text-decoration: none;
+		transition: border-color 160ms ease, background 160ms ease;
+	}
+
+	.detail-link:hover {
+		border-color: var(--accent-color);
+		background: color-mix(in srgb, var(--accent-color) 10%, transparent);
+	}
+
+	.tag-row {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 6px;
+	}
+
+	.tag {
+		padding: 4px 10px;
+		background: rgba(22, 15, 11, 0.06);
+		font-family: var(--mono, "IBM Plex Mono", monospace);
+		font-size: 0.72rem;
+		font-weight: 600;
+	}
+
+	.detail-action {
+		border-top: 1px solid rgba(22, 15, 11, 0.14);
+		padding-top: clamp(20px, 3vw, 32px);
+	}
+
+	.action-link {
+		color: var(--steel, #766a5e);
+		font-size: 0.88rem;
+		font-weight: 600;
+		text-decoration: none;
+		transition: color 160ms ease;
+	}
+
+	.action-link:hover {
+		color: var(--ink, #160f0b);
+	}
+
+	@media (max-width: 600px) {
+		.detail-header {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

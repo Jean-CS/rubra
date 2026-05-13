@@ -1,0 +1,274 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "../../../layouts/Layout.astro";
+import SiteFooter from "../../../components/SiteFooter.astro";
+import SiteHeader from "../../../components/SiteHeader.astro";
+
+export async function getStaticPaths() {
+	const allCourses = await getCollection("courses", ({ data }) => !data.draft);
+	const institutions = await getCollection("institutions", ({ data }) => !data.draft);
+
+	return allCourses.map((course) => {
+		const [institutionId, courseSlug] = course.id.split("/");
+		const institution = institutions.find((i) => i.id === institutionId);
+		return {
+			params: { id: institutionId, courseId: courseSlug },
+			props: { course, institution },
+		};
+	});
+}
+
+const { course, institution } = Astro.props;
+const { data } = course;
+
+const githubIssueBaseUrl = "https://github.com/Jean-CS/rubra/issues/new";
+
+const updateIssueUrl = new URL(`${githubIssueBaseUrl}?template=atualizar-curso.yml`);
+updateIssueUrl.searchParams.set("title", `Atualizar curso: ${data.name}`);
+updateIssueUrl.searchParams.set("institution", institution?.data.name ?? "");
+updateIssueUrl.searchParams.set("course", data.name);
+updateIssueUrl.searchParams.set("level", data.level);
+
+const headerLinks = [
+	{ href: "/comunidades", label: "Comunidades", accent: "lime" },
+	{ href: "/instituicoes", label: "Ensino", accent: "cyan" },
+	{ href: "/eventos", label: "Eventos", accent: "coral" },
+	{ href: "/sobre", label: "Sobre", accent: "violet" },
+	{ href: `${githubIssueBaseUrl}?template=indicar-instituicao.yml`, label: "Indicar", accent: "cyan" },
+] as const;
+
+const [institutionId] = course.id.split("/");
+const institutionAccent = institution?.data.accent ?? "cyan";
+---
+
+<Layout
+	title={`${data.name} — ${institution?.data.name ?? "Instituição"} | Rubra`}
+	description={data.description ?? `${data.name} — ${data.level} em ${institution?.data.name ?? "instituição"}.`}
+>
+	<div class={`detail-page accent-${institutionAccent}`}>
+		<SiteHeader links={headerLinks} />
+
+		<main class="detail-main">
+			<header class="detail-header">
+				<div class="detail-header-text">
+					<p class="detail-eyebrow">
+						{institution && (
+							<a href={`/instituicoes/${institutionId}`}>{institution.data.name}</a>
+						)}
+					</p>
+					<h1>{data.name}</h1>
+					{data.description && <p class="detail-description">{data.description}</p>}
+				</div>
+				<aside class="detail-header-meta">
+					<dl>
+						<div>
+							<dt>Nível</dt>
+							<dd>{data.level}</dd>
+						</div>
+					</dl>
+				</aside>
+			</header>
+
+			<div class="detail-body">
+				{data.tags && data.tags.length > 0 && (
+					<section class="detail-section" aria-labelledby="details-title">
+						<h2 id="details-title" class="section-label">Detalhes</h2>
+						<div class="tag-row">
+							{data.tags.map((tag) => <span class="tag">{tag}</span>)}
+						</div>
+					</section>
+				)}
+
+				{data.url && (
+					<div class="detail-section">
+						<a href={data.url} target="_blank" rel="noopener noreferrer" class="detail-link">
+							Site do curso →
+						</a>
+					</div>
+				)}
+
+				<div class="detail-action">
+					<a href={updateIssueUrl.toString()} class="action-link">
+						Atualizar dados deste curso →
+					</a>
+				</div>
+			</div>
+		</main>
+
+		<SiteFooter />
+	</div>
+</Layout>
+
+<style>
+	.detail-page {
+		--page-gutter: clamp(18px, 3.8vw, 42px);
+		--accent-color: var(--cyan, #22d3c5);
+		position: relative;
+		min-height: 100dvh;
+		overflow-x: clip;
+		background:
+			linear-gradient(90deg, rgba(22, 15, 11, 0.055) 1px, transparent 1px),
+			linear-gradient(rgba(22, 15, 11, 0.055) 1px, transparent 1px),
+			var(--paper, #f8f1e7);
+		background-size: 42px 42px, 42px 42px, auto;
+		color: var(--ink, #160f0b);
+		font-family: var(--body, "IBM Plex Sans", system-ui, sans-serif);
+	}
+
+	.detail-page *,
+	.detail-page *::before,
+	.detail-page *::after {
+		box-sizing: border-box;
+	}
+
+	.detail-page.accent-lime { --accent-color: var(--lime, #b7ff4a); }
+	.detail-page.accent-cyan { --accent-color: var(--cyan, #22d3c5); }
+	.detail-page.accent-coral { --accent-color: var(--coral, #ff6247); }
+	.detail-page.accent-violet { --accent-color: var(--violet, #6f5ae8); }
+	.detail-page.accent-red { --accent-color: var(--red, #e53935); }
+
+	.detail-main {
+		position: relative;
+		z-index: 1;
+		width: min(860px, calc(100% - (var(--page-gutter) * 2)));
+		margin-inline: auto;
+		padding-block: clamp(28px, 5vw, 64px);
+	}
+
+	.detail-header {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto;
+		gap: clamp(20px, 4vw, 48px);
+		align-items: start;
+		padding-bottom: clamp(28px, 4vw, 48px);
+		border-bottom: 2px solid var(--accent-color);
+		margin-bottom: clamp(28px, 4vw, 48px);
+	}
+
+	.detail-eyebrow {
+		margin: 0 0 12px;
+		color: var(--steel, #766a5e);
+		font-family: var(--mono, "IBM Plex Mono", monospace);
+		font-size: 0.74rem;
+		font-weight: 600;
+	}
+
+	.detail-eyebrow a {
+		color: inherit;
+		text-decoration: none;
+	}
+
+	.detail-eyebrow a:hover {
+		text-decoration: underline;
+	}
+
+	h1 {
+		margin: 0 0 16px;
+		font-family: var(--display, "Bricolage Grotesque", sans-serif);
+		font-size: clamp(2rem, 5vw, 3.2rem);
+		font-weight: 800;
+		line-height: 1;
+	}
+
+	.detail-description {
+		margin: 0;
+		max-width: 640px;
+		color: var(--steel, #766a5e);
+		line-height: 1.6;
+	}
+
+	.detail-header-meta dl {
+		margin: 0;
+		display: grid;
+		gap: 16px;
+	}
+
+	.detail-header-meta dt {
+		margin: 0 0 2px;
+		color: var(--steel, #766a5e);
+		font-family: var(--mono, "IBM Plex Mono", monospace);
+		font-size: 0.68rem;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+	}
+
+	.detail-header-meta dd {
+		margin: 0;
+		font-weight: 600;
+		font-size: 0.9rem;
+	}
+
+	.detail-body {
+		display: grid;
+		gap: clamp(28px, 4vw, 48px);
+	}
+
+	.detail-section {
+		border-top: 1px solid rgba(22, 15, 11, 0.14);
+		padding-top: clamp(20px, 3vw, 32px);
+	}
+
+	.section-label {
+		margin: 0 0 16px;
+		color: var(--steel, #766a5e);
+		font-family: var(--mono, "IBM Plex Mono", monospace);
+		font-size: 0.74rem;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+	}
+
+	.tag-row {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 6px;
+	}
+
+	.tag {
+		padding: 4px 10px;
+		background: rgba(22, 15, 11, 0.06);
+		font-family: var(--mono, "IBM Plex Mono", monospace);
+		font-size: 0.72rem;
+		font-weight: 600;
+	}
+
+	.detail-link {
+		display: inline-block;
+		padding: 8px 14px;
+		border: 1px solid rgba(22, 15, 11, 0.2);
+		color: inherit;
+		font-size: 0.88rem;
+		font-weight: 600;
+		text-decoration: none;
+		transition: border-color 160ms ease, background 160ms ease;
+	}
+
+	.detail-link:hover {
+		border-color: var(--accent-color);
+		background: color-mix(in srgb, var(--accent-color) 10%, transparent);
+	}
+
+	.detail-action {
+		border-top: 1px solid rgba(22, 15, 11, 0.14);
+		padding-top: clamp(20px, 3vw, 32px);
+	}
+
+	.action-link {
+		color: var(--steel, #766a5e);
+		font-size: 0.88rem;
+		font-weight: 600;
+		text-decoration: none;
+		transition: color 160ms ease;
+	}
+
+	.action-link:hover {
+		color: var(--ink, #160f0b);
+	}
+
+	@media (max-width: 600px) {
+		.detail-header {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>
