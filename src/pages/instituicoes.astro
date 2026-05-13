@@ -19,6 +19,15 @@ const events = (await getCollection("events", ({ data }) => data.draft !== true)
 	({ data }) => data,
 );
 
+const allCourses = await getCollection("courses", ({ data }) => data.draft !== true);
+const totalCourses = allCourses.length;
+const coursesByInstitution = Object.fromEntries(
+	institutions.map(({ id }) => [
+		id,
+		allCourses.filter((c) => c.id.startsWith(`${id}/`)),
+	]),
+);
+
 const githubIssueBaseUrl = "https://github.com/Jean-CS/rubra/issues/new";
 const institutionIssueUrl = `${githubIssueBaseUrl}?template=indicar-instituicao.yml`;
 const eventIssueUrl = `${githubIssueBaseUrl}?template=indicar-evento.yml`;
@@ -103,6 +112,7 @@ const profiles = Array.from(new Set(institutions.map(({ profile }) => profile)))
 					</div>
 					<div class="board-footline">
 						<span>{profiles.length} perfis</span>
+						<span>{totalCourses} cursos</span>
 						<span>{institutionEventCount} eventos</span>
 					</div>
 				</aside>
@@ -117,6 +127,10 @@ const profiles = Array.from(new Set(institutions.map(({ profile }) => profile)))
 					<p>
 						<strong>{institutions.length}</strong>
 						<span>instituições mapeadas</span>
+					</p>
+					<p>
+						<strong>{totalCourses}</strong>
+						<span>cursos e programas</span>
 					</p>
 					<p>
 						<strong>{profiles.length}</strong>
@@ -155,6 +169,24 @@ const profiles = Array.from(new Set(institutions.map(({ profile }) => profile)))
 											<span>{tag}</span>
 										))}
 									</div>
+									{coursesByInstitution[institution.id]?.length > 0 && (
+										<div class="course-preview" aria-label={`Cursos de ${institution.name}`}>
+											<span class="course-preview-label">Cursos</span>
+											<div class="course-pill-list">
+												{coursesByInstitution[institution.id].slice(0, 3).map((c) => (
+													<span class="course-pill">
+														<span class="pill-name">{c.data.name}</span>
+														<span class="pill-level">{c.data.level}</span>
+													</span>
+												))}
+												{coursesByInstitution[institution.id].length > 3 && (
+													<a href={`/instituicoes/${institution.id}`} class="course-more">
+														+{coursesByInstitution[institution.id].length - 3} mais
+													</a>
+												)}
+											</div>
+										</div>
+									)}
 								</div>
 								<aside class="entity-side" aria-label={`Detalhes de ${institution.name}`}>
 									<dl>
@@ -166,11 +198,22 @@ const profiles = Array.from(new Set(institutions.map(({ profile }) => profile)))
 											<dt>Tipo</dt>
 											<dd>{institution.type}</dd>
 										</div>
+										{coursesByInstitution[institution.id]?.length > 0 && (
+											<div>
+												<dt>Cursos</dt>
+												<dd>{coursesByInstitution[institution.id].length}</dd>
+											</div>
+										)}
 									</dl>
 									<div class="side-links">
 										<a href={institution.website} target="_blank" rel="noopener noreferrer">
 											Site oficial
 										</a>
+										{coursesByInstitution[institution.id]?.length > 0 && (
+											<a href={`/instituicoes/${institution.id}#courses-title`}>
+												Ver cursos
+											</a>
+										)}
 										<a href={institutionUpdateIssueUrl(institution)}>Atualizar dados</a>
 									</div>
 								</aside>
