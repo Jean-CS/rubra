@@ -11,14 +11,17 @@ export async function getStaticPaths() {
 	return allCourses.map((course) => {
 		const [institutionId, courseSlug] = course.id.split("/");
 		const institution = institutions.find((i) => i.id === institutionId);
+		const siblingCourses = allCourses
+			.filter((c) => c.id.startsWith(`${institutionId}/`) && c.id !== course.id)
+			.slice(0, 4);
 		return {
 			params: { id: institutionId, courseId: courseSlug },
-			props: { course, institution },
+			props: { course, institution, siblingCourses },
 		};
 	});
 }
 
-const { course, institution } = Astro.props;
+const { course, institution, siblingCourses } = Astro.props;
 const { data } = course;
 
 const githubIssueBaseUrl = "https://github.com/Jean-CS/rubra/issues/new";
@@ -39,6 +42,8 @@ const headerLinks = [
 
 const [institutionId] = course.id.split("/");
 const institutionAccent = institution?.data.accent ?? "cyan";
+
+const hasMeta = data.modality || data.duration;
 ---
 
 <Layout
@@ -50,41 +55,91 @@ const institutionAccent = institution?.data.accent ?? "cyan";
 
 		<main class="detail-main">
 			<header class="detail-header">
-				<div class="detail-header-text">
-					<p class="detail-eyebrow">
-						{institution && (
+				<p class="detail-eyebrow">
+					{institution ? (
+						<>
 							<a href={`/instituicoes/${institutionId}`}>{institution.data.name}</a>
-						)}
-					</p>
-					<h1>{data.name}</h1>
-					{data.description && <p class="detail-description">{data.description}</p>}
+							<span class="eyebrow-sep" aria-hidden="true">·</span>
+							<span class="eyebrow-meta">{institution.data.type}</span>
+							<span class="eyebrow-sep" aria-hidden="true">·</span>
+							<span class="eyebrow-meta">{institution.data.profile}</span>
+						</>
+					) : (
+						<a href="/instituicoes">Ensino e formação</a>
+					)}
+				</p>
+				<h1>{data.name}</h1>
+				<div class="course-badges">
+					<span class="level-badge-prominent">{data.level}</span>
+					{data.modality && (
+						<span class="meta-badge">
+							<span aria-hidden="true">◈</span>{data.modality}
+						</span>
+					)}
+					{data.duration && (
+						<span class="meta-badge">
+							<span aria-hidden="true">⏱</span>{data.duration}
+						</span>
+					)}
 				</div>
-				<aside class="detail-header-meta">
-					<dl>
-						<div>
-							<dt>Nível</dt>
-							<dd>{data.level}</dd>
-						</div>
-					</dl>
-				</aside>
+				{data.description && (
+					<p class="detail-description">{data.description}</p>
+				)}
 			</header>
 
 			<div class="detail-body">
 				{data.tags && data.tags.length > 0 && (
-					<section class="detail-section" aria-labelledby="details-title">
-						<h2 id="details-title" class="section-label">Detalhes</h2>
-						<div class="tag-row">
-							{data.tags.map((tag) => <span class="tag">{tag}</span>)}
+					<section class="detail-section" aria-labelledby="topics-title">
+						<h2 id="topics-title" class="section-label">Tópicos</h2>
+						<div class="topic-chips">
+							{data.tags.map((tag) => (
+								<span class="topic-chip">{tag}</span>
+							))}
 						</div>
 					</section>
 				)}
 
 				{data.url && (
-					<div class="detail-section">
-						<a href={data.url} target="_blank" rel="noopener noreferrer" class="detail-link">
-							Site do curso →
+					<div class="apply-section">
+						<a
+							href={data.url}
+							target="_blank"
+							rel="noopener noreferrer"
+							class="apply-btn"
+						>
+							Acessar site do curso →
 						</a>
 					</div>
+				)}
+
+				{siblingCourses.length > 0 && (
+					<section class="detail-section" aria-labelledby="related-title">
+						<h2 id="related-title" class="section-label">
+							Outros cursos {institution ? `em ${institution.data.name}` : "desta instituição"}
+						</h2>
+						<div class="related-grid">
+							{siblingCourses.map((sibling) => {
+								const [sibInstId, sibSlug] = sibling.id.split("/");
+								return (
+									<a
+										href={`/instituicoes/${sibInstId}/${sibSlug}`}
+										class="related-card"
+									>
+										<div class="related-card-inner">
+											<span class="related-name">{sibling.data.name}</span>
+											<span class="level-badge">{sibling.data.level}</span>
+										</div>
+										<span class="related-arrow" aria-hidden="true">→</span>
+									</a>
+								);
+							})}
+						</div>
+						{institution && (
+							<a href={`/instituicoes/${institutionId}`} class="see-all-link">
+								Ver todos os cursos de {institution.data.name} →
+							</a>
+						)}
+					</section>
 				)}
 
 				<div class="detail-action">
@@ -135,18 +190,20 @@ const institutionAccent = institution?.data.accent ?? "cyan";
 		padding-block: clamp(28px, 5vw, 64px);
 	}
 
+	/* ── Header ── */
+
 	.detail-header {
-		display: grid;
-		grid-template-columns: minmax(0, 1fr) auto;
-		gap: clamp(20px, 4vw, 48px);
-		align-items: start;
 		padding-bottom: clamp(28px, 4vw, 48px);
 		border-bottom: 2px solid var(--accent-color);
 		margin-bottom: clamp(28px, 4vw, 48px);
 	}
 
 	.detail-eyebrow {
-		margin: 0 0 12px;
+		margin: 0 0 16px;
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 5px 8px;
 		color: var(--steel, #766a5e);
 		font-family: var(--mono, "IBM Plex Mono", monospace);
 		font-size: 0.74rem;
@@ -156,10 +213,20 @@ const institutionAccent = institution?.data.accent ?? "cyan";
 	.detail-eyebrow a {
 		color: inherit;
 		text-decoration: none;
+		transition: color 150ms ease;
 	}
 
 	.detail-eyebrow a:hover {
-		text-decoration: underline;
+		color: var(--ink, #160f0b);
+	}
+
+	.eyebrow-sep {
+		user-select: none;
+		opacity: 0.5;
+	}
+
+	.eyebrow-meta {
+		opacity: 0.7;
 	}
 
 	h1 {
@@ -167,6 +234,41 @@ const institutionAccent = institution?.data.accent ?? "cyan";
 		font-family: var(--display, "Bricolage Grotesque", sans-serif);
 		font-size: clamp(2rem, 5vw, 3.2rem);
 		font-weight: 800;
+		line-height: 1.05;
+	}
+
+	.course-badges {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 8px;
+		margin-bottom: 18px;
+	}
+
+	.level-badge-prominent {
+		display: inline-flex;
+		align-items: center;
+		padding: 5px 14px;
+		background: var(--accent-color);
+		color: var(--ink, #160f0b);
+		font-family: var(--mono, "IBM Plex Mono", monospace);
+		font-size: 0.7rem;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+		line-height: 1;
+	}
+
+	.meta-badge {
+		display: inline-flex;
+		align-items: center;
+		gap: 5px;
+		padding: 5px 12px;
+		border: 1px solid rgba(22, 15, 11, 0.18);
+		font-family: var(--mono, "IBM Plex Mono", monospace);
+		font-size: 0.7rem;
+		font-weight: 600;
+		color: var(--steel, #766a5e);
 		line-height: 1;
 	}
 
@@ -174,30 +276,11 @@ const institutionAccent = institution?.data.accent ?? "cyan";
 		margin: 0;
 		max-width: 640px;
 		color: var(--steel, #766a5e);
-		line-height: 1.6;
+		line-height: 1.65;
+		font-size: 1rem;
 	}
 
-	.detail-header-meta dl {
-		margin: 0;
-		display: grid;
-		gap: 16px;
-	}
-
-	.detail-header-meta dt {
-		margin: 0 0 2px;
-		color: var(--steel, #766a5e);
-		font-family: var(--mono, "IBM Plex Mono", monospace);
-		font-size: 0.68rem;
-		font-weight: 600;
-		text-transform: uppercase;
-		letter-spacing: 0.06em;
-	}
-
-	.detail-header-meta dd {
-		margin: 0;
-		font-weight: 600;
-		font-size: 0.9rem;
-	}
+	/* ── Body grid ── */
 
 	.detail-body {
 		display: grid;
@@ -205,7 +288,7 @@ const institutionAccent = institution?.data.accent ?? "cyan";
 	}
 
 	.detail-section {
-		border-top: 1px solid rgba(22, 15, 11, 0.14);
+		border-top: 1px solid rgba(22, 15, 11, 0.12);
 		padding-top: clamp(20px, 3vw, 32px);
 	}
 
@@ -219,38 +302,138 @@ const institutionAccent = institution?.data.accent ?? "cyan";
 		letter-spacing: 0.06em;
 	}
 
-	.tag-row {
+	/* ── Topics ── */
+
+	.topic-chips {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 6px;
+		gap: 7px;
 	}
 
-	.tag {
-		padding: 4px 10px;
-		background: rgba(22, 15, 11, 0.06);
+	.topic-chip {
+		padding: 5px 12px;
+		border: 1px solid rgba(22, 15, 11, 0.14);
+		background: rgba(22, 15, 11, 0.025);
 		font-family: var(--mono, "IBM Plex Mono", monospace);
 		font-size: 0.72rem;
 		font-weight: 600;
+		line-height: 1;
 	}
 
-	.detail-link {
+	/* ── Apply CTA ── */
+
+	.apply-section {
+		border-top: 1px solid rgba(22, 15, 11, 0.12);
+		padding-top: clamp(20px, 3vw, 32px);
+	}
+
+	.apply-btn {
 		display: inline-block;
-		padding: 8px 14px;
-		border: 1px solid rgba(22, 15, 11, 0.2);
-		color: inherit;
-		font-size: 0.88rem;
-		font-weight: 600;
+		padding: 14px 28px;
+		background: var(--ink, #160f0b);
+		color: var(--paper, #f8f1e7);
+		font-family: var(--body, "IBM Plex Sans", system-ui, sans-serif);
+		font-weight: 700;
+		font-size: 0.95rem;
 		text-decoration: none;
-		transition: border-color 160ms ease, background 160ms ease;
+		letter-spacing: 0.01em;
+		transition: background 200ms ease, color 200ms ease;
 	}
 
-	.detail-link:hover {
-		border-color: var(--accent-color);
-		background: color-mix(in srgb, var(--accent-color) 10%, transparent);
+	.apply-btn:hover {
+		background: var(--accent-color);
+		color: var(--ink, #160f0b);
 	}
+
+	/* ── Related courses ── */
+
+	.related-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+		gap: 1px;
+		background: rgba(22, 15, 11, 0.1);
+		border: 1px solid rgba(22, 15, 11, 0.1);
+		margin-bottom: 14px;
+	}
+
+	.related-card {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 12px;
+		padding: 16px 18px;
+		color: inherit;
+		text-decoration: none;
+		background: var(--paper, #f8f1e7);
+		transition: background 160ms ease;
+	}
+
+	.related-card:hover {
+		background: color-mix(in srgb, var(--accent-color) 9%, var(--paper, #f8f1e7));
+	}
+
+	.related-card-inner {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+		min-width: 0;
+	}
+
+	.related-name {
+		font-weight: 700;
+		font-size: 0.9rem;
+		line-height: 1.3;
+		transition: color 160ms ease;
+	}
+
+	.related-card:hover .related-name {
+		color: color-mix(in srgb, var(--accent-color) 75%, var(--ink, #160f0b));
+	}
+
+	.level-badge {
+		font-family: var(--mono, "IBM Plex Mono", monospace);
+		font-size: 0.58rem;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		padding: 2px 7px;
+		border: 1px solid color-mix(in srgb, var(--accent-color) 45%, transparent);
+		background: color-mix(in srgb, var(--accent-color) 10%, transparent);
+		display: inline-block;
+		align-self: flex-start;
+		line-height: 1.6;
+		white-space: nowrap;
+	}
+
+	.related-arrow {
+		color: var(--steel, #766a5e);
+		flex-shrink: 0;
+		font-size: 1rem;
+		transition: transform 160ms ease, color 160ms ease;
+	}
+
+	.related-card:hover .related-arrow {
+		transform: translateX(4px);
+		color: var(--accent-color);
+	}
+
+	.see-all-link {
+		display: inline-block;
+		font-size: 0.86rem;
+		font-weight: 600;
+		color: var(--steel, #766a5e);
+		text-decoration: none;
+		transition: color 150ms ease;
+	}
+
+	.see-all-link:hover {
+		color: var(--ink, #160f0b);
+	}
+
+	/* ── Action CTA ── */
 
 	.detail-action {
-		border-top: 1px solid rgba(22, 15, 11, 0.14);
+		border-top: 1px solid rgba(22, 15, 11, 0.12);
 		padding-top: clamp(20px, 3vw, 32px);
 	}
 
@@ -266,8 +449,8 @@ const institutionAccent = institution?.data.accent ?? "cyan";
 		color: var(--ink, #160f0b);
 	}
 
-	@media (max-width: 600px) {
-		.detail-header {
+	@media (max-width: 500px) {
+		.related-grid {
 			grid-template-columns: 1fr;
 		}
 	}

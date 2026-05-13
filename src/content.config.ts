@@ -45,6 +45,8 @@ const courses = defineCollection({
 		level: z.string().min(1),
 		description: z.string().min(1).optional(),
 		url: z.string().url().optional(),
+		duration: z.string().optional(),
+		modality: z.enum(["Presencial", "EAD", "Híbrido"]).optional(),
 		tags: tagsSchema.optional(),
 		draft: z.boolean().optional().default(false),
 	}),

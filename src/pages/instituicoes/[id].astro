@@ -22,6 +22,57 @@ export async function getStaticPaths() {
 const { entry, courses } = Astro.props;
 const { data } = entry;
 
+// Group courses by level family
+const LEVEL_GROUPS: Record<string, string[]> = {
+	"Graduação": ["Bacharelado", "Tecnólogo", "Licenciatura"],
+	"Pós-Graduação": ["Especialização", "MBA", "Mestrado", "Doutorado"],
+	"Técnico": ["Técnico"],
+};
+const GROUP_ORDER = ["Graduação", "Técnico", "Pós-Graduação"];
+
+const grouped = new Map<string, typeof courses>();
+for (const course of courses) {
+	let groupName = course.data.level;
+	for (const [group, levels] of Object.entries(LEVEL_GROUPS)) {
+		if (levels.some((l) => course.data.level.startsWith(l))) {
+			groupName = group;
+			break;
+		}
+	}
+	if (!grouped.has(groupName)) grouped.set(groupName, []);
+	grouped.get(groupName)!.push(course);
+}
+
+const courseGroups = [...grouped.entries()].sort(([a], [b]) => {
+	const ai = GROUP_ORDER.indexOf(a);
+	const bi = GROUP_ORDER.indexOf(b);
+	if (ai === -1 && bi === -1) return a.localeCompare(b, "pt");
+	if (ai === -1) return 1;
+	if (bi === -1) return -1;
+	return ai - bi;
+});
+
+// Synthesize tags into student-facing signals
+const TAG_SIGNALS: Record<string, { icon: string; label: string }> = {
+	"EAD": { icon: "◈", label: "EAD disponível" },
+	"Público": { icon: "◉", label: "Ensino público" },
+	"Pesquisa": { icon: "◈", label: "Foco em pesquisa" },
+	"Federal": { icon: "◉", label: "Instituição pública" },
+	"Estadual": { icon: "◉", label: "Instituição pública" },
+	"Indústria": { icon: "◈", label: "Parceria com indústria" },
+	"Extensão": { icon: "◈", label: "Projetos de extensão" },
+};
+
+const seenLabels = new Set<string>();
+const characteristics: { icon: string; label: string }[] = [];
+for (const tag of data.tags) {
+	const signal = TAG_SIGNALS[tag];
+	if (signal && !seenLabels.has(signal.label)) {
+		seenLabels.add(signal.label);
+		characteristics.push(signal);
+	}
+}
+
 const githubIssueBaseUrl = "https://github.com/Jean-CS/rubra/issues/new";
 const institutionIssueUrl = `${githubIssueBaseUrl}?template=indicar-instituicao.yml`;
 
@@ -53,73 +104,103 @@ const headerLinks = [
 
 		<main class="detail-main">
 			<header class="detail-header">
-				<div class="detail-header-text">
-					<p class="detail-eyebrow">
-						<a href="/instituicoes">Ensino e formação</a>
-					</p>
-					<h1>{data.name}</h1>
-					<p class="detail-description">{data.description}</p>
+				<p class="detail-eyebrow">
+					<a href="/instituicoes">Ensino e formação</a>
+				</p>
+				<h1>{data.name}</h1>
+				<p class="detail-description">{data.description}</p>
+				<div class="meta-strip">
+					<span class="meta-item">{data.type}</span>
+					<span class="meta-sep" aria-hidden="true">·</span>
+					<span class="meta-item">{data.profile}</span>
+					<span class="meta-sep" aria-hidden="true">·</span>
+					<a
+						href={data.website}
+						target="_blank"
+						rel="noopener noreferrer"
+						class="meta-link"
+					>Site oficial →</a>
 				</div>
-				<aside class="detail-header-meta">
-					<dl>
-						<div>
-							<dt>Tipo</dt>
-							<dd>{data.type}</dd>
-						</div>
-						<div>
-							<dt>Perfil</dt>
-							<dd>{data.profile}</dd>
-						</div>
-					</dl>
-				</aside>
 			</header>
 
 			<div class="detail-body">
-				<section class="detail-section" aria-labelledby="profile-title">
-					<h2 id="profile-title" class="section-label">Perfil</h2>
-					<p class="detail-prose">{data.profile}</p>
-				</section>
-
 				{courses.length > 0 && (
-					<section class="detail-section" aria-labelledby="courses-title">
-						<h2 id="courses-title" class="section-label">Cursos e programas</h2>
-						<ul class="course-list">
-							{courses.map((course) => {
-								const courseSlug = course.id.split("/")[1];
-								return (
-									<li class="course-item">
-										<a href={`/instituicoes/${entry.id}/${courseSlug}`} class="course-link">
-											<span class="course-name">{course.data.name}</span>
-											<span class="course-level">{course.data.level}</span>
-											<span class="course-arrow" aria-hidden="true">→</span>
-										</a>
-									</li>
-								);
-							})}
-						</ul>
+					<section class="courses-section" aria-labelledby="courses-title">
+						<div class="section-header">
+							<h2 id="courses-title" class="section-label">Cursos e programas</h2>
+							<span class="course-count">
+								{courses.length} {courses.length === 1 ? "curso" : "cursos"}
+							</span>
+						</div>
+						<div class="course-groups">
+							{courseGroups.map(([groupName, groupCourses]) => (
+								<div class="course-group">
+									{courseGroups.length > 1 && (
+										<h3 class="group-heading">
+											<span>{groupName}</span>
+										</h3>
+									)}
+									<ul class="course-list" role="list">
+										{groupCourses.map((course) => {
+											const courseSlug = course.id.split("/")[1];
+											return (
+												<li>
+													<a
+														href={`/instituicoes/${entry.id}/${courseSlug}`}
+														class="course-card"
+													>
+														<div class="course-card-inner">
+															<div class="course-card-top">
+																<span class="course-name">{course.data.name}</span>
+																<span class="level-badge">{course.data.level}</span>
+															</div>
+															{course.data.description && (
+																<p class="course-desc">{course.data.description}</p>
+															)}
+														</div>
+														<span class="course-arrow" aria-hidden="true">→</span>
+													</a>
+												</li>
+											);
+										})}
+									</ul>
+								</div>
+							))}
+						</div>
 					</section>
 				)}
 
-				<section class="detail-section" aria-labelledby="links-title">
-					<h2 id="links-title" class="section-label">Links</h2>
-					<div class="link-row">
-						<a href={data.website} target="_blank" rel="noopener noreferrer" class="detail-link">
-							Site oficial →
-						</a>
-						{data.links?.map((link) => (
-							<a href={link.url} target="_blank" rel="noopener noreferrer" class="detail-link">
-								{link.label} →
-							</a>
-						))}
-					</div>
-				</section>
+				{characteristics.length > 0 && (
+					<section class="detail-section" aria-labelledby="char-title">
+						<h2 id="char-title" class="section-label">Características</h2>
+						<div class="characteristics">
+							{characteristics.map(({ icon, label }) => (
+								<div class="char-signal">
+									<span class="char-icon" aria-hidden="true">{icon}</span>
+									<span class="char-label">{label}</span>
+								</div>
+							))}
+						</div>
+					</section>
+				)}
 
-				<section class="detail-section" aria-labelledby="tags-title">
-					<h2 id="tags-title" class="section-label">Tags</h2>
-					<div class="tag-row">
-						{data.tags.map((tag) => <span class="tag">{tag}</span>)}
-					</div>
-				</section>
+				{data.links && data.links.length > 0 && (
+					<section class="detail-section" aria-labelledby="links-title">
+						<h2 id="links-title" class="section-label">Links</h2>
+						<div class="link-row">
+							{data.links.map((link) => (
+								<a
+									href={link.url}
+									target="_blank"
+									rel="noopener noreferrer"
+									class="detail-link"
+								>
+									{link.label} →
+								</a>
+							))}
+						</div>
+					</section>
+				)}
 
 				<div class="detail-action">
 					<a href={updateIssueUrl.toString()} class="action-link">
@@ -169,18 +250,16 @@ const headerLinks = [
 		padding-block: clamp(28px, 5vw, 64px);
 	}
 
+	/* ── Header ── */
+
 	.detail-header {
-		display: grid;
-		grid-template-columns: minmax(0, 1fr) auto;
-		gap: clamp(20px, 4vw, 48px);
-		align-items: start;
 		padding-bottom: clamp(28px, 4vw, 48px);
 		border-bottom: 2px solid var(--accent-color);
 		margin-bottom: clamp(28px, 4vw, 48px);
 	}
 
 	.detail-eyebrow {
-		margin: 0 0 12px;
+		margin: 0 0 16px;
 		color: var(--steel, #766a5e);
 		font-family: var(--mono, "IBM Plex Mono", monospace);
 		font-size: 0.74rem;
@@ -197,41 +276,52 @@ const headerLinks = [
 	}
 
 	h1 {
-		margin: 0 0 16px;
+		margin: 0 0 14px;
 		font-family: var(--display, "Bricolage Grotesque", sans-serif);
 		font-size: clamp(2rem, 5vw, 3.2rem);
 		font-weight: 800;
-		line-height: 1;
+		line-height: 1.05;
 	}
 
 	.detail-description {
-		margin: 0;
+		margin: 0 0 20px;
 		max-width: 640px;
 		color: var(--steel, #766a5e);
-		line-height: 1.6;
+		line-height: 1.65;
+		font-size: 1rem;
 	}
 
-	.detail-header-meta dl {
-		margin: 0;
-		display: grid;
-		gap: 16px;
-	}
-
-	.detail-header-meta dt {
-		margin: 0 0 2px;
-		color: var(--steel, #766a5e);
+	.meta-strip {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 6px 10px;
 		font-family: var(--mono, "IBM Plex Mono", monospace);
-		font-size: 0.68rem;
+		font-size: 0.78rem;
 		font-weight: 600;
-		text-transform: uppercase;
-		letter-spacing: 0.06em;
 	}
 
-	.detail-header-meta dd {
-		margin: 0;
-		font-weight: 600;
-		font-size: 0.9rem;
+	.meta-item {
+		color: var(--ink, #160f0b);
 	}
+
+	.meta-sep {
+		color: var(--steel, #766a5e);
+		user-select: none;
+	}
+
+	.meta-link {
+		color: var(--accent-color);
+		text-decoration: none;
+		transition: opacity 150ms ease;
+	}
+
+	.meta-link:hover {
+		opacity: 0.72;
+		text-decoration: underline;
+	}
+
+	/* ── Body grid ── */
 
 	.detail-body {
 		display: grid;
@@ -239,7 +329,7 @@ const headerLinks = [
 	}
 
 	.detail-section {
-		border-top: 1px solid rgba(22, 15, 11, 0.14);
+		border-top: 1px solid rgba(22, 15, 11, 0.12);
 		padding-top: clamp(20px, 3vw, 32px);
 	}
 
@@ -253,54 +343,187 @@ const headerLinks = [
 		letter-spacing: 0.06em;
 	}
 
-	.detail-prose {
-		margin: 0;
-		line-height: 1.6;
+	/* ── Courses ── */
+
+	.courses-section {
+		border-top: 1px solid rgba(22, 15, 11, 0.12);
+		padding-top: clamp(20px, 3vw, 32px);
+	}
+
+	.section-header {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: 12px;
+		margin-bottom: 20px;
+	}
+
+	.section-header .section-label {
+		margin-bottom: 0;
+	}
+
+	.course-count {
+		font-family: var(--mono, "IBM Plex Mono", monospace);
+		font-size: 0.72rem;
+		color: var(--steel, #766a5e);
+		font-weight: 600;
+		white-space: nowrap;
+	}
+
+	.course-groups {
+		display: grid;
+		gap: 28px;
+	}
+
+	.group-heading {
+		margin: 0 0 10px;
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		font-family: var(--mono, "IBM Plex Mono", monospace);
+		font-size: 0.68rem;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+		color: var(--accent-color);
+	}
+
+	.group-heading::after {
+		content: "";
+		flex: 1;
+		height: 1px;
+		background: color-mix(in srgb, var(--accent-color) 28%, transparent);
 	}
 
 	.course-list {
 		list-style: none;
 		margin: 0;
 		padding: 0;
-		display: grid;
-		gap: 4px;
 	}
 
-	.course-link {
-		display: flex;
+	.course-card {
+		display: grid;
+		grid-template-columns: 1fr auto;
+		gap: 0 16px;
 		align-items: center;
-		gap: 12px;
-		padding: 12px 0;
+		padding: 15px 0;
 		color: inherit;
 		text-decoration: none;
-		border-bottom: 1px solid rgba(22, 15, 11, 0.08);
-		transition: color 160ms ease;
+		border-bottom: 1px solid rgba(22, 15, 11, 0.09);
+		position: relative;
+		padding-left: 0;
+		transition: padding-left 200ms ease;
 	}
 
-	.course-link:hover {
-		color: var(--accent-color);
+	.course-card::before {
+		content: "";
+		position: absolute;
+		inset-block: 0;
+		left: -4px;
+		width: 2px;
+		background: var(--accent-color);
+		opacity: 0;
+		transition: opacity 200ms ease;
+	}
+
+	.course-card:hover {
+		padding-left: 10px;
+	}
+
+	.course-card:hover::before {
+		opacity: 1;
+	}
+
+	.course-card-inner {
+		display: flex;
+		flex-direction: column;
+		gap: 5px;
+		min-width: 0;
+	}
+
+	.course-card-top {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		flex-wrap: wrap;
 	}
 
 	.course-name {
-		font-weight: 600;
-		flex: 1;
+		font-weight: 700;
+		font-size: 0.97rem;
+		line-height: 1.3;
+		transition: color 200ms ease;
 	}
 
-	.course-level {
+	.course-card:hover .course-name {
+		color: color-mix(in srgb, var(--accent-color) 75%, var(--ink, #160f0b));
+	}
+
+	.level-badge {
 		font-family: var(--mono, "IBM Plex Mono", monospace);
-		font-size: 0.74rem;
+		font-size: 0.6rem;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		padding: 2px 7px;
+		border: 1px solid color-mix(in srgb, var(--accent-color) 45%, transparent);
+		background: color-mix(in srgb, var(--accent-color) 10%, transparent);
+		white-space: nowrap;
+		flex-shrink: 0;
+		line-height: 1.6;
+	}
+
+	.course-desc {
+		margin: 0;
+		font-size: 0.84rem;
 		color: var(--steel, #766a5e);
+		line-height: 1.5;
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
 	}
 
 	.course-arrow {
 		color: var(--steel, #766a5e);
-		transition: transform 160ms ease;
+		transition: transform 200ms ease, color 200ms ease;
+		font-size: 1rem;
+		line-height: 1;
+		flex-shrink: 0;
 	}
 
-	.course-link:hover .course-arrow {
+	.course-card:hover .course-arrow {
 		transform: translateX(4px);
 		color: var(--accent-color);
 	}
+
+	/* ── Characteristics ── */
+
+	.characteristics {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+	}
+
+	.char-signal {
+		display: inline-flex;
+		align-items: center;
+		gap: 7px;
+		padding: 7px 14px;
+		border: 1px solid rgba(22, 15, 11, 0.14);
+		background: rgba(22, 15, 11, 0.025);
+		font-size: 0.84rem;
+		font-weight: 600;
+		line-height: 1;
+	}
+
+	.char-icon {
+		color: var(--accent-color);
+		font-size: 0.72rem;
+		line-height: 1;
+	}
+
+	/* ── Links ── */
 
 	.link-row {
 		display: flex;
@@ -324,22 +547,10 @@ const headerLinks = [
 		background: color-mix(in srgb, var(--accent-color) 10%, transparent);
 	}
 
-	.tag-row {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 6px;
-	}
-
-	.tag {
-		padding: 4px 10px;
-		background: rgba(22, 15, 11, 0.06);
-		font-family: var(--mono, "IBM Plex Mono", monospace);
-		font-size: 0.72rem;
-		font-weight: 600;
-	}
+	/* ── Action CTA ── */
 
 	.detail-action {
-		border-top: 1px solid rgba(22, 15, 11, 0.14);
+		border-top: 1px solid rgba(22, 15, 11, 0.12);
 		padding-top: clamp(20px, 3vw, 32px);
 	}
 
@@ -356,8 +567,10 @@ const headerLinks = [
 	}
 
 	@media (max-width: 600px) {
-		.detail-header {
-			grid-template-columns: 1fr;
+		.section-header {
+			flex-direction: column;
+			gap: 2px;
+			align-items: flex-start;
 		}
 	}
 </style>
