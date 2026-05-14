@@ -21,6 +21,11 @@ export async function getStaticPaths() {
 
 const { entry, courses } = Astro.props;
 const { data } = entry;
+const descriptionParagraphs = data.description
+	.split(/\n\s*\n/)
+	.map((paragraph) => paragraph.trim())
+	.filter(Boolean);
+const descriptionSummary = descriptionParagraphs[0] ?? data.description;
 
 // Group courses by level family
 const LEVEL_GROUPS: Record<string, string[]> = {
@@ -97,7 +102,7 @@ const headerLinks = [
 
 <Layout
 	title={`${data.name} | Instituição | Rubra`}
-	description={data.description}
+	description={descriptionSummary}
 >
 	<div class={`detail-page accent-${data.accent}`}>
 		<SiteHeader links={headerLinks} />
@@ -108,7 +113,11 @@ const headerLinks = [
 					<a href="/instituicoes">Ensino e formação</a>
 				</p>
 				<h1>{data.name}</h1>
-				<p class="detail-description">{data.description}</p>
+				<div class="detail-description">
+					{descriptionParagraphs.map((paragraph) => (
+						<p>{paragraph}</p>
+					))}
+				</div>
 				<div class="meta-strip">
 					<span class="meta-item">{data.type}</span>
 					<span class="meta-sep" aria-hidden="true">·</span>
@@ -289,6 +298,14 @@ const headerLinks = [
 		color: var(--steel, #766a5e);
 		line-height: 1.65;
 		font-size: 1rem;
+	}
+
+	.detail-description p {
+		margin: 0;
+	}
+
+	.detail-description p + p {
+		margin-top: 0.9em;
 	}
 
 	.meta-strip {

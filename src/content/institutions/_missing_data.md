@@ -20,3 +20,4 @@
 | uel/especializacao-ml-big-data.md | mec_grade | N/A — especialização lato sensu courses are not ENADE-evaluated |
 | uel/mestrado-ciencia-da-computacao.md | mec_grade | N/A — mestrado stricto sensu courses are not ENADE-evaluated |
 | uel/ciencia-de-dados-ia.md | mec_grade | Course too new — first class started 2024, no ENADE cycle completed yet |
+| senac/ads.md | mec_grade | Course and Londrina Centro faculty are new in 2026; no ENADE cycle completed yet |

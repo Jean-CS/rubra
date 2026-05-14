@@ -8,6 +8,8 @@ import { formatEventDate, weekdayFormatter } from "../lib/eventDates";
 const sortByName = <T extends { name: string }>(items: T[]) =>
 	items.sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
 
+const summarizeDescription = (description: string) => description.split(/\n\s*\n/)[0];
+
 const communities = sortByName(
 	(await getCollection("communities", ({ data }) => data.draft !== true)).map(
 		({ data }) => data,
@@ -16,7 +18,10 @@ const communities = sortByName(
 
 const institutions = sortByName(
 	(await getCollection("institutions", ({ data }) => data.draft !== true)).map(
-		({ data }) => data,
+		({ data }) => ({
+			...data,
+			summary: summarizeDescription(data.description),
+		}),
 	),
 );
 
@@ -297,7 +302,7 @@ const ecosystemTracks = [
 									{institution.profile && <span>{institution.profile}</span>}
 								</div>
 							<h3>{institution.name}</h3>
-							<p>{institution.description}</p>
+							<p>{institution.summary}</p>
 							<div class="tag-row">
 								{institution.tags.map((tag) => (
 									<span>{tag}</span>

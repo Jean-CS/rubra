@@ -8,10 +8,13 @@ import "../styles/rubra-index-pages.css";
 const sortByName = <T extends { name: string }>(items: T[]) =>
 	items.sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
 
+const summarizeDescription = (description: string) => description.split(/\n\s*\n/)[0];
+
 const institutions = sortByName(
 	(await getCollection("institutions", ({ data }) => data.draft !== true)).map((entry) => ({
 		id: entry.id,
 		...entry.data,
+		summary: summarizeDescription(entry.data.description),
 	})),
 );
 
@@ -163,7 +166,7 @@ const profiles = Array.from(new Set(institutions.map(({ profile }) => profile)))
 								<div class="entity-body">
 									<p class="meta-label">{institution.type}</p>
 									<h3><a href={`/instituicoes/${institution.id}`}>{institution.name}</a></h3>
-									<p>{institution.description}</p>
+									<p>{institution.summary}</p>
 									<div class="tag-row" aria-label={`Temas de ${institution.name}`}>
 										{institution.tags.map((tag) => (
 											<span>{tag}</span>
