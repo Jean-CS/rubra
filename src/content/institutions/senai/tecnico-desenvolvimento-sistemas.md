@@ -4,7 +4,7 @@ level: Técnico
 description: Formação técnica híbrida voltada ao desenvolvimento de sistemas modernos, com componentes práticos de programação e metodologias ágeis.
 url: https://www.senaipr.org.br/
 shift: Noite
-workload: "800h"
+workload: "1.200h"
 tags:
   - Técnico
   - Programação

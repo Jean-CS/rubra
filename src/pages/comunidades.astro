@@ -46,6 +46,7 @@ const communityUpdateIssueUrl = (community: (typeof communities)[number]) =>
 		"request-type": "Atualização de comunidade existente",
 		name: community.name,
 		type: community.type,
+		...(community.website ? { website: community.website } : {}),
 		cadence: community.cadence,
 		status: community.status,
 		description: community.description,
@@ -179,6 +180,11 @@ const allTags = Array.from(new Set(communities.flatMap(({ tags }) => tags))).sor
 											</div>
 										</dl>
 										<div class="side-links">
+											{community.website && (
+												<a href={community.website} target="_blank" rel="noopener noreferrer">
+													Site
+												</a>
+											)}
 											<a href={communityUpdateIssueUrl(community)}>Atualizar dados</a>
 										</div>
 									</aside>

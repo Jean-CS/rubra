@@ -4,7 +4,7 @@ level: Especialização
 description: Especialização em métodos de aprendizado de máquina, mineração de dados e infraestrutura para processamento de grandes volumes.
 url: https://portal.uel.br/
 shift: Flexível
-workload: "360h"
+workload: "390h"
 tuition: "Gratuito"
 tags:
   - Machine Learning

@@ -67,6 +67,7 @@ const communityUpdateIssueUrl = (community: (typeof communities)[number]) =>
 		"request-type": "Atualização de comunidade existente",
 		name: community.name,
 		type: community.type,
+		...(community.website ? { website: community.website } : {}),
 		cadence: community.cadence,
 		status: community.status,
 		description: community.description,
@@ -245,9 +246,28 @@ const ecosystemTracks = [
 							</div>
 							<div class="card-footer">
 								<span>{community.cadence}</span>
-								<a href={communityUpdateIssueUrl(community)} aria-label={`Atualizar dados de ${community.name}`}>
-									Atualizar
-								</a>
+								<div class="card-actions">
+									{
+										community.website && (
+											<a
+												class="website-link"
+												href={community.website}
+												target="_blank"
+												rel="noopener noreferrer"
+												aria-label={`Abrir site de ${community.name} em nova aba`}
+											>
+												<svg aria-hidden="true" viewBox="0 0 24 24">
+													<circle cx="12" cy="12" r="10"></circle>
+													<path d="M2 12h20"></path>
+													<path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+												</svg>
+											</a>
+										)
+									}
+									<a href={communityUpdateIssueUrl(community)} aria-label={`Atualizar dados de ${community.name}`}>
+										Atualizar
+									</a>
+								</div>
 							</div>
 						</article>
 					))

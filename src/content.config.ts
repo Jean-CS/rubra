@@ -12,6 +12,7 @@ const communities = defineCollection({
 	schema: z.object({
 		name: z.string().min(1),
 		type: z.string().min(1),
+		website: z.string().url().optional(),
 		description: z.string().min(1),
 		cadence: z.string().min(1),
 		status: z.string().min(1),
@@ -22,7 +23,10 @@ const communities = defineCollection({
 });
 
 const institutions = defineCollection({
-	loader: glob({ base: "./src/content/institutions", pattern: "*.{md,mdx}" }),
+	loader: glob({
+		base: "./src/content/institutions",
+		pattern: ["*.{md,mdx}", "!_*.{md,mdx}"],
+	}),
 	schema: z.object({
 		name: z.string().min(1),
 		website: z.string().url(),
