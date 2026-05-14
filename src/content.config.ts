@@ -12,6 +12,7 @@ const communities = defineCollection({
 	schema: z.object({
 		name: z.string().min(1),
 		type: z.string().min(1),
+		website: z.string().url().optional(),
 		description: z.string().min(1),
 		cadence: z.string().min(1),
 		status: z.string().min(1),
