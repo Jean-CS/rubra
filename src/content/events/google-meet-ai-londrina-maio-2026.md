@@ -6,7 +6,7 @@ location: Google Meet
 format: Online
 organizerName: IA Londrina
 organizerType: Comunidade
-url: https://github.com/Jean-CS/rubra/issues/new?template=indicar-evento.yml&title=Indicar%20evento%3A%20Google%20Meet%20AI%20Londrina
+url: https://calendar.app.google/zHno2hMLgMBmUJua6
 description: Encontro online da comunidade IA Londrina via Google Meet, reunindo pessoas interessadas em inteligência artificial aplicada, automações e troca técnica.
 tags:
   - IA
