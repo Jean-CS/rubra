@@ -14,7 +14,7 @@ const institutions = sortByName(
 	(await getCollection("institutions", ({ data }) => data.draft !== true)).map((entry) => ({
 		id: entry.id,
 		...entry.data,
-		summary: summarizeDescription(entry.data.description),
+		summary: entry.data.summary ?? summarizeDescription(entry.data.description),
 	})),
 );
 

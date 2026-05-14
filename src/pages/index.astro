@@ -18,9 +18,10 @@ const communities = sortByName(
 
 const institutions = sortByName(
 	(await getCollection("institutions", ({ data }) => data.draft !== true)).map(
-		({ data }) => ({
+		({ id, data }) => ({
+			id,
 			...data,
-			summary: summarizeDescription(data.description),
+			summary: data.summary ?? summarizeDescription(data.description),
 		}),
 	),
 );
@@ -301,7 +302,9 @@ const ecosystemTracks = [
 									<p>{institution.type}</p>
 									{institution.profile && <span>{institution.profile}</span>}
 								</div>
-							<h3>{institution.name}</h3>
+							<h3>
+								<a href={`/instituicoes/${institution.id}`}>{institution.name}</a>
+							</h3>
 							<p>{institution.summary}</p>
 							<div class="tag-row">
 								{institution.tags.map((tag) => (
@@ -323,6 +326,9 @@ const ecosystemTracks = [
 									</svg>
 								</a>
 								<div class="card-actions">
+									<a href={`/instituicoes/${institution.id}`} aria-label={`Ver detalhes de ${institution.name}`}>
+										Detalhes
+									</a>
 									<a href={institutionUpdateIssueUrl(institution)} aria-label={`Atualizar dados de ${institution.name}`}>
 										Atualizar
 									</a>
@@ -1137,6 +1143,17 @@ const ecosystemTracks = [
 		font-size: clamp(1.7rem, 2.3vw, 2.25rem);
 		font-weight: 800;
 		line-height: 0.95;
+	}
+
+	.community-card h3 a {
+		color: inherit;
+		text-decoration: none;
+	}
+
+	.community-card h3 a:hover {
+		text-decoration: underline;
+		text-decoration-thickness: 2px;
+		text-underline-offset: 4px;
 	}
 
 	.community-card > p {

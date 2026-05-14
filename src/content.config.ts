@@ -32,6 +32,7 @@ const institutions = defineCollection({
 		website: z.string().url(),
 		type: z.string().min(1),
 		description: z.string().min(1),
+		summary: z.string().min(1).optional(),
 		profile: z.string().min(1),
 		accent: accentSchema,
 		tags: tagsSchema,

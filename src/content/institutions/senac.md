@@ -2,6 +2,7 @@
 name: SENAC
 website: https://www.pr.senac.br/faculdade
 type: Faculdade
+summary: Faculdade do Sistema S em Londrina Centro, com graduação tecnológica conectada ao mercado de TIC.
 description: |-
   O Senac PR dá um novo passo em sua trajetória de excelência em educação profissional com o lançamento da Faculdade Senac Londrina Centro. A unidade, já consolidada na oferta de cursos técnicos, livres e de aprendizagem, passa agora a oferecer cursos de graduação tecnológica, ampliando as oportunidades de qualificação e desenvolvimento profissional na região.
 
