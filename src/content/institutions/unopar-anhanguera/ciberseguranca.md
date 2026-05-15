@@ -4,7 +4,8 @@ level: Tecnólogo
 description: Curso EAD focado em segurança da informação, proteção de redes, análise de vulnerabilidades, resposta a incidentes e conformidade.
 url: https://www.anhanguera.com/
 shift: Flexível
-workload: "2.000h"
+workload: "2.100h"
+tuition: "R$ 182/mês"
 tags:
   - Cibersegurança
   - Segurança da Informação

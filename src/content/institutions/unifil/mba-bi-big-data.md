@@ -5,6 +5,7 @@ description: MBA com foco em estratégia orientada a dados, business intelligenc
 url: https://unifil.br/
 shift: Flexível
 workload: "360h"
+tuition: "R$ 350/mês"
 tags:
   - Ciência de Dados
   - Business Intelligence

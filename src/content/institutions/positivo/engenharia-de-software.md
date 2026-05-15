@@ -5,6 +5,7 @@ description: Bacharelado presencial com foco em arquitetura de software, metodol
 url: https://www.up.edu.br/
 shift: Noite
 workload: "3.200h"
+tuition: "R$ 631,92/mês"
 tags:
   - Engenharia de Software
   - Programação

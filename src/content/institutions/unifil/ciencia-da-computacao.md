@@ -5,6 +5,7 @@ description: Bacharelado noturno presencial com formação técnica e científic
 url: https://unifil.br/
 shift: Noite
 workload: "3.200h"
+mec_grade: 4
 tags:
   - Ciência da Computação
   - Programação

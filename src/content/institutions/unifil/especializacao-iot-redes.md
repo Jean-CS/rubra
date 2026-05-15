@@ -5,6 +5,7 @@ description: Pós-graduação em IoT, redes sem fio, protocolos de conectividade
 url: https://unifil.br/
 shift: Flexível
 workload: "360h"
+tuition: "R$ 350/mês"
 tags:
   - IoT
   - Redes

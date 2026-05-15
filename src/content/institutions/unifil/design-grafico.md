@@ -5,6 +5,7 @@ description: Curso presencial de design gráfico com formação em identidade vi
 url: https://unifil.br/
 shift: Noite
 workload: "2.000h"
+mec_grade: 5
 tags:
   - Design
   - Comunicação Visual
