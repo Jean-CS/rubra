@@ -58,4 +58,29 @@ const events = defineCollection({
 		}),
 });
 
-export const collections = { communities, institutions, events };
+const speakers = defineCollection({
+	loader: glob({ base: "./src/content/speakers", pattern: "**/*.{md,mdx}" }),
+	schema: z.object({
+		name: z.string().min(1),
+		bio: z.string().min(1),
+		topics: z.array(z.string().min(1)).min(1),
+		openToTalks: z.boolean().default(false),
+		accent: accentSchema,
+		links: z
+			.array(z.object({ label: z.string().min(1), url: z.string().url() }))
+			.optional(),
+		pastTalks: z
+			.array(
+				z.object({
+					title: z.string().min(1),
+					eventName: z.string().min(1),
+					eventDate: z.string().optional(),
+					url: z.string().url().optional(),
+				}),
+			)
+			.optional(),
+		draft: z.boolean().optional().default(false),
+	}),
+});
+
+export const collections = { communities, institutions, events, speakers };
