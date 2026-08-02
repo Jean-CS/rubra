@@ -23,15 +23,40 @@ const communities = defineCollection({
 });
 
 const institutions = defineCollection({
-	loader: glob({ base: "./src/content/institutions", pattern: "**/*.{md,mdx}" }),
+	loader: glob({
+		base: "./src/content/institutions",
+		pattern: ["*.{md,mdx}", "!_*.{md,mdx}"],
+	}),
 	schema: z.object({
 		name: z.string().min(1),
 		website: z.string().url(),
 		type: z.string().min(1),
 		description: z.string().min(1),
+		summary: z.string().min(1).optional(),
 		profile: z.string().min(1),
 		accent: accentSchema,
 		tags: tagsSchema,
+		links: z
+			.array(z.object({ label: z.string().min(1), url: z.string().url() }))
+			.optional(),
+		draft: z.boolean().optional().default(false),
+	}),
+});
+
+const courses = defineCollection({
+	loader: glob({ base: "./src/content/institutions", pattern: "*/*.{md,mdx}" }),
+	schema: z.object({
+		name: z.string().min(1),
+		level: z.string().min(1),
+		description: z.string().min(1).optional(),
+		url: z.string().url().optional(),
+		duration: z.string().optional(),
+		modality: z.enum(["Presencial", "EAD", "Híbrido"]).optional(),
+		shift: z.enum(["Manhã", "Tarde", "Noite", "Integral", "Flexível"]).optional(),
+		workload: z.string().optional(),
+		mec_grade: z.number().int().min(1).max(5).optional(),
+		tuition: z.string().optional(),
+		tags: tagsSchema.optional(),
 		draft: z.boolean().optional().default(false),
 	}),
 });
@@ -59,4 +84,4 @@ const events = defineCollection({
 		}),
 });
 
-export const collections = { communities, institutions, events };
+export const collections = { communities, institutions, events, courses };

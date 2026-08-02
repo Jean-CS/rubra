@@ -374,6 +374,14 @@
 	line-height: 1;
 }
 
+.entity-body h3 a {
+	text-decoration: none;
+}
+
+.entity-body h3 a:hover {
+	text-decoration: underline;
+}
+
 .entity-body p {
 	max-width: 760px;
 	margin: 0;
@@ -397,6 +405,70 @@
 	font-size: 0.68rem;
 	font-weight: 700;
 	text-transform: uppercase;
+}
+
+.course-preview {
+	margin-top: 16px;
+	padding-top: 14px;
+	border-top: 1px solid var(--line);
+}
+
+.course-preview-label {
+	display: block;
+	margin-bottom: 8px;
+	color: var(--steel);
+	font-family: var(--mono);
+	font-size: 0.65rem;
+	font-weight: 700;
+	letter-spacing: 0.05em;
+	text-transform: uppercase;
+}
+
+.course-pill-list {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+}
+
+.course-pill {
+	display: inline-flex;
+	align-items: baseline;
+	gap: 6px;
+	padding: 5px 9px;
+	border: 1px solid var(--line);
+	border-left: 3px solid var(--accent);
+	background: rgba(22, 15, 11, 0.03);
+}
+
+.pill-name {
+	font-size: 0.8rem;
+	font-weight: 700;
+}
+
+.pill-level {
+	color: var(--steel);
+	font-family: var(--mono);
+	font-size: 0.63rem;
+	text-transform: uppercase;
+}
+
+.course-more {
+	display: inline-flex;
+	align-items: center;
+	padding: 5px 9px;
+	border: 1px dashed var(--line);
+	color: var(--steel);
+	font-family: var(--mono);
+	font-size: 0.68rem;
+	font-weight: 700;
+	text-decoration: none;
+	text-transform: uppercase;
+	transition: border-color 160ms ease, color 160ms ease;
+}
+
+.course-more:hover {
+	border-color: var(--ink);
+	color: var(--ink);
 }
 
 .entity-side {

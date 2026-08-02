@@ -1,0 +1,57 @@
+name: Atualizar dados de curso
+description: Corrija ou complemente informações de um curso já mapeado no Rubra.
+title: "[Curso] "
+labels:
+  - contribuicao
+  - instituicao
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Obrigado por ajudar a manter o mapa vivo. As informações passam por curadoria manual antes de entrar no site.
+  - type: input
+    id: institution
+    attributes:
+      label: Instituição
+      placeholder: SENAI
+    validations:
+      required: true
+  - type: input
+    id: course
+    attributes:
+      label: Nome do curso
+      placeholder: Técnico em Informática
+    validations:
+      required: true
+  - type: input
+    id: level
+    attributes:
+      label: Nível
+      description: Técnico, Graduação, CST, Qualificação, etc.
+      placeholder: Técnico
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Descrição sugerida
+      description: Uma ou duas frases sobre o curso e seu foco.
+      placeholder: Formação técnica em...
+  - type: input
+    id: url
+    attributes:
+      label: Link do curso
+      placeholder: https://...
+  - type: input
+    id: tags
+    attributes:
+      label: Tags
+      description: Informe de 1 a 5 tags separadas por vírgula.
+      placeholder: Programação, Redes, Técnico
+  - type: textarea
+    id: evidence
+    attributes:
+      label: O que precisa ser corrigido ou adicionado?
+      description: Descreva o que está errado ou faltando.
+    validations:
+      required: true
