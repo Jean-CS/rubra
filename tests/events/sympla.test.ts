@@ -48,3 +48,20 @@ test("falha com payload alterado ou incompleto sem inventar eventos", () => {
 	);
 	assert.throws(() => parseSymplaCatalog("<html>layout novo</html>", "America/Sao_Paulo"), /serializado/i);
 });
+
+test("preserva cidade ausente como incompleta para triagem", async () => {
+	const html = (await readFile(fixture, "utf8")).replaceAll('\\"city\\":\\"Londrina\\",', "");
+	const events = parseSymplaCatalog(html, "America/Sao_Paulo", "technology");
+	assert.equal(events.length, 2);
+	assert.equal(events.every(({ city }) => city === ""), true);
+	assert.equal(events.every(({ location }) => !location.includes("Londrina")), true);
+});
+
+test("rejeita URLs de evento fora do provedor", async () => {
+	const html = (await readFile(fixture, "utf8")).replace(
+		"https://www.sympla.com.br/evento/ecoticnova-2026/3505110?referrer=fixture",
+		"https://example.com/evento/3505110",
+	);
+	const events = parseSymplaCatalog(html, "America/Sao_Paulo", "technology");
+	assert.equal(events.some(({ externalId }) => externalId === "3505110"), false);
+});

@@ -20,6 +20,8 @@ interface HttpClientOptions {
 	timeoutMs: number;
 	maxAttempts: number;
 	maxRequests: number;
+	maxRedirects: number;
+	allowedHosts: readonly string[];
 	fetchImpl?: typeof fetch;
 }
 
@@ -38,6 +40,7 @@ const looksBlocked = (value: string) => BLOCK_SIGNALS.some((pattern) => pattern.
 
 export class PublicHttpClient {
 	private requestCount = 0;
+	private logicalRequestCount = 0;
 	private readonly fetchImpl: typeof fetch;
 
 	constructor(private readonly options: HttpClientOptions) {
@@ -48,7 +51,13 @@ export class PublicHttpClient {
 		return this.requestCount;
 	}
 
+	get logicalRequestsMade() {
+		return this.logicalRequestCount;
+	}
+
 	async getText(url: string): Promise<string> {
+		this.assertSafeDestination(url);
+		this.logicalRequestCount += 1;
 		let lastError: unknown;
 
 		for (let attempt = 1; attempt <= this.options.maxAttempts; attempt += 1) {
@@ -67,7 +76,8 @@ export class PublicHttpClient {
 	private async requestFollowingSafeRedirects(initialUrl: string): Promise<string> {
 		let currentUrl = initialUrl;
 
-		for (let redirect = 0; redirect <= 3; redirect += 1) {
+		for (let redirect = 0; redirect <= this.options.maxRedirects; redirect += 1) {
+			this.assertSafeDestination(currentUrl);
 			if (this.requestCount >= this.options.maxRequests) {
 				throw new RequestLimitError(`Limite de ${this.options.maxRequests} requisições atingido`);
 			}
@@ -90,6 +100,7 @@ export class PublicHttpClient {
 				const location = response.headers.get("location");
 				if (!location) throw new Error(`Redirecionamento sem destino em ${currentUrl}`);
 				const nextUrl = new URL(location, currentUrl).toString();
+				this.assertSafeDestination(nextUrl);
 				if (looksBlocked(nextUrl)) {
 					throw new SourceBlockedError(`Fonte redirecionou para uma proteção: ${new URL(nextUrl).hostname}`);
 				}
@@ -98,6 +109,7 @@ export class PublicHttpClient {
 			}
 
 			if (!response.ok) throw new Error(`HTTP ${response.status} ao consultar ${currentUrl}`);
+			this.assertSafeDestination(response.url || currentUrl);
 
 			const text = await response.text();
 			if (looksBlocked(`${response.url}\n${text.slice(0, 100_000)}`)) {
@@ -107,5 +119,16 @@ export class PublicHttpClient {
 		}
 
 		throw new Error(`Redirecionamentos demais ao consultar ${initialUrl}`);
+	}
+
+	private assertSafeDestination(value: string) {
+		const url = new URL(value);
+		if (url.protocol !== "https:") {
+			throw new SourceBlockedError(`Destino inseguro recusado: ${url.protocol}`);
+		}
+		const host = url.hostname.toLocaleLowerCase("en-US");
+		if (!this.options.allowedHosts.some((allowed) => host === allowed.toLocaleLowerCase("en-US"))) {
+			throw new SourceBlockedError(`Destino fora da fonte permitida: ${host}`);
+		}
 	}
 }

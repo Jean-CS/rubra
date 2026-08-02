@@ -19,3 +19,17 @@ test("permite páginas públicas e rejeita endpoints bloqueados pela regra mais 
 		/robots\.txt/,
 	);
 });
+
+test("usa o grupo de user-agent mais específico", () => {
+	const specific = `
+User-agent: Rubra
+Allow: /private
+
+User-agent: RubraEventIndexer
+Disallow: /private
+`;
+	assert.equal(
+		robotsAllows(specific, "https://example.com/private", "RubraEventIndexer/1.0"),
+		false,
+	);
+});

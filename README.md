@@ -109,7 +109,7 @@ syncIgnore:
   - description
 ```
 
-`syncIgnore` protege uma correção aprovada da comunidade contra atualizações posteriores da fonte. A execução manual fica em **Actions → Sincronizar eventos públicos → Run workflow**. Schedules do GitHub Actions podem ser desativados depois de 60 dias sem atividade no repositório; nesse caso, uma execução manual ou nova atividade reativa a automação.
+`syncIgnore` protege uma correção aprovada da comunidade contra atualizações posteriores da fonte. Os campos aceitos são `title`, `date`, `endDate`, `time`, `location`, `format`, `organizerName`, `url`, `description` e `status`. A execução manual fica em **Actions → Sincronizar eventos públicos → Run workflow**. Schedules do GitHub Actions podem ser desativados depois de 60 dias sem atividade no repositório; nesse caso, uma execução manual ou nova atividade reativa a automação.
 
 ## Desenvolvimento
 

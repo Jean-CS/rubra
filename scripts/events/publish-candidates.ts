@@ -1,39 +1,59 @@
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
-import type { DiscoveryCandidate } from "./types";
+import { Octokit } from "@octokit/rest";
+import { discoveryCandidateSchema, type DiscoveryCandidate } from "./types";
+import { truncate } from "./text";
 
 const LABEL = "descoberta-automatica";
+const MAX_CREATED_PER_RUN = 20;
+const REQUEST_TIMEOUT_MS = 8_000;
 
 export const candidateMarker = (candidate: DiscoveryCandidate) =>
-	`<!-- event-discovery:${candidate.event.provider}:${candidate.event.externalId} -->`;
+	`<!-- event-discovery:v1:${candidate.event.provider}:${Buffer.from(candidate.event.externalId).toString("base64url")} -->`;
+
+const escapeInline = (value: string, maxLength = 240) =>
+	truncate(value, maxLength)
+		.replaceAll("&", "&amp;")
+		.replaceAll("<", "&lt;")
+		.replaceAll(">", "&gt;")
+		.replaceAll("@", "&#64;")
+		.replaceAll("|", "\\|")
+		.replace(/\r?\n/g, "<br>");
+
+const escapePreformatted = (value: string, maxLength = 1_000) =>
+	truncate(value, maxLength)
+		.replaceAll("&", "&amp;")
+		.replaceAll("<", "&lt;")
+		.replaceAll(">", "&gt;")
+		.replaceAll("@", "&#64;");
 
 export const buildCandidateIssue = (candidate: DiscoveryCandidate) => {
 	const { event } = candidate;
 	return {
-		title: `[Evento descoberto] ${event.title}`,
+		title: `[Evento descoberto] ${truncate(event.title.replace(/\s+/g, " ").trim(), 180).replaceAll("@", "@\u200b")}`,
 		body: `${candidateMarker(candidate)}
 
 ## Descoberta automática
 
-Este evento foi encontrado em uma página pública e **não foi publicado**. A descoberta precisa de revisão humana porque: **${candidate.reason}**.
+Este evento foi encontrado em uma página pública e **não foi publicado**. A descoberta precisa de revisão humana porque: **${escapeInline(candidate.reason)}**.
 
 | Campo | Valor |
 | --- | --- |
 | Fonte | ${event.provider} |
 | Classificação | ${event.classification === "technology" ? "Tecnologia" : "Incerta"} |
-| ID externo | \`${event.externalId}\` |
-| Evento | ${event.title} |
-| Data | ${event.date}${event.endDate ? ` a ${event.endDate}` : ""} |
-| Horário | ${event.time ?? "Não informado"} |
-| Local | ${event.location} |
+| ID externo | ${escapeInline(event.externalId)} |
+| Evento | ${escapeInline(event.title)} |
+| Data | ${escapeInline(`${event.date}${event.endDate ? ` a ${event.endDate}` : ""}`)} |
+| Horário | ${escapeInline(event.time ?? "Não informado")} |
+| Local | ${escapeInline(event.location)} |
 | Formato | ${event.format} |
-| Organizador | ${event.organizerName} |
+| Organizador | ${escapeInline(event.organizerName)} |
 | Status | ${event.status} |
-| URL pública | ${event.url} |
+| URL pública | ${escapeInline(event.url, 500)} |
 
 ### Descrição encontrada
 
-${event.description ?? "Não disponível na fonte pública."}
+<pre>${escapePreformatted(event.description ?? "Não disponível na fonte pública.")}</pre>
 
 ### Revisão
 
@@ -46,60 +66,69 @@ _Gerado pelo coletor público do Rubra. Não contém e-mail ou dados privados do
 	};
 };
 
-interface GitHubIssue { body?: string | null }
-
-const githubRequest = async <T>(path: string, token: string, init: RequestInit = {}): Promise<T> => {
-	const response = await fetch(`https://api.github.com${path}`, {
-		...init,
-		headers: {
-			Accept: "application/vnd.github+json",
-			Authorization: `Bearer ${token}`,
-			"X-GitHub-Api-Version": "2022-11-28",
-			"User-Agent": "RubraEventIndexer/1.0",
-			...init.headers,
-		},
-	});
-	if (!response.ok) throw new Error(`GitHub API ${response.status}: ${await response.text()}`);
-	return response.status === 204 ? undefined as T : response.json() as Promise<T>;
+const repositoryParts = (repository: string) => {
+	const [owner, repo, extra] = repository.split("/");
+	if (!owner || !repo || extra) throw new Error(`Repositório inválido: ${repository}`);
+	return { owner, repo };
 };
 
-const ensureLabel = async (repository: string, token: string) => {
-	const path = `/repos/${repository}/labels/${encodeURIComponent(LABEL)}`;
-	const response = await fetch(`https://api.github.com${path}`, {
-		headers: { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json", "User-Agent": "RubraEventIndexer/1.0" },
-	});
-	if (response.ok) return;
-	if (response.status !== 404) throw new Error(`Não foi possível verificar label: HTTP ${response.status}`);
-	await githubRequest(`/repos/${repository}/labels`, token, {
-		method: "POST",
-		body: JSON.stringify({ name: LABEL, color: "6f5ae8", description: "Evento encontrado pelo coletor público" }),
-	});
+const requestOptions = () => ({ request: { signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS) } });
+
+const ensureLabel = async (octokit: Octokit, owner: string, repo: string) => {
+	try {
+		await octokit.rest.issues.getLabel({ owner, repo, name: LABEL, ...requestOptions() });
+	} catch (error) {
+		if (!error || typeof error !== "object" || !("status" in error) || error.status !== 404) throw error;
+		await octokit.rest.issues.createLabel({
+			owner,
+			repo,
+			name: LABEL,
+			color: "6f5ae8",
+			description: "Evento encontrado pelo coletor público",
+			...requestOptions(),
+		});
+	}
 };
 
 export const publishCandidates = async (
 	candidates: DiscoveryCandidate[],
 	repository: string,
 	token: string,
+	octokit = new Octokit({ auth: token, userAgent: "RubraEventIndexer/1.0" }),
 ) => {
 	if (candidates.length === 0) return { created: 0, existing: 0 };
-	await ensureLabel(repository, token);
-	const issues = await githubRequest<GitHubIssue[]>(
-		`/repos/${repository}/issues?state=all&labels=${encodeURIComponent(LABEL)}&per_page=100`,
-		token,
-	);
+	const { owner, repo } = repositoryParts(repository);
+	await ensureLabel(octokit, owner, repo);
+	const issues = await octokit.paginate(octokit.rest.issues.listForRepo, {
+		owner,
+		repo,
+		state: "all",
+		labels: LABEL,
+		per_page: 100,
+		...requestOptions(),
+	});
+	const existingMarkers = new Set(issues.flatMap((issue) => {
+		const firstLine = issue.body?.split(/\r?\n/, 1)[0];
+		return firstLine?.startsWith("<!-- event-discovery:v1:") ? [firstLine] : [];
+	}));
 	let created = 0;
 	let existing = 0;
-	for (const candidate of candidates.slice(0, 20)) {
+	for (const candidate of candidates) {
 		const marker = candidateMarker(candidate);
-		if (issues.some((issue) => issue.body?.includes(marker))) {
+		if (existingMarkers.has(marker)) {
 			existing += 1;
 			continue;
 		}
+		if (created >= MAX_CREATED_PER_RUN) break;
 		const issue = buildCandidateIssue(candidate);
-		await githubRequest(`/repos/${repository}/issues`, token, {
-			method: "POST",
-			body: JSON.stringify({ ...issue, labels: [LABEL, "evento"] }),
+		await octokit.rest.issues.create({
+			owner,
+			repo,
+			...issue,
+			labels: [LABEL, "evento"],
+			...requestOptions(),
 		});
+		existingMarkers.add(marker);
 		created += 1;
 	}
 	return { created, existing };
@@ -109,11 +138,21 @@ if (process.argv[1]?.endsWith("publish-candidates.ts")) {
 	const token = process.env.GITHUB_TOKEN;
 	const repository = process.env.GITHUB_REPOSITORY;
 	if (!token || !repository) {
-		console.log("GITHUB_TOKEN/GITHUB_REPOSITORY ausentes; publicação de candidatos ignorada.");
+		const message = "GITHUB_TOKEN/GITHUB_REPOSITORY ausentes; publicação de candidatos não executada.";
+		if (process.env.GITHUB_ACTIONS === "true") {
+			console.error(message);
+			process.exitCode = 1;
+		} else {
+			console.log(message);
+		}
 	} else {
 		const path = resolve(process.cwd(), ".event-sync/candidates.json");
 		readFile(path, "utf8")
-			.then((source) => publishCandidates(JSON.parse(source), repository, token))
+			.then((source) => publishCandidates(
+				discoveryCandidateSchema.array().parse(JSON.parse(source)),
+				repository,
+				token,
+			))
 			.then((result) => console.log(JSON.stringify(result)))
 			.catch((error) => { console.error(error); process.exitCode = 1; });
 	}

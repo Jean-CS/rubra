@@ -8,9 +8,11 @@ import { PublicHttpClient } from "./http";
 import type { EventAdapter } from "./types";
 
 export const runSync = async (projectRoot: string) => {
-	const http = new PublicHttpClient(discoveryConfig.http);
 	const adapters: EventAdapter[] = [];
+	const clients: PublicHttpClient[] = [];
 	if (discoveryConfig.symplaEnabled) {
+		const http = new PublicHttpClient({ ...discoveryConfig.http, ...discoveryConfig.symplaHttp });
+		clients.push(http);
 		adapters.push(new SymplaAdapter(
 			http,
 			discoveryConfig.symplaCatalogUrls,
@@ -21,6 +23,8 @@ export const runSync = async (projectRoot: string) => {
 		));
 	}
 	if (discoveryConfig.meetupEnabled) {
+		const http = new PublicHttpClient({ ...discoveryConfig.http, ...discoveryConfig.meetupHttp });
+		clients.push(http);
 		adapters.push(new MeetupAdapter(
 			http,
 			discoveryConfig.meetupDiscoveryUrl,
@@ -38,7 +42,12 @@ export const runSync = async (projectRoot: string) => {
 	const discovered = (await Promise.all(adapters.map((adapter) => adapter.discover()))).flat();
 	const result = await reconcileEvents(discovered, projectRoot);
 	const candidatePath = await writeCandidates(projectRoot, result.candidates);
-	return { ...result, candidatePath, requestsMade: http.requestsMade };
+	return {
+		...result,
+		candidatePath,
+		logicalRequestsMade: clients.reduce((total, client) => total + client.logicalRequestsMade, 0),
+		requestsMade: clients.reduce((total, client) => total + client.requestsMade, 0),
+	};
 };
 
 const isEntrypoint = process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1]);
@@ -50,6 +59,7 @@ if (isEntrypoint) {
 				discovered: result.discoveredCount,
 				changedFiles: relativeChangedFiles(result.changedFiles, projectRoot),
 				candidates: result.candidates.length,
+				logicalRequests: result.logicalRequestsMade,
 				requests: result.requestsMade,
 			}, null, 2));
 		})

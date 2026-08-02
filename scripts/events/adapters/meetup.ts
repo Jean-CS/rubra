@@ -1,34 +1,40 @@
 import { load } from "cheerio";
+import { z } from "zod";
 import type { EventAdapter, EventFormat, EventStatus, ExternalEvent } from "../types";
+import { externalEventSchema } from "../types";
 import { canonicalUrl, compactText, htmlToText, normalizeText, toLocalDateParts, truncate } from "../text";
 import type { PublicHttpClient } from "../http";
 import { assertRobotsAllowed } from "../robots";
 
-interface MeetupAddress {
-	addressLocality?: string;
-	addressRegion?: string;
-	streetAddress?: string;
-}
+const meetupEventSchema = z.object({
+	"@type": z.union([z.string(), z.array(z.string())]),
+	name: z.string().optional(),
+	url: z.string().optional(),
+	description: z.string().optional(),
+	startDate: z.string().optional(),
+	endDate: z.string().optional(),
+	eventStatus: z.string().optional(),
+	eventAttendanceMode: z.union([z.string(), z.array(z.string())]).optional(),
+	location: z.object({
+		name: z.string().optional(),
+		address: z.union([
+			z.string(),
+			z.object({
+				addressLocality: z.string().optional(),
+				addressRegion: z.string().optional(),
+				streetAddress: z.string().optional(),
+			}),
+		]).optional(),
+	}).optional(),
+	organizer: z.object({ name: z.string().optional(), url: z.string().optional() }).optional(),
+}).passthrough();
 
-interface MeetupEvent {
-	"@type"?: string | string[];
-	name?: string;
-	url?: string;
-	description?: string;
-	startDate?: string;
-	endDate?: string;
-	eventStatus?: string;
-	eventAttendanceMode?: string | string[];
-	location?: {
-		name?: string;
-		address?: MeetupAddress | string;
-	};
-	organizer?: { name?: string; url?: string };
-}
+type MeetupEvent = z.infer<typeof meetupEventSchema>;
 
 const isEvent = (value: unknown): value is MeetupEvent => {
-	if (!value || typeof value !== "object") return false;
-	const type = (value as MeetupEvent)["@type"];
+	const parsed = meetupEventSchema.safeParse(value);
+	if (!parsed.success) return false;
+	const type = parsed.data["@type"];
 	return type === "Event" || (Array.isArray(type) && type.includes("Event"));
 };
 
@@ -84,7 +90,10 @@ export const parseMeetupDiscovery = (html: string, techKeywords: readonly string
 		const segments = url.pathname.split("/").filter(Boolean);
 		if (segments.length !== 1 || ["find", "login", "register", "topics"].includes(segments[0])) return;
 		const haystack = normalizeText(`${segments[0]} ${$(element).text()}`);
-		if (!normalizedKeywords.some((keyword) => haystack.includes(keyword))) return;
+		const tokens = new Set(haystack.split(" ").filter(Boolean));
+		if (!normalizedKeywords.some((keyword) =>
+			keyword.includes(" ") ? ` ${haystack} `.includes(` ${keyword} `) : tokens.has(keyword)
+		)) return;
 		groups.add(`https://www.meetup.com/${segments[0]}/`);
 	});
 
@@ -123,8 +132,9 @@ export const parseMeetupEvents = (
 		const start = toLocalDateParts(payload.startDate, timeZone);
 		const end = payload.endDate ? toLocalDateParts(payload.endDate, timeZone) : undefined;
 		const url = canonicalUrl(payload.url);
+		if (!/(^|\.)meetup\.com$/i.test(new URL(url).hostname)) continue;
 		const description = payload.description ? truncate(htmlToText(payload.description)) : undefined;
-		const event: ExternalEvent = {
+		const event = externalEventSchema.parse({
 			provider: "meetup",
 			classification: "technology",
 			externalId: eventId(url),
@@ -140,7 +150,7 @@ export const parseMeetupEvents = (
 			...(description ? { description } : {}),
 			status: mapStatus(payload.eventStatus),
 			tags: ["Tecnologia", "Meetup"],
-		};
+		});
 		discovered.set(`${event.provider}:${event.externalId}`, event);
 	}
 	return [...discovered.values()];

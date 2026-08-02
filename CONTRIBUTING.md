@@ -122,4 +122,4 @@ syncIgnore:
   - location
 ```
 
-Valores permitidos são `title`, `date`, `endDate`, `time`, `location`, `format`, `organizerName`, `url`, `description`, `status` e `tags`. Eventos manuais continuam válidos sem `source`, e contribuições diretas por PR continuam bem-vindas.
+Valores permitidos são `title`, `date`, `endDate`, `time`, `location`, `format`, `organizerName`, `url`, `description` e `status`. Eventos manuais continuam válidos sem `source`, e contribuições diretas por PR continuam bem-vindas.

@@ -1,52 +1,29 @@
 import { load } from "cheerio";
+import { z } from "zod";
 import type { EventAdapter, ExternalEvent } from "../types";
+import { externalEventSchema } from "../types";
 import { canonicalUrl, compactText, normalizeText, toLocalDateParts } from "../text";
 import type { PublicHttpClient } from "../http";
 import { assertRobotsAllowed } from "../robots";
 
-interface SymplaPayload {
-	id?: string | number;
-	name?: string;
-	url?: string;
-	start_date?: string;
-	end_date?: string;
-	event_type?: string;
-	company?: string;
-	organizer?: { name?: string };
-	location?: {
-		name?: string;
-		city?: string;
-		state?: string;
-		address?: string;
-	};
-}
+const symplaPayloadSchema = z.object({
+	id: z.union([z.string(), z.number()]),
+	name: z.string(),
+	url: z.string(),
+	start_date: z.string(),
+	end_date: z.string().optional(),
+	event_type: z.string().optional(),
+	company: z.literal("sympla"),
+	organizer: z.object({ name: z.string() }),
+	location: z.object({
+		name: z.string().optional(),
+		city: z.string().optional(),
+		state: z.string().optional(),
+		address: z.string().optional(),
+	}).optional(),
+}).passthrough();
 
-const extractContainingObject = (text: string, markerIndex: number) => {
-	const stack: number[] = [];
-	let inString = false;
-	let escaped = false;
-
-	for (let index = 0; index < text.length; index += 1) {
-		const character = text[index];
-		if (inString) {
-			if (escaped) escaped = false;
-			else if (character === "\\") escaped = true;
-			else if (character === '"') inString = false;
-			continue;
-		}
-
-		if (character === '"') inString = true;
-		else if (character === "{") stack.push(index);
-		else if (character === "}") {
-			const start = stack.pop();
-			if (start !== undefined && start <= markerIndex && markerIndex <= index) {
-				return text.slice(start, index + 1);
-			}
-		}
-	}
-
-	return undefined;
-};
+type SymplaPayload = z.infer<typeof symplaPayloadSchema>;
 
 const decodeFlightState = (html: string) => {
 	const $ = load(html);
@@ -70,23 +47,39 @@ const decodeFlightState = (html: string) => {
 
 const extractPayloads = (state: string) => {
 	const payloads: SymplaPayload[] = [];
-	const seenRanges = new Set<string>();
+	const seen = new Set<string>();
 	const marker = '"company":"sympla"';
-	let cursor = 0;
+	const stack: Array<{ start: number; containsMarker: boolean }> = [];
+	let inString = false;
+	let escaped = false;
 
-	while (cursor < state.length) {
-		const markerIndex = state.indexOf(marker, cursor);
-		if (markerIndex === -1) break;
-		cursor = markerIndex + marker.length;
-		const objectText = extractContainingObject(state, markerIndex);
-		if (!objectText || seenRanges.has(objectText)) continue;
-		seenRanges.add(objectText);
-
-		try {
-			const payload = JSON.parse(objectText) as SymplaPayload;
-			if (payload.id && payload.name && payload.url && payload.start_date) payloads.push(payload);
-		} catch {
-			// Payload incompleto ou formato desconhecido: ignorado de forma segura.
+	for (let index = 0; index < state.length; index += 1) {
+		if (state.startsWith(marker, index) && stack.length > 0) {
+			stack[stack.length - 1].containsMarker = true;
+		}
+		const character = state[index];
+		if (inString) {
+			if (escaped) escaped = false;
+			else if (character === "\\") escaped = true;
+			else if (character === '"') inString = false;
+			continue;
+		}
+		if (character === '"') inString = true;
+		else if (character === "{") stack.push({ start: index, containsMarker: false });
+		else if (character === "}") {
+			const frame = stack.pop();
+			if (!frame?.containsMarker) continue;
+			try {
+				const parsed = symplaPayloadSchema.safeParse(JSON.parse(state.slice(frame.start, index + 1)));
+				if (!parsed.success) continue;
+				const key = String(parsed.data.id);
+				if (!seen.has(key)) {
+					seen.add(key);
+					payloads.push(parsed.data);
+				}
+			} catch {
+				// Payload incompleto ou formato desconhecido: ignorado de forma segura.
+			}
 		}
 	}
 
@@ -95,8 +88,9 @@ const extractPayloads = (state: string) => {
 
 const locationLabel = (payload: SymplaPayload) => {
 	const venue = compactText(payload.location?.name ?? payload.location?.address ?? "Local não informado");
-	const city = compactText(payload.location?.city ?? "Londrina");
+	const city = compactText(payload.location?.city ?? "");
 	const state = compactText(payload.location?.state ?? "PR");
+	if (!city) return venue;
 	return venue.toLocaleLowerCase("pt-BR").includes(city.toLocaleLowerCase("pt-BR"))
 		? venue
 		: `${venue} — ${city}, ${state}`;
@@ -120,17 +114,20 @@ export const parseSymplaCatalog = (
 		}
 		const start = toLocalDateParts(payload.start_date, timeZone);
 		const end = payload.end_date ? toLocalDateParts(payload.end_date, timeZone) : undefined;
-		const city = compactText(payload.location?.city ?? "Londrina");
+		const city = compactText(payload.location?.city ?? "");
 		const venue = locationLabel(payload);
 		const organizerName = compactText(payload.organizer.name);
 		const title = compactText(payload.name);
 		const online = /online/i.test(`${payload.event_type ?? ""} ${venue}`);
 
-		return [{
+		const url = canonicalUrl(payload.url);
+		if (!/(^|\.)sympla\.com\.br$/i.test(new URL(url).hostname)) return [];
+
+		return [externalEventSchema.parse({
 			provider: "sympla",
 			classification,
 			externalId: String(payload.id),
-			url: canonicalUrl(payload.url),
+			url,
 			title,
 			date: start.date,
 			...(end && end.date !== start.date ? { endDate: end.date } : {}),
@@ -142,7 +139,7 @@ export const parseSymplaCatalog = (
 			description: `${title}, organizado por ${organizerName}, com realização em ${venue}.`,
 			status: "Agendado",
 			tags: ["Tecnologia", "Evento"],
-		} satisfies ExternalEvent];
+		})];
 	});
 };
 
@@ -166,7 +163,7 @@ export class SymplaAdapter implements EventAdapter {
 			const html = await this.http.getText(url);
 			const classification = /\/tecnologia\/?$/i.test(new URL(url).pathname) ? "technology" : "uncertain";
 			for (const event of parseSymplaCatalog(html, this.timeZone, classification)) {
-				if (!this.allowedCities.map(normalizeText).includes(normalizeText(event.city))) continue;
+				if (event.city && !this.allowedCities.map(normalizeText).includes(normalizeText(event.city))) continue;
 				const key = `${event.provider}:${event.externalId}`;
 				const existing = discovered.get(key);
 				if (!existing || event.classification === "technology") discovered.set(key, event);

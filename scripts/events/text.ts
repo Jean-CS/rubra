@@ -1,4 +1,5 @@
 import { load } from "cheerio";
+import { isHttpUrl } from "./types";
 
 export const normalizeText = (value: string) =>
 	value
@@ -23,6 +24,19 @@ export const truncate = (value: string, maxLength = 320) => {
 export const slugify = (value: string) => normalizeText(value).replace(/\s+/g, "-");
 
 export const toLocalDateParts = (isoDate: string, timeZone: string) => {
+	if (/^\d{4}-\d{2}-\d{2}$/.test(isoDate)) {
+		const [year, month, day] = isoDate.split("-").map(Number);
+		const date = new Date(Date.UTC(year, month - 1, day));
+		if (
+			date.getUTCFullYear() !== year ||
+			date.getUTCMonth() !== month - 1 ||
+			date.getUTCDate() !== day
+		) {
+			throw new Error(`Data inválida: ${isoDate}`);
+		}
+		return { date: isoDate, time: undefined };
+	}
+
 	const date = new Date(isoDate);
 	if (Number.isNaN(date.getTime())) throw new Error(`Data inválida: ${isoDate}`);
 
@@ -46,6 +60,7 @@ export const toLocalDateParts = (isoDate: string, timeZone: string) => {
 };
 
 export const canonicalUrl = (value: string) => {
+	if (!isHttpUrl(value)) throw new Error(`URL deve usar HTTP ou HTTPS: ${value}`);
 	const url = new URL(value);
 	url.hash = "";
 	url.search = "";

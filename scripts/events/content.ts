@@ -1,24 +1,17 @@
 import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import { basename, join } from "node:path";
 import { parse, stringify } from "yaml";
-import type { DiscoveryCandidate, ExternalEvent, EventSource, OrganizerType } from "./types";
+import {
+	SYNCABLE_FIELDS,
+	type DiscoveryCandidate,
+	type ExternalEvent,
+	type EventSource,
+	type OrganizerType,
+	type SyncableField,
+} from "./types";
 import { canonicalUrl, normalizeText, slugify } from "./text";
 
-export const SYNCABLE_FIELDS = [
-	"title",
-	"date",
-	"endDate",
-	"time",
-	"location",
-	"format",
-	"organizerName",
-	"url",
-	"description",
-	"status",
-	"tags",
-] as const;
-
-type SyncableField = (typeof SYNCABLE_FIELDS)[number];
+export { SYNCABLE_FIELDS } from "./types";
 
 interface EventDocument {
 	path: string;
@@ -215,7 +208,7 @@ export const reconcileEvents = async (
 
 	for (const event of uniqueExternalEvents(events)) {
 		const existing = externalKeys(event).map((key) => index.get(key)).find(Boolean);
-		const organizer = organizers.get(normalizeText(existing?.data.organizerName ?? event.organizerName));
+		const organizer = organizers.get(normalizeText(event.organizerName));
 		if (event.classification === "uncertain" || !organizer || !completeEvent(event)) {
 			candidates.push({
 				reason: candidateReason(event, organizer),

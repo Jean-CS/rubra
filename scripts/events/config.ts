@@ -8,7 +8,15 @@ export const discoveryConfig = {
 		userAgent: "RubraEventIndexer/1.0 (+https://www.rubratech.com.br/sobre)",
 		timeoutMs: 8_000,
 		maxAttempts: 2,
-		maxRequests: 20,
+		maxRedirects: 3,
+	},
+	symplaHttp: {
+		allowedHosts: ["www.sympla.com.br"],
+		maxRequests: 16,
+	},
+	meetupHttp: {
+		allowedHosts: ["www.meetup.com"],
+		maxRequests: 40,
 	},
 	symplaCatalogUrls: [
 		"https://www.sympla.com.br/eventos/londrina-pr/tecnologia",
@@ -35,6 +43,8 @@ export const discoveryConfig = {
 		"dojo",
 		"gdg",
 		"ia",
+		"ai",
+		"inteligencia artificial",
 		"programacao",
 		"software",
 		"tech",

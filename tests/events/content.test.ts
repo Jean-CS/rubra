@@ -105,6 +105,34 @@ test("manda classificação incerta para triagem mesmo com organizador reconheci
 	assert.match(result.candidates[0].reason, /Classificação/);
 });
 
+test("organizador desconhecido não herda confiança de evento existente", async () => {
+	const root = await createProject();
+	const path = join(root, "src/content/events/existing.md");
+	await writeFile(path, `---
+title: ECOTICNOVA 2026
+date: 2026-09-10
+location: Londrina, PR
+format: Presencial
+organizerName: GDG Londrina
+organizerType: Comunidade
+url: https://www.sympla.com.br/evento/original/1
+description: Evento confiável.
+tags: [Tecnologia]
+---
+`, "utf8");
+
+	const result = await reconcileEvents([externalEvent({
+		externalId: "attacker",
+		url: "https://www.sympla.com.br/evento/colisao/2",
+		organizerName: "Organizador Desconhecido",
+		location: "Londrina, PR",
+	})], root);
+	assert.deepEqual(result.changedFiles, []);
+	assert.equal(result.candidates.length, 1);
+	assert.match(result.candidates[0].reason, /não reconhecido/);
+	assert.match(await readFile(path, "utf8"), /evento\/original\/1/);
+});
+
 test("protege descrição editorial ao vincular uma fonte pela primeira vez", async () => {
 	const root = await createProject();
 	const path = join(root, "src/content/events/manual.md");
