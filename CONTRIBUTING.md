@@ -8,7 +8,7 @@ Abra uma Issue usando um dos formulários:
 
 - [Indicar ou atualizar comunidade](https://github.com/Jean-CS/rubra/issues/new?template=indicar-comunidade.yml)
 - [Indicar ou atualizar instituição de ensino](https://github.com/Jean-CS/rubra/issues/new?template=indicar-instituicao.yml)
-- [Indicar evento](https://github.com/Jean-CS/rubra/issues/new?template=indicar-evento.yml)
+- [Indicar ou corrigir evento](https://github.com/Jean-CS/rubra/issues/new?template=indicar-evento.yml)
 
 Inclua links verificáveis quando houver e uma descrição curta. A curadoria pode ajustar texto, tags e categoria para manter o diretório consistente.
 
@@ -79,6 +79,7 @@ tags:
   - IA
   - Meetup
   - Carreira
+status: Agendado
 ---
 ```
 
@@ -96,3 +97,29 @@ Depois de revisar uma Issue:
 Para preparar uma entrada sem publicar ainda, adicione `draft: true` ao frontmatter. Entradas em draft são validadas, mas não aparecem no site.
 
 A curadoria pode ajustar título, descrição, tags, categoria e organizador antes de publicar. Para eventos, publique apenas quando houver informação suficiente para verificar a indicação.
+
+## Revisar descobertas automáticas
+
+O coletor diário nunca publica diretamente. Ele produz dois tipos de entrada para revisão:
+
+1. Um PR na branch `automation/event-sync` quando o organizador já existe no Rubra e todos os campos obrigatórios estão disponíveis.
+2. Uma Issue `descoberta-automatica` quando o organizador é desconhecido ou a descoberta está incompleta.
+
+Ao revisar um PR automático:
+
+- abra a URL pública e confira título, data, cidade, formato, organizador e status;
+- rejeite eventos sem relação clara com tecnologia em Londrina;
+- trate a descrição da Sympla como um resumo factual mínimo, não como texto promocional;
+- não interprete ausência no catálogo como cancelamento;
+- aceite mudança de status do Meetup somente quando o JSON-LD declarar adiamento ou cancelamento;
+- confirme que `pnpm test` e `pnpm build` passaram.
+
+Quando uma correção comunitária aprovada contradizer a plataforma, mantenha o valor corrigido e adicione o campo a `syncIgnore`:
+
+```yaml
+syncIgnore:
+  - description
+  - location
+```
+
+Valores permitidos são `title`, `date`, `endDate`, `time`, `location`, `format`, `organizerName`, `url`, `description`, `status` e `tags`. Eventos manuais continuam válidos sem `source`, e contribuições diretas por PR continuam bem-vindas.

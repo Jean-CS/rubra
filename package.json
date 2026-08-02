@@ -2,6 +2,7 @@
   "name": "rubra",
   "type": "module",
   "version": "0.0.1",
+  "packageManager": "pnpm@10.32.1",
   "engines": {
     "node": ">=22.12.0"
   },
@@ -9,9 +10,19 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "events:sync": "tsx scripts/events/sync.ts",
+    "events:publish-candidates": "tsx scripts/events/publish-candidates.ts",
+    "check": "tsc --noEmit",
+    "test": "tsx --test tests/events/*.test.ts"
   },
   "dependencies": {
-    "astro": "^6.2.1"
+    "astro": "^6.2.1",
+    "cheerio": "^1.2.0",
+    "yaml": "^2.9.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.1",
+    "tsx": "^4.23.1"
   }
 }

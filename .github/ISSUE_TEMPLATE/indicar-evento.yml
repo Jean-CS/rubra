@@ -10,7 +10,23 @@ body:
       value: |
         Obrigado por ajudar a manter a agenda viva. Eventos passam por curadoria manual antes de entrar no site. Inclua um link público se houver.
   - type: input
-    id: title
+    id: request-type
+    attributes:
+      label: Tipo de solicitação
+      description: Use "Novo evento" ou "Correção de evento existente".
+      placeholder: Novo evento
+    validations:
+      required: true
+  - type: input
+    id: event-reference
+    attributes:
+      label: Evento existente
+      description: Para correções, informe o identificador preenchido pelo Rubra ou cole o título atual.
+      placeholder: gdg-londrina-encontro-2026
+    validations:
+      required: false
+  - type: input
+    id: event-name
     attributes:
       label: Nome do evento
       placeholder: Meetup de IA em Londrina

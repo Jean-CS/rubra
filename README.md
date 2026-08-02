@@ -38,7 +38,7 @@ Abra uma issue usando o formulário certo:
 | --- | --- |
 | Comunidade | [Indicar ou atualizar comunidade](https://github.com/Jean-CS/rubra/issues/new?template=indicar-comunidade.yml) |
 | Instituição de ensino | [Indicar ou atualizar instituição](https://github.com/Jean-CS/rubra/issues/new?template=indicar-instituicao.yml) |
-| Evento | [Indicar evento](https://github.com/Jean-CS/rubra/issues/new?template=indicar-evento.yml) |
+| Evento | [Indicar ou corrigir evento](https://github.com/Jean-CS/rubra/issues/new?template=indicar-evento.yml) |
 | Sugestão, feedback ou crítica | [Propor melhoria para o Rubra](https://github.com/Jean-CS/rubra/issues/new?template=feedback.yml) |
 | Problema ou bug | [Reportar problema](https://github.com/Jean-CS/rubra/issues/new?template=bug.yml) |
 
@@ -53,6 +53,7 @@ Para detalhes do processo, leia [CONTRIBUTING.md](CONTRIBUTING.md).
 - Agenda com próximos eventos publicados.
 - Histórico de eventos já realizados.
 - Fluxo aberto de indicação via GitHub Issues, com curadoria antes da publicação.
+- Descoberta diária de eventos públicos de Sympla e Meetup, sempre com revisão humana.
 
 ## Curadoria
 
@@ -79,6 +80,37 @@ Para preparar uma entrada sem exibir no site, use:
 draft: true
 ```
 
+### Descoberta automática de eventos
+
+O Rubra consulta uma vez por dia os catálogos públicos da Sympla em Londrina e páginas públicas de grupos de tecnologia no Meetup. O coletor lê apenas HTML público: não usa tokens de organizadores, páginas autenticadas, endpoints internos ou calendários privados.
+
+O fluxo é:
+
+```txt
+Sympla/Meetup públicos → normalização → Markdown ou Issue → revisão → merge → Vercel
+```
+
+- Eventos completos de organizadores já cadastrados são propostos no PR contínuo `automation/event-sync`.
+- Organizador desconhecido ou informação incompleta gera uma Issue com a label `descoberta-automatica`, sem publicação.
+- Ausência posterior no catálogo não remove nem cancela eventos.
+- Queue-it, captcha, Cloudflare, HTTP 403 ou 429 fazem a execução falhar sem tentar contornar a proteção.
+- Mudanças de termos ou incidentes podem pausar cada adaptador imediatamente pelas flags `symplaEnabled` e `meetupEnabled` em `scripts/events/config.ts`.
+- Eventos que existem somente em Instagram, LinkedIn ou WhatsApp continuam dependendo de indicação comunitária.
+
+O estado editorial opcional de um evento sincronizado é:
+
+```yaml
+status: Agendado
+source:
+  provider: sympla
+  externalId: "3505110"
+  url: https://www.sympla.com.br/evento/ecoticnova-2026/3505110
+syncIgnore:
+  - description
+```
+
+`syncIgnore` protege uma correção aprovada da comunidade contra atualizações posteriores da fonte. A execução manual fica em **Actions → Sincronizar eventos públicos → Run workflow**. Schedules do GitHub Actions podem ser desativados depois de 60 dias sem atividade no repositório; nesse caso, uma execução manual ou nova atividade reativa a automação.
+
 ## Desenvolvimento
 
 Requisitos:
@@ -102,6 +134,9 @@ Por padrão, o Astro sobe em `http://localhost:4321`.
 | `pnpm install` | Instala as dependências |
 | `pnpm dev` | Inicia o servidor de desenvolvimento |
 | `pnpm build` | Gera o site de produção em `dist/` |
+| `pnpm check` | Verifica os tipos TypeScript do site, scripts e testes |
+| `pnpm test` | Testa parsers, bloqueios e reconciliação usando fixtures locais |
+| `pnpm events:sync` | Executa a coleta pública e prepara alterações/candidatos |
 | `pnpm preview` | Pré-visualiza o build localmente |
 | `pnpm astro` | Executa comandos da CLI do Astro |
 
@@ -113,6 +148,8 @@ Por padrão, o Astro sobe em `http://localhost:4321`.
 │   ├── content/          # Comunidades, instituições e eventos
 │   ├── layouts/          # Layout base do site
 │   └── pages/            # Home e página de eventos
+├── scripts/events/       # Coleta, normalização e reconciliação
+├── tests/                # Fixtures sanitizadas e testes do coletor
 ├── public/               # Assets públicos
 ├── BRAND.md              # Direção de marca e tom de voz
 ├── CONTRIBUTING.md       # Fluxo de contribuição e curadoria

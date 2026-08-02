@@ -8,12 +8,13 @@ import {
 	formatLongEventDate,
 	weekdayFormatter,
 } from "../lib/eventDates";
+import { eventCorrectionIssueUrl, eventIssueUrl } from "../lib/eventIssues";
 
 const getDateKey = (date: Date) => date.toISOString().slice(0, 10);
 const todayKey = getDateKey(new Date());
 
 const events = (await getCollection("events", ({ data }) => data.draft !== true))
-	.map(({ data }) => data);
+	.map(({ id, data }) => ({ id, ...data }));
 
 const upcomingEvents = events
 	.filter((event) => getDateKey(event.endDate ?? event.date) >= todayKey)
@@ -23,8 +24,6 @@ const pastEvents = events
 	.filter((event) => getDateKey(event.endDate ?? event.date) < todayKey)
 	.sort((a, b) => b.date.getTime() - a.date.getTime());
 
-const eventIssueUrl =
-	"https://github.com/Jean-CS/rubra/issues/new?template=indicar-evento.yml";
 const headerLinks = [
 	{ href: "/comunidades", label: "Comunidades", accent: "lime" },
 	{ href: "/instituicoes", label: "Ensino", accent: "cyan" },
@@ -132,11 +131,15 @@ const organizerStats = Array.from(
 					upcomingEvents.length > 0 ? (
 						<div class="upcoming-list">
 							{upcomingEvents.map((event) => (
-								<a class="upcoming-card" href={event.url} target="_blank" rel="noopener noreferrer">
+								<article class="upcoming-card">
 									<span>{formatEventDate(event.date, event.endDate)}</span>
-									<strong>{event.title}</strong>
+									<strong><a href={event.url} target="_blank" rel="noopener noreferrer">{event.title}</a></strong>
 									<small>{event.location}</small>
-								</a>
+									<div class="upcoming-actions">
+										<small class:list={["status-label", `status-${event.status.toLocaleLowerCase("pt-BR")}`]}>{event.status}</small>
+										<a href={eventCorrectionIssueUrl(event)}>Corrigir dados</a>
+									</div>
+								</article>
 							))}
 						</div>
 					) : (
@@ -189,6 +192,9 @@ const organizerStats = Array.from(
 								<span>{event.organizerName}</span>
 								<span>{event.format}</span>
 								{event.time && <span>{event.time}</span>}
+								{event.status !== "Agendado" && (
+									<span class:list={["status-label", `status-${event.status.toLocaleLowerCase("pt-BR")}`]}>{event.status}</span>
+								)}
 							</div>
 							<h3>
 								<a href={event.url} target="_blank" rel="noopener noreferrer">
@@ -202,6 +208,7 @@ const organizerStats = Array.from(
 									{event.tags.map((tag) => (
 										<small>{tag}</small>
 									))}
+									<a class="event-correction" href={eventCorrectionIssueUrl(event)}>Corrigir dados</a>
 								</div>
 							</footer>
 						</div>
@@ -575,7 +582,6 @@ const organizerStats = Array.from(
 		gap: 16px;
 		padding: 18px 22px;
 		border-bottom: 1px solid var(--line);
-		text-decoration: none;
 		transition: background 160ms ease;
 	}
 
@@ -607,9 +613,52 @@ const organizerStats = Array.from(
 		line-height: 1;
 	}
 
+	.upcoming-card strong a {
+		color: inherit;
+		text-decoration: none;
+	}
+
+	.upcoming-card strong a:hover {
+		text-decoration: underline;
+		text-underline-offset: 4px;
+	}
+
 	.upcoming-card small {
 		grid-column: 2;
 		color: var(--steel);
+	}
+
+	.upcoming-actions {
+		display: flex;
+		grid-column: 2;
+		align-items: center;
+		gap: 12px;
+	}
+
+	.upcoming-actions small {
+		grid-column: auto;
+	}
+
+	.upcoming-actions a,
+	.event-correction {
+		color: var(--violet);
+		font-family: var(--mono);
+		font-size: 0.64rem;
+		font-weight: 800;
+		text-transform: uppercase;
+		text-underline-offset: 3px;
+	}
+
+	.status-label {
+		font-weight: 800;
+	}
+
+	.status-adiado {
+		color: #8a4b00 !important;
+	}
+
+	.status-cancelado {
+		color: var(--red) !important;
 	}
 
 	.organizer-row {

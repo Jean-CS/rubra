@@ -4,6 +4,7 @@ import Layout from "../layouts/Layout.astro";
 import SiteFooter from "../components/SiteFooter.astro";
 import SiteHeader from "../components/SiteHeader.astro";
 import { formatEventDate, weekdayFormatter } from "../lib/eventDates";
+import { eventCorrectionIssueUrl, eventIssueUrl } from "../lib/eventIssues";
 
 const sortByName = <T extends { name: string }>(items: T[]) =>
 	items.sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
@@ -32,7 +33,7 @@ const todayKey = getDateKey(new Date());
 const publishedEvents = (
 	await getCollection("events", ({ data }) => data.draft !== true)
 )
-	.map(({ data }) => data);
+	.map(({ id, data }) => ({ id, ...data }));
 
 const upcomingEvents = publishedEvents
 	.filter((event) => {
@@ -44,7 +45,6 @@ const upcomingEvents = publishedEvents
 const githubIssueBaseUrl = "https://github.com/Jean-CS/rubra/issues/new";
 const communityIssueUrl = `${githubIssueBaseUrl}?template=indicar-comunidade.yml`;
 const institutionIssueUrl = `${githubIssueBaseUrl}?template=indicar-instituicao.yml`;
-const eventIssueUrl = `${githubIssueBaseUrl}?template=indicar-evento.yml`;
 const feedbackIssueUrl = `${githubIssueBaseUrl}?template=feedback.yml`;
 const bugIssueUrl = `${githubIssueBaseUrl}?template=bug.yml`;
 const eventsPageUrl = "/eventos";
@@ -367,6 +367,7 @@ const ecosystemTracks = [
 										<span>{event.format}</span>
 										{event.time && <span>{event.time}</span>}
 										<span>{event.location}</span>
+										<span class:list={["event-status", `status-${event.status.toLocaleLowerCase("pt-BR")}`]}>{event.status}</span>
 									</div>
 									<h3>
 										<a href={event.url} target="_blank" rel="noopener noreferrer">
@@ -382,6 +383,7 @@ const ecosystemTracks = [
 											{event.tags.map((tag) => (
 												<span>{tag}</span>
 											))}
+											<a class="event-correction" href={eventCorrectionIssueUrl(event)}>Corrigir dados</a>
 										</div>
 									</div>
 								</div>
@@ -1375,6 +1377,29 @@ const ecosystemTracks = [
 	.event-tags {
 		margin-top: 0;
 		padding-top: 0;
+	}
+
+	.event-meta .event-status {
+		border-color: currentColor;
+		font-weight: 800;
+	}
+
+	.event-meta .status-adiado {
+		color: #8a4b00;
+	}
+
+	.event-meta .status-cancelado {
+		color: var(--red);
+	}
+
+	.event-correction {
+		align-self: center;
+		color: var(--violet);
+		font-family: var(--mono);
+		font-size: 0.66rem;
+		font-weight: 800;
+		text-transform: uppercase;
+		text-underline-offset: 3px;
 	}
 
 	.event-archive-link {

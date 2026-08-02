@@ -1,0 +1,43 @@
+export const discoveryConfig = {
+	// Chaves editoriais para pausar imediatamente uma fonte após mudança de termos ou incidente.
+	symplaEnabled: true,
+	meetupEnabled: true,
+	timeZone: "America/Sao_Paulo",
+	allowedCities: ["Londrina"],
+	http: {
+		userAgent: "RubraEventIndexer/1.0 (+https://www.rubratech.com.br/sobre)",
+		timeoutMs: 8_000,
+		maxAttempts: 2,
+		maxRequests: 20,
+	},
+	symplaCatalogUrls: [
+		"https://www.sympla.com.br/eventos/londrina-pr/tecnologia",
+		"https://www.sympla.com.br/eventos/londrina-pr/congresso-palestra",
+		"https://www.sympla.com.br/eventos/londrina-pr/curso-workshop",
+	],
+	symplaRobotsUrl: "https://www.sympla.com.br/robots.txt",
+	meetupDiscoveryUrl: "https://www.meetup.com/find/br--londrina/",
+	meetupRobotsUrl: "https://www.meetup.com/robots.txt",
+	meetupKnownGroups: [
+		"https://www.meetup.com/aws-user-group-londrina/",
+		"https://www.meetup.com/developerparana/",
+		"https://www.meetup.com/dojolondrina/",
+	],
+	meetupMaxGroupsPerRun: 12,
+	meetupTechKeywords: [
+		"aws",
+		"cloud",
+		"dados",
+		"data",
+		"desenvolvimento",
+		"developer",
+		"devops",
+		"dojo",
+		"gdg",
+		"ia",
+		"programacao",
+		"software",
+		"tech",
+		"tecnologia",
+	],
+} as const;

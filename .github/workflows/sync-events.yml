@@ -1,0 +1,101 @@
+name: Sincronizar eventos públicos
+
+on:
+  schedule:
+    - cron: "17 9 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: event-discovery
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      SYNC_BRANCH: automation/event-sync
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Checkout da versão editorial atual
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Preparar pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.32.1
+
+      - name: Preparar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.12.0
+          cache: pnpm
+
+      - name: Instalar dependências
+        run: pnpm install --frozen-lockfile
+
+      - name: Testar parsers e reconciliação
+        run: pnpm check && pnpm test
+
+      - name: Coletar e reconciliar eventos
+        run: pnpm events:sync
+
+      - name: Validar site antes de propor mudanças
+        run: pnpm build
+
+      - name: Abrir Issues para descobertas que exigem triagem
+        run: pnpm events:publish-candidates
+
+      - name: Verificar se há conteúdo publicável
+        id: changes
+        run: |
+          if git diff --quiet -- src/content/events; then
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Atualizar branch única de sincronização
+        if: steps.changes.outputs.has_changes == 'true'
+        run: |
+          git config user.name "rubra-event-indexer[bot]"
+          git config user.email "rubra-event-indexer[bot]@users.noreply.github.com"
+          git checkout -B "$SYNC_BRANCH"
+          git add src/content/events
+          git commit -m "chore: sincronizar eventos públicos"
+          git push --force-with-lease origin "$SYNC_BRANCH"
+
+      - name: Abrir ou atualizar PR editorial
+        if: steps.changes.outputs.has_changes == 'true'
+        run: |
+          body_file="$(mktemp)"
+          printf '%s\n' \
+            '## Sincronização automática' \
+            '' \
+            'Eventos encontrados em páginas públicas de Sympla e Meetup. Nada deve ser publicado sem revisão humana.' \
+            '' \
+            '### Revisão' \
+            '- [ ] Conferir organizador, data, cidade, formato e URL' \
+            '- [ ] Confirmar que descrições são factuais' \
+            '- [ ] Preservar correções editoriais com `syncIgnore`' \
+            '' \
+            '### Validação executada' \
+            '- `pnpm test`' \
+            '- `pnpm check`' \
+            '- `pnpm build`' \
+            '' \
+            '### Após o merge' \
+            'Confirmar o deploy da Vercel e verificar os cards afetados na agenda.' > "$body_file"
+          pr_number="$(gh pr list --head "$SYNC_BRANCH" --base main --state open --json number --jq '.[0].number // empty')"
+          if [ -z "$pr_number" ]; then
+            gh pr create --base main --head "$SYNC_BRANCH" --title "chore: sincronizar eventos públicos" --body-file "$body_file"
+          else
+            gh pr edit "$pr_number" --title "chore: sincronizar eventos públicos" --body-file "$body_file"
+          fi

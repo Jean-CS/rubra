@@ -6,6 +6,25 @@ const accentSchema = z.enum(["violet", "red", "lime", "cyan", "coral"]);
 const tagsSchema = z.array(z.string().min(1)).min(1);
 const eventFormatSchema = z.enum(["Presencial", "Online", "Híbrido"]);
 const organizerTypeSchema = z.enum(["Comunidade", "Instituição de Ensino"]);
+const eventStatusSchema = z.enum(["Agendado", "Adiado", "Cancelado"]);
+const eventSourceSchema = z.object({
+	provider: z.enum(["sympla", "meetup"]),
+	externalId: z.string().min(1),
+	url: z.string().url(),
+});
+const syncIgnoreSchema = z.array(z.enum([
+	"title",
+	"date",
+	"endDate",
+	"time",
+	"location",
+	"format",
+	"organizerName",
+	"url",
+	"description",
+	"status",
+	"tags",
+]));
 
 const communities = defineCollection({
 	loader: glob({ base: "./src/content/communities", pattern: "**/*.{md,mdx}" }),
@@ -76,6 +95,9 @@ const events = defineCollection({
 			url: z.string().url(),
 			description: z.string().min(1),
 			tags: tagsSchema,
+			status: eventStatusSchema.optional().default("Agendado"),
+			source: eventSourceSchema.optional(),
+			syncIgnore: syncIgnoreSchema.optional(),
 			draft: z.boolean().optional().default(false),
 		})
 		.refine(({ date, endDate }) => !endDate || endDate >= date, {

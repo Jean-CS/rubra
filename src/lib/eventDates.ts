@@ -25,7 +25,7 @@ export const formatEventDate = (date: Date, endDate?: Date) => {
 	const start = formatShortDate(date);
 	const end = endDate ? formatShortDate(endDate) : null;
 
-	if (!end || end === start) return start;
+	if (!endDate || !end || end === start) return start;
 
 	const sameMonth =
 		date.getUTCFullYear() === endDate.getUTCFullYear() &&
@@ -33,4 +33,3 @@ export const formatEventDate = (date: Date, endDate?: Date) => {
 
 	return sameMonth ? `${date.getUTCDate()} a ${end}` : `${start} a ${end}`;
 };
-
