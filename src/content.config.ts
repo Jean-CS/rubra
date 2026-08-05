@@ -1,11 +1,27 @@
 import { defineCollection } from "astro:content";
 import { glob } from "astro/loaders";
 import { z } from "astro/zod";
+import {
+	EVENT_FORMATS,
+	EVENT_PROVIDERS,
+	EVENT_STATUSES,
+	ORGANIZER_TYPES,
+	SYNCABLE_FIELDS,
+	isHttpUrl,
+} from "../scripts/events/types";
 
 const accentSchema = z.enum(["violet", "red", "lime", "cyan", "coral"]);
 const tagsSchema = z.array(z.string().min(1)).min(1);
-const eventFormatSchema = z.enum(["Presencial", "Online", "Híbrido"]);
-const organizerTypeSchema = z.enum(["Comunidade", "Instituição de Ensino"]);
+const httpUrlSchema = z.string().url().refine(isHttpUrl, "URL deve usar HTTP ou HTTPS");
+const eventFormatSchema = z.enum(EVENT_FORMATS);
+const organizerTypeSchema = z.enum(ORGANIZER_TYPES);
+const eventStatusSchema = z.enum(EVENT_STATUSES);
+const eventSourceSchema = z.object({
+	provider: z.enum(EVENT_PROVIDERS),
+	externalId: z.string().min(1),
+	url: httpUrlSchema,
+});
+const syncIgnoreSchema = z.array(z.enum(SYNCABLE_FIELDS));
 
 const communities = defineCollection({
 	loader: glob({ base: "./src/content/communities", pattern: "**/*.{md,mdx}" }),
@@ -73,9 +89,12 @@ const events = defineCollection({
 			format: eventFormatSchema,
 			organizerName: z.string().min(1),
 			organizerType: organizerTypeSchema,
-			url: z.string().url(),
+			url: httpUrlSchema,
 			description: z.string().min(1),
 			tags: tagsSchema,
+			status: eventStatusSchema.optional().default("Agendado"),
+			source: eventSourceSchema.optional(),
+			syncIgnore: syncIgnoreSchema.optional(),
 			draft: z.boolean().optional().default(false),
 		})
 		.refine(({ date, endDate }) => !endDate || endDate >= date, {

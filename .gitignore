@@ -26,3 +26,6 @@ docs/internal/
 # jetbrains setting folder
 .idea/
 .vercel
+
+# event discovery candidates (consumed by CI, never published)
+.event-sync/
