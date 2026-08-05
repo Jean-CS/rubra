@@ -13,7 +13,7 @@
     "astro": "astro",
     "events:sync": "tsx scripts/events/sync.ts",
     "events:publish-candidates": "tsx scripts/events/publish-candidates.ts",
-    "check": "tsc --noEmit",
+    "check": "astro sync && tsc --noEmit",
     "test": "tsx --test tests/events/*.test.ts"
   },
   "dependencies": {
