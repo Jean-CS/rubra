@@ -6,6 +6,10 @@ import type { DiscoveryCandidate } from "../../scripts/events/types";
 
 const candidate: DiscoveryCandidate = {
 	reason: "Organizador ainda não reconhecido pelo Rubra",
+	triage: {
+		category: "review",
+		reasons: ["Metadados públicos insuficientes para confirmar o foco em tecnologia"],
+	},
 	event: {
 		provider: "sympla",
 		classification: "uncertain",
@@ -29,6 +33,8 @@ test("Issue de descoberta contém marcador estável e dados para revisão", () =
 	assert.match(issue.body, /event-discovery:v1:sympla:MzUwNTExMA/);
 	assert.match(issue.body, /não foi publicado/);
 	assert.match(issue.body, /Novo organizador/);
+	assert.match(issue.body, /Triagem sugerida \| Revisar/);
+	assert.match(issue.body, /Metadados públicos insuficientes/);
 	assert.equal(issue.body.includes("@"), false);
 });
 
@@ -58,6 +64,7 @@ test("pagina marcadores e limita criações, não inspeção", async () => {
 		body: `${candidateMarker(entry)}\nexistente`,
 	}));
 	const created: string[] = [];
+	const createdLabels: string[][] = [];
 	const octokit = {
 		paginate: async () => existing,
 		rest: {
@@ -65,8 +72,9 @@ test("pagina marcadores e limita criações, não inspeção", async () => {
 				getLabel: async () => ({ data: {} }),
 				createLabel: async () => ({ data: {} }),
 				listForRepo: async () => ({ data: existing }),
-				create: async ({ body }: { body?: string }) => {
+				create: async ({ body, labels }: { body?: string; labels?: string[] }) => {
 					created.push(body ?? "");
+					createdLabels.push(labels ?? []);
 					return { data: {} };
 				},
 			},
@@ -76,4 +84,32 @@ test("pagina marcadores e limita criações, não inspeção", async () => {
 	const result = await publishCandidates(candidates, "Jean-CS/rubra", "token", octokit);
 	assert.deepEqual(result, { created: 5, existing: 20 });
 	assert.equal(created.length, 5);
+	assert.equal(createdLabels.every((labels) => labels.includes("triagem:revisar")), true);
+	assert.equal(createdLabels.every((labels) => labels.filter((label) => label.startsWith("triagem:")).length === 1), true);
+});
+
+test("cria labels gerenciadas ausentes durante a calibração", async () => {
+	const managedLabels: string[] = [];
+	const octokit = {
+		paginate: async () => [],
+		rest: {
+			issues: {
+				getLabel: async () => { throw Object.assign(new Error("Not Found"), { status: 404 }); },
+				createLabel: async ({ name }: { name: string }) => {
+					managedLabels.push(name);
+					return { data: {} };
+				},
+				listForRepo: async () => ({ data: [] }),
+				create: async () => ({ data: {} }),
+			},
+		},
+	} as unknown as Octokit;
+
+	await publishCandidates([candidate], "Jean-CS/rubra", "token", octokit);
+	assert.deepEqual(managedLabels, [
+		"descoberta-automatica",
+		"triagem:obvio-nao",
+		"triagem:revisar",
+		"triagem:tecnologia",
+	]);
 });

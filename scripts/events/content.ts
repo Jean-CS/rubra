@@ -10,6 +10,7 @@ import {
 	type SyncableField,
 } from "./types";
 import { canonicalUrl, normalizeText, slugify } from "./text";
+import { classifyEventTriage } from "./triage";
 
 export { SYNCABLE_FIELDS } from "./types";
 
@@ -213,6 +214,7 @@ export const reconcileEvents = async (
 			candidates.push({
 				reason: candidateReason(event, organizer),
 				event,
+				triage: classifyEventTriage(event),
 			});
 			continue;
 		}

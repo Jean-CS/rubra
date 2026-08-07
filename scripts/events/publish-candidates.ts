@@ -1,10 +1,39 @@
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { Octokit } from "@octokit/rest";
-import { discoveryCandidateSchema, type DiscoveryCandidate } from "./types";
+import {
+	discoveryCandidateSchema,
+	type DiscoveryCandidate,
+	type EventTriageCategory,
+} from "./types";
 import { truncate } from "./text";
 
 const LABEL = "descoberta-automatica";
+const TRIAGE_LABELS: Record<EventTriageCategory, {
+	name: string;
+	color: string;
+	description: string;
+	displayName: string;
+}> = {
+	"obvious-no": {
+		name: "triagem:obvio-nao",
+		color: "D93F0B",
+		description: "Provavelmente fora do escopo de tecnologia do Rubra",
+		displayName: "Óbvio não",
+	},
+	review: {
+		name: "triagem:revisar",
+		color: "FBCA04",
+		description: "Relação com a comunidade de tecnologia precisa de revisão",
+		displayName: "Revisar",
+	},
+	technology: {
+		name: "triagem:tecnologia",
+		color: "0E8A16",
+		description: "Provavelmente relacionado diretamente à comunidade de tecnologia",
+		displayName: "Tecnologia",
+	},
+};
 const MAX_CREATED_PER_RUN = 20;
 const REQUEST_TIMEOUT_MS = 8_000;
 
@@ -29,6 +58,10 @@ const escapePreformatted = (value: string, maxLength = 1_000) =>
 
 export const buildCandidateIssue = (candidate: DiscoveryCandidate) => {
 	const { event } = candidate;
+	const triageLabel = TRIAGE_LABELS[candidate.triage.category];
+	const triageReasons = candidate.triage.reasons
+		.map((reason) => `- ${escapeInline(reason, 500)}`)
+		.join("\n");
 	return {
 		title: `[Evento descoberto] ${truncate(event.title.replace(/\s+/g, " ").trim(), 180).replaceAll("@", "@\u200b")}`,
 		body: `${candidateMarker(candidate)}
@@ -41,6 +74,7 @@ Este evento foi encontrado em uma página pública e **não foi publicado**. A d
 | --- | --- |
 | Fonte | ${event.provider} |
 | Classificação | ${event.classification === "technology" ? "Tecnologia" : "Incerta"} |
+| Triagem sugerida | ${triageLabel.displayName} |
 | ID externo | ${escapeInline(event.externalId)} |
 | Evento | ${escapeInline(event.title)} |
 | Data | ${escapeInline(`${event.date}${event.endDate ? ` a ${event.endDate}` : ""}`)} |
@@ -54,6 +88,10 @@ Este evento foi encontrado em uma página pública e **não foi publicado**. A d
 ### Descrição encontrada
 
 <pre>${escapePreformatted(event.description ?? "Não disponível na fonte pública.")}</pre>
+
+### Motivos da triagem sugerida
+
+${triageReasons}
 
 ### Revisão
 
@@ -74,17 +112,22 @@ const repositoryParts = (repository: string) => {
 
 const requestOptions = () => ({ request: { signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS) } });
 
-const ensureLabel = async (octokit: Octokit, owner: string, repo: string) => {
+const ensureLabel = async (
+	octokit: Octokit,
+	owner: string,
+	repo: string,
+	label: { name: string; color: string; description: string },
+) => {
 	try {
-		await octokit.rest.issues.getLabel({ owner, repo, name: LABEL, ...requestOptions() });
+		await octokit.rest.issues.getLabel({ owner, repo, name: label.name, ...requestOptions() });
 	} catch (error) {
 		if (!error || typeof error !== "object" || !("status" in error) || error.status !== 404) throw error;
 		await octokit.rest.issues.createLabel({
 			owner,
 			repo,
-			name: LABEL,
-			color: "6f5ae8",
-			description: "Evento encontrado pelo coletor público",
+			name: label.name,
+			color: label.color,
+			description: label.description,
 			...requestOptions(),
 		});
 	}
@@ -98,7 +141,12 @@ export const publishCandidates = async (
 ) => {
 	if (candidates.length === 0) return { created: 0, existing: 0 };
 	const { owner, repo } = repositoryParts(repository);
-	await ensureLabel(octokit, owner, repo);
+	for (const label of [
+		{ name: LABEL, color: "6f5ae8", description: "Evento encontrado pelo coletor público" },
+		...Object.values(TRIAGE_LABELS),
+	]) {
+		await ensureLabel(octokit, owner, repo, label);
+	}
 	const issues = await octokit.paginate(octokit.rest.issues.listForRepo, {
 		owner,
 		repo,
@@ -125,7 +173,7 @@ export const publishCandidates = async (
 			owner,
 			repo,
 			...issue,
-			labels: [LABEL, "evento"],
+			labels: [LABEL, "evento", TRIAGE_LABELS[candidate.triage.category].name],
 			...requestOptions(),
 		});
 		existingMarkers.add(marker);

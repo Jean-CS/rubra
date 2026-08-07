@@ -123,3 +123,15 @@ syncIgnore:
 ```
 
 Valores permitidos são `title`, `date`, `endDate`, `time`, `location`, `format`, `organizerName`, `url`, `description` e `status`. Eventos manuais continuam válidos sem `source`, e contribuições diretas por PR continuam bem-vindas.
+
+### Interpretar as sugestões de triagem
+
+O coletor adiciona exatamente uma sugestão a cada nova Issue:
+
+- `triagem:obvio-nao`: provável evento de outro setor, sem foco real na comunidade de tecnologia;
+- `triagem:revisar`: caso adjacente ou ambíguo, como tecnologia aplicada principalmente à construção ou à indústria;
+- `triagem:tecnologia`: provável evento diretamente voltado a pessoas de software, dados, infraestrutura, segurança, IA ou comunidades técnicas.
+
+Essas labels não são decisões. Durante a calibração, revise todos os candidatos normalmente e use `invalid` com fechamento como **Not planned** quando o evento estiver fora do escopo. Mantenha `descoberta-automatica`, pois ela participa da deduplicação.
+
+Se a sugestão estiver errada, considere o caso um sinal de calibração: ajuste a regra e adicione um teste antes de automatizar qualquer descarte. A calibração exige pelo menos 14 execuções diárias e 20 sugestões `triagem:obvio-nao` sem falsos descartes.
