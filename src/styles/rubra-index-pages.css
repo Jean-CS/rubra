@@ -21,8 +21,8 @@
 	min-height: 100dvh;
 	overflow-x: clip;
 	background:
-		linear-gradient(90deg, rgba(22, 15, 11, 0.055) 1px, transparent 1px),
-		linear-gradient(rgba(22, 15, 11, 0.055) 1px, transparent 1px),
+		linear-gradient(90deg, rgba(22, 15, 11, 0.01) 1px, transparent 1px),
+		linear-gradient(rgba(22, 15, 11, 0.01) 1px, transparent 1px),
 		linear-gradient(116deg, transparent 0 37%, rgba(183, 255, 74, 0.18) 37% 37.22%, transparent 37.22%),
 		linear-gradient(28deg, transparent 0 68%, rgba(34, 211, 197, 0.16) 68% 68.18%, transparent 68.18%),
 		var(--paper);
@@ -157,14 +157,6 @@
 		rgba(248, 241, 231, 0.86);
 	background-size: 28px 28px;
 	box-shadow: 8px 8px 0 var(--ink);
-}
-
-.signal-board::before {
-	position: absolute;
-	inset: 12px;
-	pointer-events: none;
-	content: "";
-	border: 1px dashed rgba(22, 15, 11, 0.22);
 }
 
 .board-topline,
@@ -438,6 +430,18 @@
 	border: 1px solid var(--line);
 	border-left: 3px solid var(--accent);
 	background: rgba(22, 15, 11, 0.03);
+	color: var(--ink);
+	text-decoration: none;
+	transition: border-color 160ms ease, background 160ms ease, transform 160ms ease;
+}
+
+.course-pill:hover,
+.course-pill:focus-visible {
+	border-color: var(--ink);
+	border-left-color: var(--accent);
+	background: rgba(255, 255, 255, 0.42);
+	outline: 0;
+	transform: translateY(-1px);
 }
 
 .pill-name {

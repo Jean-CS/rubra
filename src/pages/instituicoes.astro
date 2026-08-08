@@ -177,10 +177,10 @@ const profiles = Array.from(new Set(institutions.map(({ profile }) => profile)))
 											<span class="course-preview-label">Cursos</span>
 											<div class="course-pill-list">
 												{coursesByInstitution[institution.id].slice(0, 3).map((c) => (
-													<span class="course-pill">
+													<a class="course-pill" href={`/instituicoes/${c.id}`}>
 														<span class="pill-name">{c.data.name}</span>
 														<span class="pill-level">{c.data.level}</span>
-													</span>
+													</a>
 												))}
 												{coursesByInstitution[institution.id].length > 3 && (
 													<a href={`/instituicoes/${institution.id}`} class="course-more">
