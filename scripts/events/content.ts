@@ -74,10 +74,16 @@ const buildOrganizerRegistry = async (projectRoot: string) => {
 			const document = parseDocument(path, await readFile(path, "utf8"));
 			const name = typeof document.data.name === "string" ? document.data.name : undefined;
 			if (!name) continue;
+			const aliases = Array.isArray(document.data.aliases)
+				? document.data.aliases.filter((alias): alias is string => typeof alias === "string")
+				: [];
 			const tags = Array.isArray(document.data.tags)
 				? document.data.tags.filter((tag): tag is string => typeof tag === "string")
 				: [];
-			registry.set(normalizeText(name), { name, type: source.type, tags });
+			const organizer = { name, type: source.type, tags };
+			for (const knownName of [name, ...aliases]) {
+				registry.set(normalizeText(knownName), organizer);
+			}
 		}
 	}
 	return registry;

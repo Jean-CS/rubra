@@ -12,6 +12,7 @@ import {
 
 const accentSchema = z.enum(["violet", "red", "lime", "cyan", "coral"]);
 const tagsSchema = z.array(z.string().min(1)).min(1);
+const aliasesSchema = z.array(z.string().min(1)).min(1).optional();
 const httpUrlSchema = z.string().url().refine(isHttpUrl, "URL deve usar HTTP ou HTTPS");
 const eventFormatSchema = z.enum(EVENT_FORMATS);
 const organizerTypeSchema = z.enum(ORGANIZER_TYPES);
@@ -27,6 +28,7 @@ const communities = defineCollection({
 	loader: glob({ base: "./src/content/communities", pattern: "**/*.{md,mdx}" }),
 	schema: z.object({
 		name: z.string().min(1),
+		aliases: aliasesSchema,
 		type: z.string().min(1),
 		website: z.string().url().optional(),
 		description: z.string().min(1),
@@ -45,6 +47,7 @@ const institutions = defineCollection({
 	}),
 	schema: z.object({
 		name: z.string().min(1),
+		aliases: aliasesSchema,
 		website: z.string().url(),
 		type: z.string().min(1),
 		description: z.string().min(1),
