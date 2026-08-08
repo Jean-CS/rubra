@@ -38,11 +38,14 @@ Abra uma issue usando o formulário certo:
 | --- | --- |
 | Comunidade | [Indicar ou atualizar comunidade](https://github.com/Jean-CS/rubra/issues/new?template=indicar-comunidade.yml) |
 | Instituição de ensino | [Indicar ou atualizar instituição](https://github.com/Jean-CS/rubra/issues/new?template=indicar-instituicao.yml) |
+| Curso já mapeado | [Corrigir ou completar dados de curso](https://github.com/Jean-CS/rubra/issues/new?template=atualizar-curso.yml) |
 | Evento | [Indicar ou corrigir evento](https://github.com/Jean-CS/rubra/issues/new?template=indicar-evento.yml) |
 | Sugestão, feedback ou crítica | [Propor melhoria para o Rubra](https://github.com/Jean-CS/rubra/issues/new?template=feedback.yml) |
 | Problema ou bug | [Reportar problema](https://github.com/Jean-CS/rubra/issues/new?template=bug.yml) |
 
 Para indicações de conteúdo, inclua links verificáveis sempre que possível. Para sugestões e críticas, explique o contexto e a mudança que você gostaria de ver. Para bugs, descreva o que aconteceu e como reproduzir. A curadoria pode ajustar descrição, categoria, tags e outros campos para manter o diretório consistente.
+
+Atualizações de cursos devem separar fato confirmado de estimativa. Preços precisam indicar a data da oferta; conceitos MEC, formas de ingresso e matriz curricular devem apontar para uma fonte oficial ou pública confiável. Uma contribuição não é publicada automaticamente.
 
 Para detalhes do processo, leia [CONTRIBUTING.md](CONTRIBUTING.md).
 

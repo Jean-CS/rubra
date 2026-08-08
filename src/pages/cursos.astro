@@ -3,6 +3,7 @@ import { getCollection } from "astro:content";
 import Layout from "../layouts/Layout.astro";
 import SiteFooter from "../components/SiteFooter.astro";
 import SiteHeader from "../components/SiteHeader.astro";
+import { formatCourseReviewDate, formatCourseTuition } from "../lib/courses";
 import "../styles/rubra-index-pages.css";
 
 const institutionEntries = await getCollection("institutions", ({ data }) => data.draft !== true);
@@ -21,6 +22,7 @@ const courses = courseEntries
 		return {
 			id: entry.id,
 			...entry.data,
+			tuitionLabel: formatCourseTuition(entry.data.tuition),
 			institutionId,
 			institution: institution.data,
 		};
@@ -61,10 +63,13 @@ const courseGroups = groupDefinitions.map((group) => ({
 }));
 
 const publicOrFreeCourses = courses.filter(
-	(course) => course.tuition === "Gratuito" || course.tags?.includes("Público"),
+	(course) =>
+		course.tuition?.type === "free" ||
+		course.tuition?.type === "mixed" ||
+		course.tags.includes("Público"),
 ).length;
-const eveningCourses = courses.filter((course) => course.shift === "Noite").length;
-const topicCount = new Set(courses.flatMap((course) => course.tags ?? [])).size;
+const eveningCourses = courses.filter((course) => course.shifts.includes("Noite")).length;
+const topicCount = new Set(courses.flatMap((course) => course.tags)).size;
 
 const githubIssueBaseUrl = "https://github.com/Jean-CS/rubra/issues/new";
 const institutionIssueUrl = `${githubIssueBaseUrl}?template=indicar-instituicao.yml`;
@@ -78,12 +83,11 @@ const headerLinks = [
 	{ href: institutionIssueUrl, label: "Indicar", accent: "cyan" },
 ] as const;
 
-const updatedAt = new Intl.DateTimeFormat("pt-BR", {
-	day: "numeric",
-	month: "long",
-	year: "numeric",
-	timeZone: "America/Sao_Paulo",
-}).format(new Date());
+const reviewedDates = courses.flatMap((course) =>
+	course.verification ? [course.verification.reviewedAt] : [],
+);
+const latestReviewDate = reviewedDates.sort((a, b) => b.getTime() - a.getTime())[0];
+const updatedAt = latestReviewDate ? formatCourseReviewDate(latestReviewDate) : undefined;
 ---
 
 <Layout
@@ -106,7 +110,7 @@ const updatedAt = new Intl.DateTimeFormat("pt-BR", {
 						instituição, nível, turno e área de formação — com links para os perfis
 						curados e para as fontes oficiais.
 					</p>
-					<span class="freshness-note">Atualizado em {updatedAt}</span>
+					{updatedAt && <span class="freshness-note">Dados revisados até {updatedAt}</span>}
 					<div class="hero-actions">
 						<a class="button button-primary" href="#graduacao">Explorar cursos</a>
 						<a class="button button-secondary" href="/instituicoes">Ver instituições</a>
@@ -187,10 +191,10 @@ const updatedAt = new Intl.DateTimeFormat("pt-BR", {
 								</h3>
 								{course.description && <p>{course.description}</p>}
 								<dl>
-									{course.shift && (
+									{course.shifts.length > 0 && (
 										<div>
-											<dt>Turno</dt>
-											<dd>{course.shift}</dd>
+											<dt>{course.shifts.length > 1 ? "Turnos" : "Turno"}</dt>
+											<dd>{course.shifts.join(" e ")}</dd>
 										</div>
 									)}
 									{course.duration && (
@@ -199,10 +203,10 @@ const updatedAt = new Intl.DateTimeFormat("pt-BR", {
 											<dd>{course.duration}</dd>
 										</div>
 									)}
-									{course.tuition && (
+									{course.tuitionLabel && (
 										<div>
 											<dt>Mensalidade</dt>
-											<dd>{course.tuition}</dd>
+											<dd>{course.tuitionLabel}</dd>
 										</div>
 									)}
 								</dl>

@@ -8,7 +8,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Obrigado por ajudar a manter o mapa vivo. As informações passam por curadoria manual antes de entrar no site.
+        Obrigado por ajudar a manter o mapa vivo. As informações passam por curadoria manual antes de entrar no site. Valores, conceitos MEC e regras de ingresso só são publicados com uma fonte confiável.
   - type: input
     id: institution
     attributes:
@@ -37,10 +37,68 @@ body:
       label: Descrição sugerida
       description: Uma ou duas frases sobre o curso e seu foco.
       placeholder: Formação técnica em...
-  - type: input
-    id: url
+  - type: dropdown
+    id: modality
     attributes:
-      label: Link do curso
+      label: Modalidade
+      options:
+        - Presencial
+        - EAD
+        - Híbrido
+  - type: dropdown
+    id: shifts
+    attributes:
+      label: Turnos
+      description: Selecione todas as opções confirmadas para esta oferta.
+      multiple: true
+      options:
+        - Manhã
+        - Tarde
+        - Noite
+        - Integral
+        - Flexível
+  - type: input
+    id: duration
+    attributes:
+      label: Duração
+      placeholder: 2 anos e meio
+  - type: input
+    id: workload
+    attributes:
+      label: Carga horária
+      placeholder: 2.000h
+  - type: input
+    id: campus
+    attributes:
+      label: Campus ou local de oferta
+      description: Deixe em branco quando não houver um local físico aplicável.
+      placeholder: Campus Londrina
+  - type: textarea
+    id: tuition
+    attributes:
+      label: Mensalidade ou gratuidade
+      description: Informe se é gratuito, pago, misto ou se o valor não é publicado. Para valores, inclua a data da oferta.
+      placeholder: Pago — R$ ... em agosto de 2026, sujeito a bolsa.
+  - type: textarea
+    id: admission
+    attributes:
+      label: Como ingressar
+      description: Resuma as formas de ingresso e inclua o link do processo seletivo.
+      placeholder: Vestibular, ENEM ou transferência — https://...
+  - type: textarea
+    id: curriculum
+    attributes:
+      label: Destaques do currículo
+      description: Liste de 3 a 6 conteúdos confirmados na página ou matriz oficial.
+      placeholder: |
+        - Algoritmos e programação
+        - Bancos de dados
+        - Engenharia de software
+  - type: input
+    id: official_url
+    attributes:
+      label: Página oficial específica do curso
+      description: Não use a página inicial genérica da instituição.
       placeholder: https://...
   - type: input
     id: tags
@@ -52,6 +110,9 @@ body:
     id: evidence
     attributes:
       label: O que precisa ser corrigido ou adicionado?
-      description: Descreva o que está errado ou faltando.
+      description: Descreva a mudança e liste as fontes que comprovam cada informação. PDFs oficiais, páginas do curso, editais e dados do MEC são preferidos.
+      placeholder: |
+        Alterar a duração para 3 anos.
+        Fonte (página oficial do curso): https://...
     validations:
       required: true

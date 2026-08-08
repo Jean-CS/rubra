@@ -1,11 +1,20 @@
 ---
 name: Engenharia da Computação
 level: Bacharelado
+area: engineering
 description: Bacharelado presencial em engenharia da computação com foco em hardware, sistemas embarcados, redes e desenvolvimento de software.
-url: https://www.anhanguera.com/
-shift: Noite
+modality: Presencial
+shifts:
+  - Noite
 workload: "4.040h"
-mec_grade: 3
+mec:
+  status: rated
+  grade: 3
+tuition:
+  type: not-published
+verification:
+  reviewedAt: 2026-08-01
+  status: partial
 tags:
   - Engenharia de Computação
   - Hardware

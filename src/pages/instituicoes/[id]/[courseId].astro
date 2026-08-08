@@ -3,6 +3,15 @@ import { getCollection } from "astro:content";
 import Layout from "../../../layouts/Layout.astro";
 import SiteFooter from "../../../components/SiteFooter.astro";
 import SiteHeader from "../../../components/SiteHeader.astro";
+import {
+	COURSE_AREA_LABELS,
+	COURSE_ESTIMATED_FIELD_LABELS,
+	COURSE_MEC_STATUS_LABELS,
+	formatCourseReviewDate,
+	formatCourseTuition,
+	getRelatedCourses,
+	isEstimatedCourseField,
+} from "../../../lib/courses";
 
 export async function getStaticPaths() {
 	const allCourses = await getCollection("courses", ({ data }) => !data.draft);
@@ -11,22 +20,21 @@ export async function getStaticPaths() {
 	return allCourses.map((course) => {
 		const [institutionId, courseSlug] = course.id.split("/");
 		const institution = institutions.find((i) => i.id === institutionId);
-		const siblingCourses = allCourses
-			.filter((c) => c.id.startsWith(`${institutionId}/`) && c.id !== course.id)
-			.sort(
-				(a, b) =>
-					a.data.name.localeCompare(b.data.name, "pt-BR") ||
-					a.id.localeCompare(b.id, "pt-BR"),
-			)
-			.slice(0, 4);
+		const relatedCourses = getRelatedCourses(allCourses, course).map((relatedCourse) => {
+			const [relatedInstitutionId] = relatedCourse.id.split("/");
+			return {
+				course: relatedCourse,
+				institution: institutions.find(({ id }) => id === relatedInstitutionId),
+			};
+		});
 		return {
 			params: { id: institutionId, courseId: courseSlug },
-			props: { course, institution, siblingCourses },
+			props: { course, institution, relatedCourses },
 		};
 	});
 }
 
-const { course, institution, siblingCourses } = Astro.props;
+const { course, institution, relatedCourses } = Astro.props;
 const { data } = course;
 
 const githubIssueBaseUrl = "https://github.com/Jean-CS/rubra/issues/new";
@@ -48,13 +56,35 @@ const headerLinks = [
 
 const [institutionId] = course.id.split("/");
 const institutionAccent = institution?.data.accent ?? "cyan";
-
-const hasMeta = data.modality || data.duration;
+const tuitionLabel = formatCourseTuition(data.tuition);
+const mecLabel = data.mec
+	? data.mec.status === "rated"
+		? `Conceito MEC ${data.mec.grade}/5`
+		: COURSE_MEC_STATUS_LABELS[data.mec.status]
+	: undefined;
+const atAGlance = [
+	{ label: "Nível", value: data.level },
+	data.modality && { label: "Modalidade", value: data.modality, field: "modality" as const },
+	{ label: data.shifts.length > 1 ? "Turnos" : "Turno", value: data.shifts.join(" e "), field: "shifts" as const },
+	data.duration && { label: "Duração", value: data.duration, field: "duration" as const },
+	data.workload && { label: "Carga horária", value: data.workload, field: "workload" as const },
+	data.campus && { label: "Local", value: data.campus, field: "campus" as const },
+	tuitionLabel && { label: "Mensalidade", value: tuitionLabel, detail: data.tuition?.note, field: "tuition" as const },
+	mecLabel && { label: "MEC", value: mecLabel, detail: data.mec?.note, field: "mec" as const },
+].filter(Boolean) as Array<{
+	label: string;
+	value: string;
+	detail?: string;
+	field?: Parameters<typeof isEstimatedCourseField>[1];
+}>;
+const externalUrl = data.officialUrl ?? institution?.data.website;
+const externalLabel = data.officialUrl ? "Ver página oficial do curso" : "Visitar site da instituição";
+const reviewDate = data.verification ? formatCourseReviewDate(data.verification.reviewedAt) : undefined;
 ---
 
 <Layout
-	title={`${data.name} — ${institution?.data.name ?? "Instituição"} | Rubra`}
-	description={data.description ?? `${data.name} — ${data.level} em ${institution?.data.name ?? "instituição"}.`}
+	title={`${data.name} — ${institution?.data.name ?? "Instituição"} em Londrina | Rubra`}
+	description={`${data.description} Veja modalidade, turno, duração, ingresso, currículo e fontes.`}
 >
 	<div class={`detail-page accent-${institutionAccent}`}>
 		<SiteHeader links={headerLinks} />
@@ -79,44 +109,53 @@ const hasMeta = data.modality || data.duration;
 				<h1>{data.name}</h1>
 				<div class="course-badges">
 					<span class="level-badge-prominent">{data.level}</span>
-					{data.modality && (
-						<span class="meta-badge">
-							<span aria-hidden="true">◈</span>{data.modality}
-						</span>
-					)}
-					{data.shift && (
-						<span class="meta-badge">
-							<span aria-hidden="true">◷</span>{data.shift}
-						</span>
-					)}
-					{data.duration && (
-						<span class="meta-badge">
-							<span aria-hidden="true">⏱</span>{data.duration}
-						</span>
-					)}
-					{data.workload && (
-						<span class="meta-badge">
-							<span aria-hidden="true">◉</span>{data.workload}
-						</span>
-					)}
-					{data.tuition && (
-						<span class={`meta-badge${data.tuition === "Gratuito" ? " meta-badge--free" : ""}`}>
-							<span aria-hidden="true">◈</span>{data.tuition}
-						</span>
-					)}
-					{typeof data.mec_grade === "number" && (
-						<span class="mec-badge">
-							MEC {"★".repeat(data.mec_grade)}{"☆".repeat(5 - data.mec_grade)}
-						</span>
-					)}
+					<span class="meta-badge">{COURSE_AREA_LABELS[data.area]}</span>
 				</div>
-				{data.description && (
-					<p class="detail-description">{data.description}</p>
-				)}
+				<p class="detail-description">{data.description}</p>
 			</header>
 
 			<div class="detail-body">
-				{data.tags && data.tags.length > 0 && (
+				<section class="detail-section overview-section" aria-labelledby="overview-title">
+					<h2 id="overview-title" class="section-label">Visão geral</h2>
+					<dl class="facts-grid">
+						{atAGlance.map((item) => {
+							const estimated = item.field && isEstimatedCourseField(data.verification?.estimatedFields, item.field);
+							return (
+								<div class="fact-card">
+									<dt>{item.label}</dt>
+									<dd>
+										{item.value}
+										{estimated && <span class="estimate-label">Estimativa</span>}
+									</dd>
+									{item.detail && <p>{item.detail}</p>}
+								</div>
+							);
+						})}
+					</dl>
+				</section>
+
+				{data.admission && (
+					<section class="detail-section prose-section" aria-labelledby="admission-title">
+						<h2 id="admission-title">Como ingressar</h2>
+						<p>{data.admission.summary}</p>
+						{data.admission.url && (
+							<a href={data.admission.url} target="_blank" rel="noopener noreferrer" class="inline-link">
+								Consultar processo seletivo →
+							</a>
+						)}
+					</section>
+				)}
+
+				{data.curriculumHighlights && (
+					<section class="detail-section prose-section" aria-labelledby="curriculum-title">
+						<h2 id="curriculum-title">O que você vai estudar</h2>
+						<ul class="curriculum-list">
+							{data.curriculumHighlights.map((highlight) => <li>{highlight}</li>)}
+						</ul>
+					</section>
+				)}
+
+				{data.tags.length > 0 && (
 					<section class="detail-section" aria-labelledby="topics-title">
 						<h2 id="topics-title" class="section-label">Tópicos</h2>
 						<div class="topic-chips">
@@ -127,35 +166,60 @@ const hasMeta = data.modality || data.duration;
 					</section>
 				)}
 
-				{data.url && (
+				{externalUrl && (
 					<div class="apply-section">
 						<a
-							href={data.url}
+							href={externalUrl}
 							target="_blank"
 							rel="noopener noreferrer"
 							class="apply-btn"
 						>
-							Acessar site do curso →
+							{externalLabel} →
 						</a>
 					</div>
 				)}
 
-				{siblingCourses.length > 0 && (
+				{(data.sources || data.verification) && (
+					<section class="detail-section sources-section" aria-labelledby="sources-title">
+						<h2 id="sources-title">Fontes e atualização</h2>
+						{data.sources && (
+							<ul class="source-list">
+								{data.sources.map((source) => (
+									<li><a href={source.url} target="_blank" rel="noopener noreferrer">{source.label} ↗</a></li>
+								))}
+							</ul>
+						)}
+						{reviewDate && (
+							<p class="verification-note">
+								Revisado em {reviewDate}. {data.verification?.status === "verified"
+									? "Dados conferidos nas fontes listadas."
+									: "Verificação parcial: alguns dados ainda precisam de confirmação."}
+							</p>
+						)}
+						{data.verification?.estimatedFields && data.verification.estimatedFields.length > 0 && (
+							<p class="estimate-note">
+								<strong>Estimativas nesta página:</strong>{" "}
+								{data.verification.estimatedFields.map((field) => COURSE_ESTIMATED_FIELD_LABELS[field]).join(", ")}.
+							</p>
+						)}
+					</section>
+				)}
+
+				{relatedCourses.length > 0 && (
 					<section class="detail-section" aria-labelledby="related-title">
-						<h2 id="related-title" class="section-label">
-							Outros cursos {institution ? `em ${institution.data.name}` : "desta instituição"}
-						</h2>
+						<h2 id="related-title">Cursos semelhantes em Londrina</h2>
 						<div class="related-grid">
-							{siblingCourses.map((sibling) => {
-								const [sibInstId, sibSlug] = sibling.id.split("/");
+							{relatedCourses.map(({ course: relatedCourse, institution: relatedInstitution }) => {
+								const [relatedInstitutionId, relatedSlug] = relatedCourse.id.split("/");
 								return (
 									<a
-										href={`/instituicoes/${sibInstId}/${sibSlug}`}
+										href={`/instituicoes/${relatedInstitutionId}/${relatedSlug}`}
 										class="related-card"
 									>
 										<div class="related-card-inner">
-											<span class="related-name">{sibling.data.name}</span>
-											<span class="level-badge">{sibling.data.level}</span>
+											<span class="related-institution">{relatedInstitution?.data.name}</span>
+											<span class="related-name">{relatedCourse.data.name}</span>
+											<span class="level-badge">{relatedCourse.data.level}</span>
 										</div>
 										<span class="related-arrow" aria-hidden="true">→</span>
 									</a>
@@ -340,6 +404,13 @@ const hasMeta = data.modality || data.duration;
 		padding-top: clamp(20px, 3vw, 32px);
 	}
 
+	.detail-section > h2:not(.section-label) {
+		margin: 0 0 14px;
+		font-family: var(--display, "Bricolage Grotesque", sans-serif);
+		font-size: clamp(1.3rem, 3vw, 1.7rem);
+		line-height: 1.15;
+	}
+
 	.section-label {
 		margin: 0 0 16px;
 		color: var(--steel, #766a5e);
@@ -348,6 +419,109 @@ const hasMeta = data.modality || data.duration;
 		font-weight: 700;
 		text-transform: uppercase;
 		letter-spacing: 0.06em;
+	}
+
+	/* ── Decision facts ── */
+
+	.overview-section {
+		border-top: 0;
+		padding-top: 0;
+	}
+
+	.facts-grid {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 1px;
+		margin: 0;
+		border: 1px solid rgba(22, 15, 11, 0.12);
+		background: rgba(22, 15, 11, 0.12);
+	}
+
+	.fact-card {
+		min-width: 0;
+		padding: 16px 18px;
+		background: var(--paper, #f8f1e7);
+	}
+
+	.fact-card dt {
+		margin-bottom: 5px;
+		color: var(--steel, #766a5e);
+		font-family: var(--mono, "IBM Plex Mono", monospace);
+		font-size: 0.64rem;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+	}
+
+	.fact-card dd {
+		margin: 0;
+		font-weight: 700;
+		line-height: 1.35;
+	}
+
+	.fact-card p {
+		margin: 7px 0 0;
+		color: var(--steel, #766a5e);
+		font-size: 0.78rem;
+		line-height: 1.45;
+	}
+
+	.estimate-label {
+		display: inline-block;
+		margin-left: 7px;
+		padding: 2px 6px;
+		border: 1px solid color-mix(in srgb, var(--coral, #ff6247) 45%, transparent);
+		color: color-mix(in srgb, var(--coral, #ff6247) 72%, var(--ink, #160f0b));
+		font-family: var(--mono, "IBM Plex Mono", monospace);
+		font-size: 0.55rem;
+		font-weight: 700;
+		text-transform: uppercase;
+		vertical-align: 2px;
+	}
+
+	/* ── Admissions and curriculum ── */
+
+	.prose-section > p {
+		max-width: 680px;
+		margin: 0 0 10px;
+		color: var(--steel, #766a5e);
+		line-height: 1.65;
+	}
+
+	.inline-link,
+	.source-list a {
+		color: inherit;
+		font-weight: 650;
+		text-underline-offset: 3px;
+		text-decoration-thickness: 1px;
+	}
+
+	.inline-link:hover,
+	.source-list a:hover {
+		color: color-mix(in srgb, var(--accent-color) 72%, var(--ink, #160f0b));
+	}
+
+	.curriculum-list {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 10px 24px;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.curriculum-list li {
+		position: relative;
+		padding-left: 18px;
+		line-height: 1.45;
+	}
+
+	.curriculum-list li::before {
+		content: "→";
+		position: absolute;
+		left: 0;
+		color: color-mix(in srgb, var(--accent-color) 78%, var(--ink, #160f0b));
+		font-weight: 800;
 	}
 
 	/* ── Topics ── */
@@ -393,6 +567,30 @@ const hasMeta = data.modality || data.duration;
 		color: var(--ink, #160f0b);
 	}
 
+	/* ── Sources ── */
+
+	.source-list {
+		display: grid;
+		gap: 8px;
+		margin: 0 0 18px;
+		padding-left: 20px;
+	}
+
+	.verification-note,
+	.estimate-note {
+		margin: 8px 0 0;
+		max-width: 680px;
+		color: var(--steel, #766a5e);
+		font-size: 0.82rem;
+		line-height: 1.55;
+	}
+
+	.estimate-note {
+		padding: 10px 12px;
+		border-left: 3px solid var(--coral, #ff6247);
+		background: color-mix(in srgb, var(--coral, #ff6247) 7%, transparent);
+	}
+
 	/* ── Related courses ── */
 
 	.related-grid {
@@ -425,6 +623,15 @@ const hasMeta = data.modality || data.duration;
 		flex-direction: column;
 		gap: 6px;
 		min-width: 0;
+	}
+
+	.related-institution {
+		color: var(--steel, #766a5e);
+		font-family: var(--mono, "IBM Plex Mono", monospace);
+		font-size: 0.62rem;
+		font-weight: 650;
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
 	}
 
 	.related-name {
@@ -498,6 +705,8 @@ const hasMeta = data.modality || data.duration;
 	}
 
 	@media (max-width: 500px) {
+		.facts-grid,
+		.curriculum-list,
 		.related-grid {
 			grid-template-columns: 1fr;
 		}
