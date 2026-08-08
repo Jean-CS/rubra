@@ -33,6 +33,8 @@ Exemplo de comunidade:
 ```md
 ---
 name: GDG Londrina
+aliases:
+  - Nome exibido pela fonte pública
 type: Developers
 description: Comunidade local para pessoas que criam com web, cloud, mobile e práticas modernas de desenvolvimento.
 cadence: Meetups e eventos
@@ -44,6 +46,8 @@ tags:
   - Android
 ---
 ```
+
+`aliases` é opcional e serve para associar nomes alternativos exibidos pelas fontes públicas ao nome editorial da comunidade ou instituição. O site continua exibindo `name`.
 
 Exemplo de instituição:
 

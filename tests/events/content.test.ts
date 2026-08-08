@@ -15,6 +15,8 @@ const createProject = async () => {
 	]);
 	await writeFile(join(root, "src/content/communities/gdg-londrina.md"), `---
 name: GDG Londrina
+aliases:
+  - GDG Londrina no Sympla
 type: Developers
 description: Comunidade
 cadence: Meetups
@@ -95,6 +97,18 @@ test("cria Markdown apenas para organizador reconhecido e envia desconhecido par
 	const created = await readFile(result.changedFiles[0], "utf8");
 	assert.match(created, /status: Agendado/);
 	assert.match(created, /source:/);
+});
+
+test("reconhece alias da fonte e preserva o nome editorial do organizador", async () => {
+	const root = await createProject();
+	const result = await reconcileEvents([
+		externalEvent({ organizerName: "GDG Londrina no Sympla" }),
+	], root);
+	assert.equal(result.candidates.length, 0);
+	assert.equal(result.changedFiles.length, 1);
+	const created = await readFile(result.changedFiles[0], "utf8");
+	assert.match(created, /organizerName: GDG Londrina/);
+	assert.doesNotMatch(created, /organizerName: GDG Londrina no Sympla/);
 });
 
 test("manda classificação incerta para triagem mesmo com organizador reconhecido", async () => {
