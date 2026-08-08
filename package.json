@@ -17,6 +17,7 @@
     "test": "tsx --test tests/events/*.test.ts"
   },
   "dependencies": {
+    "@astrojs/sitemap": "^3.7.3",
     "@octokit/rest": "^22.0.1",
     "astro": "^6.2.1",
     "cheerio": "^1.2.0",
