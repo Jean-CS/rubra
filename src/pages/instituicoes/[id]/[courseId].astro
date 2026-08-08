@@ -13,6 +13,11 @@ export async function getStaticPaths() {
 		const institution = institutions.find((i) => i.id === institutionId);
 		const siblingCourses = allCourses
 			.filter((c) => c.id.startsWith(`${institutionId}/`) && c.id !== course.id)
+			.sort(
+				(a, b) =>
+					a.data.name.localeCompare(b.data.name, "pt-BR") ||
+					a.id.localeCompare(b.id, "pt-BR"),
+			)
 			.slice(0, 4);
 		return {
 			params: { id: institutionId, courseId: courseSlug },
@@ -35,6 +40,7 @@ updateIssueUrl.searchParams.set("level", data.level);
 const headerLinks = [
 	{ href: "/comunidades", label: "Comunidades", accent: "lime" },
 	{ href: "/instituicoes", label: "Ensino", accent: "cyan" },
+	{ href: "/cursos", label: "Cursos", accent: "cyan" },
 	{ href: "/eventos", label: "Eventos", accent: "coral" },
 	{ href: "/sobre", label: "Sobre", accent: "violet" },
 	{ href: `${githubIssueBaseUrl}?template=indicar-instituicao.yml`, label: "Indicar", accent: "cyan" },
@@ -58,6 +64,8 @@ const hasMeta = data.modality || data.duration;
 				<p class="detail-eyebrow">
 					{institution ? (
 						<>
+							<a href="/cursos">Cursos em Londrina</a>
+							<span class="eyebrow-sep" aria-hidden="true">·</span>
 							<a href={`/instituicoes/${institutionId}`}>{institution.data.name}</a>
 							<span class="eyebrow-sep" aria-hidden="true">·</span>
 							<span class="eyebrow-meta">{institution.data.type}</span>

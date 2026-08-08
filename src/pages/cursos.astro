@@ -1,0 +1,463 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "../layouts/Layout.astro";
+import SiteFooter from "../components/SiteFooter.astro";
+import SiteHeader from "../components/SiteHeader.astro";
+import "../styles/rubra-index-pages.css";
+
+const institutionEntries = await getCollection("institutions", ({ data }) => data.draft !== true);
+const courseEntries = await getCollection("courses", ({ data }) => data.draft !== true);
+const institutionById = new Map(institutionEntries.map((entry) => [entry.id, entry]));
+
+const courses = courseEntries
+	.map((entry) => {
+		const [institutionId] = entry.id.split("/");
+		const institution = institutionById.get(institutionId);
+
+		if (!institution) {
+			throw new Error(`Instituição não encontrada para o curso ${entry.id}`);
+		}
+
+		return {
+			id: entry.id,
+			...entry.data,
+			institutionId,
+			institution: institution.data,
+		};
+	})
+	.sort(
+		(a, b) =>
+			a.name.localeCompare(b.name, "pt-BR") ||
+			a.institution.name.localeCompare(b.institution.name, "pt-BR"),
+	);
+
+const groupDefinitions = [
+	{
+		id: "graduacao",
+		label: "Graduação",
+		description: "Bacharelados, tecnólogos e licenciaturas para começar ou redirecionar uma carreira.",
+		levels: ["Bacharelado", "Tecnólogo", "Licenciatura"],
+		accent: "cyan",
+	},
+	{
+		id: "tecnico",
+		label: "Cursos técnicos",
+		description: "Formação técnica e integrada para desenvolver uma base prática em tecnologia.",
+		levels: ["Técnico", "Técnico Integrado"],
+		accent: "lime",
+	},
+	{
+		id: "pos-graduacao",
+		label: "Pós-graduação",
+		description: "Especializações, MBAs e mestrados para aprofundar uma área de atuação.",
+		levels: ["Especialização", "MBA", "Mestrado", "Doutorado"],
+		accent: "violet",
+	},
+] as const;
+
+const courseGroups = groupDefinitions.map((group) => ({
+	...group,
+	courses: courses.filter((course) => group.levels.some((level) => course.level.startsWith(level))),
+}));
+
+const publicOrFreeCourses = courses.filter(
+	(course) => course.tuition === "Gratuito" || course.tags?.includes("Público"),
+).length;
+const eveningCourses = courses.filter((course) => course.shift === "Noite").length;
+const topicCount = new Set(courses.flatMap((course) => course.tags ?? [])).size;
+
+const githubIssueBaseUrl = "https://github.com/Jean-CS/rubra/issues/new";
+const institutionIssueUrl = `${githubIssueBaseUrl}?template=indicar-instituicao.yml`;
+
+const headerLinks = [
+	{ href: "/comunidades", label: "Comunidades", accent: "lime" },
+	{ href: "/instituicoes", label: "Ensino", accent: "cyan" },
+	{ href: "/cursos", label: "Cursos", accent: "cyan" },
+	{ href: "/eventos", label: "Eventos", accent: "coral" },
+	{ href: "/sobre", label: "Sobre", accent: "violet" },
+	{ href: institutionIssueUrl, label: "Indicar", accent: "cyan" },
+] as const;
+
+const updatedAt = new Intl.DateTimeFormat("pt-BR", {
+	day: "numeric",
+	month: "long",
+	year: "numeric",
+	timeZone: "America/Sao_Paulo",
+}).format(new Date());
+---
+
+<Layout
+	title="Cursos de tecnologia em Londrina | Rubra"
+	description="Compare cursos de tecnologia em Londrina por instituição, nível, turno, duração e área de formação em um diretório local atualizado."
+>
+	<div class="index-page course-index">
+		<SiteHeader links={headerLinks} />
+
+		<main>
+			<section class="catalog-hero" aria-labelledby="courses-title">
+				<div class="hero-copy">
+					<p class="eyebrow">Formação local</p>
+					<h1 id="courses-title">
+						<span>Cursos de tecnologia</span>
+						<span>em Londrina.</span>
+					</h1>
+					<p>
+						Compare graduações, cursos técnicos e pós-graduações em tecnologia por
+						instituição, nível, turno e área de formação — com links para os perfis
+						curados e para as fontes oficiais.
+					</p>
+					<span class="freshness-note">Atualizado em {updatedAt}</span>
+					<div class="hero-actions">
+						<a class="button button-primary" href="#graduacao">Explorar cursos</a>
+						<a class="button button-secondary" href="/instituicoes">Ver instituições</a>
+					</div>
+				</div>
+
+				<aside class="signal-board" aria-label="Resumo dos cursos mapeados">
+					<div class="board-topline">
+						<span>Mapa de formação</span>
+						<span>LDN / EDU</span>
+					</div>
+					<div class="board-main">
+						<strong>{courses.length}</strong>
+						<span>cursos e programas mapeados</span>
+						<div class="signal-lines" aria-hidden="true">
+							<span>Graduação</span>
+							<span>Técnico</span>
+							<span>Pós</span>
+						</div>
+					</div>
+					<div class="board-footline">
+						<span>{institutionEntries.length} instituições</span>
+						<span>{topicCount} temas</span>
+					</div>
+				</aside>
+			</section>
+
+			<section class="section-band" aria-labelledby="course-context-title">
+				<div>
+					<p class="section-kicker">Escolha informada</p>
+					<h2 id="course-context-title">Uma visão local antes de abrir dezenas de abas.</h2>
+				</div>
+				<div class="metric-stack" aria-label="Resumo do catálogo de cursos">
+					<p>
+						<strong>{courses.length}</strong>
+						<span>cursos e programas</span>
+					</p>
+					<p>
+						<strong>{eveningCourses}</strong>
+						<span>opções noturnas</span>
+					</p>
+					<p>
+						<strong>{publicOrFreeCourses}</strong>
+						<span>opções públicas ou gratuitas</span>
+					</p>
+				</div>
+			</section>
+
+			<nav class="course-paths" aria-label="Níveis de formação">
+				{courseGroups.map((group, index) => (
+					<a class:list={["path-card", `accent-${group.accent}`]} href={`#${group.id}`}>
+						<span>{String(index + 1).padStart(2, "0")}</span>
+						<strong>{group.label}</strong>
+						<small>{group.courses.length} {group.courses.length === 1 ? "opção" : "opções"}</small>
+					</a>
+				))}
+			</nav>
+
+			{courseGroups.map((group) => (
+				<section class="course-section" id={group.id} aria-labelledby={`${group.id}-title`}>
+					<div class="section-heading">
+						<div>
+							<p class="section-kicker">{group.courses.length} opções mapeadas</p>
+							<h2 id={`${group.id}-title`}>{group.label}</h2>
+						</div>
+						<p>{group.description}</p>
+					</div>
+
+					<div class="course-grid">
+						{group.courses.map((course) => (
+							<article class:list={["course-card", `accent-${course.institution.accent}`]}>
+								<div class="course-card-topline">
+									<span>{course.level}</span>
+									<span>{course.institution.name}</span>
+								</div>
+								<h3>
+									<a href={`/instituicoes/${course.id}`}>{course.name}</a>
+								</h3>
+								{course.description && <p>{course.description}</p>}
+								<dl>
+									{course.shift && (
+										<div>
+											<dt>Turno</dt>
+											<dd>{course.shift}</dd>
+										</div>
+									)}
+									{course.duration && (
+										<div>
+											<dt>Duração</dt>
+											<dd>{course.duration}</dd>
+										</div>
+									)}
+									{course.tuition && (
+										<div>
+											<dt>Mensalidade</dt>
+											<dd>{course.tuition}</dd>
+										</div>
+									)}
+								</dl>
+								<div class="course-card-footer">
+									<a href={`/instituicoes/${course.id}`}>Ver detalhes no Rubra</a>
+									<a href={`/instituicoes/${course.institutionId}`}>Ver instituição</a>
+								</div>
+							</article>
+						))}
+					</div>
+				</section>
+			))}
+
+			<section class="course-cta" aria-labelledby="missing-course-title">
+				<div>
+					<p class="section-kicker">Catálogo comunitário</p>
+					<h2 id="missing-course-title">Faltou um curso de tecnologia em Londrina?</h2>
+					<p>
+						Indique a instituição ou ajude a corrigir informações para manter este mapa
+						útil para quem está escolhendo onde estudar.
+					</p>
+				</div>
+				<div class="cta-actions">
+					<a class="button button-primary" href={institutionIssueUrl}>Indicar instituição</a>
+					<a class="button button-secondary" href="/instituicoes">Diretório de ensino</a>
+				</div>
+			</section>
+		</main>
+
+		<SiteFooter />
+	</div>
+</Layout>
+
+<style>
+	.course-index {
+		--accent: var(--cyan);
+	}
+
+	.course-index .catalog-hero h1 {
+		max-width: 15ch;
+	}
+
+	.course-paths,
+	.course-section,
+	.course-cta {
+		position: relative;
+		z-index: 1;
+		width: min(1180px, calc(100% - (var(--page-gutter) * 2)));
+		margin-inline: auto;
+	}
+
+	.course-paths {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 14px;
+		margin-bottom: clamp(52px, 8vw, 96px);
+	}
+
+	.path-card {
+		display: grid;
+		grid-template-columns: auto 1fr;
+		gap: 8px 18px;
+		align-items: end;
+		min-height: 180px;
+		padding: clamp(18px, 3vw, 28px);
+		border: 1px solid var(--ink);
+		border-top: 8px solid var(--accent);
+		background: rgba(248, 241, 231, 0.88);
+		box-shadow: 6px 6px 0 var(--ink);
+		text-decoration: none;
+		transition: transform 160ms ease, box-shadow 160ms ease;
+	}
+
+	.path-card:hover,
+	.path-card:focus-visible {
+		box-shadow: 3px 3px 0 var(--ink);
+		outline: 0;
+		transform: translate(3px, 3px);
+	}
+
+	.path-card > span,
+	.path-card small {
+		color: var(--steel);
+		font-family: var(--mono);
+		font-size: 0.68rem;
+		font-weight: 700;
+		text-transform: uppercase;
+	}
+
+	.path-card strong {
+		font-family: var(--display);
+		font-size: clamp(1.55rem, 3vw, 2.5rem);
+		line-height: 0.95;
+	}
+
+	.path-card small {
+		grid-column: 2;
+	}
+
+	.course-section {
+		scroll-margin-top: 24px;
+		padding-bottom: clamp(58px, 9vw, 108px);
+	}
+
+	.course-section h2,
+	.course-cta h2 {
+		margin: 0;
+		font-family: var(--display);
+		font-size: clamp(2.4rem, 5vw, 4.6rem);
+		line-height: 0.92;
+	}
+
+	.course-grid {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 16px;
+	}
+
+	.course-card {
+		display: grid;
+		grid-template-rows: auto auto 1fr auto auto;
+		gap: 14px;
+		min-height: 330px;
+		padding: clamp(18px, 3vw, 28px);
+		border: 1px solid var(--ink);
+		border-left: 8px solid var(--accent);
+		background: rgba(248, 241, 231, 0.9);
+		box-shadow: 5px 5px 0 var(--ink);
+	}
+
+	.course-card-topline {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		gap: 8px;
+		color: var(--steel);
+		font-family: var(--mono);
+		font-size: 0.68rem;
+		font-weight: 700;
+		text-transform: uppercase;
+	}
+
+	.course-card h3 {
+		margin: 0;
+		font-family: var(--display);
+		font-size: clamp(1.55rem, 3vw, 2.4rem);
+		line-height: 0.98;
+	}
+
+	.course-card h3 a {
+		text-decoration: none;
+	}
+
+	.course-card h3 a:hover,
+	.course-card h3 a:focus-visible {
+		text-decoration: underline;
+		text-decoration-color: var(--accent);
+		text-underline-offset: 5px;
+	}
+
+	.course-card > p {
+		margin: 0;
+		color: #4a3c31;
+		line-height: 1.55;
+	}
+
+	.course-card dl {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		margin: 0;
+	}
+
+	.course-card dl div {
+		display: grid;
+		gap: 2px;
+		min-width: 100px;
+		padding: 8px 10px;
+		border: 1px solid var(--line);
+		background: rgba(22, 15, 11, 0.035);
+	}
+
+	.course-card dt {
+		color: var(--steel);
+		font-family: var(--mono);
+		font-size: 0.61rem;
+		font-weight: 700;
+		text-transform: uppercase;
+	}
+
+	.course-card dd {
+		margin: 0;
+		font-size: 0.82rem;
+		font-weight: 800;
+	}
+
+	.course-card-footer {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 14px;
+		padding-top: 14px;
+		border-top: 1px solid var(--line);
+	}
+
+	.course-card-footer a {
+		font-weight: 800;
+		text-decoration-color: var(--accent);
+		text-decoration-thickness: 2px;
+		text-underline-offset: 4px;
+	}
+
+	.course-cta {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto;
+		gap: clamp(22px, 5vw, 64px);
+		align-items: center;
+		padding: clamp(24px, 5vw, 52px);
+		border: 1px solid var(--ink);
+		background:
+			linear-gradient(90deg, rgba(22, 15, 11, 0.045) 1px, transparent 1px),
+			rgba(248, 241, 231, 0.9);
+		background-size: 30px 30px;
+		box-shadow: 7px 7px 0 var(--ink);
+	}
+
+	.course-cta p:not(.section-kicker) {
+		max-width: 720px;
+		margin-bottom: 0;
+		color: #4a3c31;
+		line-height: 1.6;
+	}
+
+	@media (max-width: 880px) {
+		.course-paths,
+		.course-grid,
+		.course-cta {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	@media (max-width: 560px) {
+		.path-card,
+		.course-card,
+		.course-cta {
+			box-shadow: 4px 4px 0 var(--ink);
+		}
+
+		.course-card-footer {
+			display: grid;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.path-card {
+			transition: none;
+		}
+	}
+</style>

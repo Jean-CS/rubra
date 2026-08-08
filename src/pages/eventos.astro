@@ -15,6 +15,8 @@ const todayKey = getDateKey(new Date());
 
 const events = (await getCollection("events", ({ data }) => data.draft !== true))
 	.map(({ id, data }) => ({ id, ...data }));
+const communities = await getCollection("communities", ({ data }) => data.draft !== true);
+const communityIdByName = new Map(communities.map(({ id, data }) => [data.name, id]));
 
 const upcomingEvents = events
 	.filter((event) => getDateKey(event.endDate ?? event.date) >= todayKey)
@@ -27,10 +29,19 @@ const pastEvents = events
 const headerLinks = [
 	{ href: "/comunidades", label: "Comunidades", accent: "lime" },
 	{ href: "/instituicoes", label: "Ensino", accent: "cyan" },
+	{ href: "/cursos", label: "Cursos", accent: "cyan" },
 	{ href: "/#agenda", label: "Agenda", accent: "violet" },
 	{ href: "/sobre", label: "Sobre", accent: "violet" },
 	{ href: eventIssueUrl, label: "Indicar", accent: "coral" },
 ] as const;
+
+const updatedAt = new Intl.DateTimeFormat("pt-BR", {
+	day: "numeric",
+	month: "long",
+	year: "numeric",
+	timeZone: "America/Sao_Paulo",
+}).format(new Date());
+const currentYear = new Date().getFullYear();
 
 const formatEventYear = (date: Date, endDate?: Date) => {
 	const startYear = date.getUTCFullYear();
@@ -69,29 +80,32 @@ const organizerStats = Array.from(
 	.sort((a, b) => b.count - a.count || a.name.localeCompare(b.name, "pt-BR"));
 ---
 
-<Layout>
+<Layout
+	title={`Eventos de tecnologia em Londrina — Agenda ${currentYear} | Rubra`}
+	description="Agenda atualizada de meetups, conferências, hackathons e encontros de tecnologia em Londrina e região."
+>
 	<div class="events-shell">
 		<SiteHeader links={headerLinks} />
 
 		<main>
 			<section class="events-hero" aria-labelledby="events-title">
 				<div class="hero-copy">
-					<p class="eyebrow">Agenda</p>
+					<p class="eyebrow">Agenda tech de Londrina</p>
 					<h1 id="events-title">
-					<span>Eventos</span>
-					<span>que provam</span>
-					<span>movimento.</span>
-				</h1>
-				<p>
-					Um registro público dos encontros que mantêm a cena tech de Londrina ativa:
-					o que vem pela frente, o que já aconteceu e quais comunidades estão puxando
-					a agenda.
-				</p>
-				<div class="hero-actions">
-					<a class="button button-primary" href={eventIssueUrl}>Indicar evento</a>
-					<a class="button button-secondary" href="/#agenda">Voltar para a home</a>
+						<span>Eventos de tecnologia</span>
+						<span>em Londrina.</span>
+					</h1>
+					<p>
+						Agenda pública de meetups, conferências, hackathons e encontros que mantêm
+						a cena tech de Londrina e região em movimento — com próximos eventos e um
+						histórico aberto do que já aconteceu.
+					</p>
+					<span class="freshness-note">Atualizado em {updatedAt}</span>
+					<div class="hero-actions">
+						<a class="button button-primary" href={eventIssueUrl}>Indicar evento</a>
+						<a class="button button-secondary" href="/comunidades">Ver comunidades</a>
+					</div>
 				</div>
-			</div>
 
 			<div class="activity-panel" aria-label="Resumo de eventos Rubra">
 				<div class="panel-top panel-top-year">
@@ -99,7 +113,7 @@ const organizerStats = Array.from(
 				</div>
 
 				<div class="total-stat">
-					<span>Eventos realizados</span>
+					<span>Eventos mapeados</span>
 					<strong>{events.length}</strong>
 					<small>agenda e histórico público</small>
 				</div>
@@ -157,16 +171,26 @@ const organizerStats = Array.from(
 					<h2>Quem movimenta</h2>
 				</div>
 				<div class="organizer-list">
-					{organizerStats.map((organizer, index) => (
-						<div class="organizer-row">
-							<span>{String(index + 1).padStart(2, "0")}</span>
-							<strong>{organizer.name}</strong>
-							<div class="organizer-meta">
-								<span>{pluralizeEvent(organizer.count)}</span>
-								<span>Mais recente em {formatLongEventDate(organizer.lastDate)}</span>
+					{organizerStats.map((organizer, index) => {
+						const communityId = communityIdByName.get(organizer.name);
+
+						return (
+							<div class="organizer-row">
+								<span>{String(index + 1).padStart(2, "0")}</span>
+								<strong>
+									{communityId ? (
+										<a href={`/comunidades/${communityId}`}>{organizer.name}</a>
+									) : (
+										organizer.name
+									)}
+								</strong>
+								<div class="organizer-meta">
+									<span>{pluralizeEvent(organizer.count)}</span>
+									<span>Mais recente em {formatLongEventDate(organizer.lastDate)}</span>
+								</div>
 							</div>
-						</div>
-					))}
+						);
+					})}
 				</div>
 			</div>
 		</section>
@@ -368,7 +392,7 @@ const organizerStats = Array.from(
 	}
 
 	h1 {
-		max-width: min(8.8ch, 100%);
+		max-width: min(11.5ch, 100%);
 		margin-bottom: 22px;
 		font-size: clamp(3.65rem, 6.25vw, 7.15rem);
 		font-weight: 800;
@@ -387,6 +411,20 @@ const organizerStats = Array.from(
 		color: #4a3c31;
 		font-size: clamp(1.02rem, 1.6vw, 1.25rem);
 		line-height: 1.6;
+	}
+
+	.freshness-note {
+		display: block;
+		width: fit-content;
+		margin-top: 16px;
+		padding: 6px 9px;
+		border-left: 3px solid var(--coral);
+		background: rgba(22, 15, 11, 0.045);
+		color: var(--steel);
+		font-family: var(--mono);
+		font-size: 0.68rem;
+		font-weight: 700;
+		text-transform: uppercase;
 	}
 
 	.hero-actions {
@@ -677,6 +715,11 @@ const organizerStats = Array.from(
 		font-family: var(--display);
 		font-size: 1.25rem;
 		line-height: 1;
+	}
+
+	.organizer-row strong a {
+		text-decoration-color: var(--lime);
+		text-underline-offset: 4px;
 	}
 
 	.organizer-meta {

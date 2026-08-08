@@ -66,6 +66,7 @@ const courses = defineCollection({
 	loader: glob({ base: "./src/content/institutions", pattern: "*/*.{md,mdx}" }),
 	schema: z.object({
 		name: z.string().min(1),
+		aliases: aliasesSchema,
 		level: z.string().min(1),
 		description: z.string().min(1).optional(),
 		url: z.string().url().optional(),

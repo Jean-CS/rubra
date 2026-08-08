@@ -9,9 +9,13 @@ export async function getStaticPaths() {
 	const allCourses = await getCollection("courses", ({ data }) => !data.draft);
 
 	return institutions.map((entry) => {
-		const institutionCourses = allCourses.filter((course) =>
-			course.id.startsWith(`${entry.id}/`),
-		);
+		const institutionCourses = allCourses
+			.filter((course) => course.id.startsWith(`${entry.id}/`))
+			.sort(
+				(a, b) =>
+					a.data.name.localeCompare(b.data.name, "pt-BR") ||
+					a.id.localeCompare(b.id, "pt-BR"),
+			);
 		return {
 			params: { id: entry.id },
 			props: { entry, courses: institutionCourses },
@@ -94,6 +98,7 @@ updateIssueUrl.searchParams.set("tags", data.tags.join(", "));
 const headerLinks = [
 	{ href: "/comunidades", label: "Comunidades", accent: "lime" },
 	{ href: "/instituicoes", label: "Ensino", accent: "cyan" },
+	{ href: "/cursos", label: "Cursos", accent: "cyan" },
 	{ href: "/eventos", label: "Eventos", accent: "coral" },
 	{ href: "/sobre", label: "Sobre", accent: "violet" },
 	{ href: `${githubIssueBaseUrl}?template=indicar-instituicao.yml`, label: "Indicar", accent: "cyan" },
