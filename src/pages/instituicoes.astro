@@ -22,7 +22,11 @@ const events = (await getCollection("events", ({ data }) => data.draft !== true)
 	({ data }) => data,
 );
 
-const allCourses = await getCollection("courses", ({ data }) => data.draft !== true);
+const allCourses = (await getCollection("courses", ({ data }) => data.draft !== true)).sort(
+	(a, b) =>
+		a.data.name.localeCompare(b.data.name, "pt-BR") ||
+		a.id.localeCompare(b.id, "pt-BR"),
+);
 const totalCourses = allCourses.length;
 const coursesByInstitution = Object.fromEntries(
 	institutions.map(({ id }) => [

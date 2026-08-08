@@ -13,6 +13,11 @@ export async function getStaticPaths() {
 		const institution = institutions.find((i) => i.id === institutionId);
 		const siblingCourses = allCourses
 			.filter((c) => c.id.startsWith(`${institutionId}/`) && c.id !== course.id)
+			.sort(
+				(a, b) =>
+					a.data.name.localeCompare(b.data.name, "pt-BR") ||
+					a.id.localeCompare(b.id, "pt-BR"),
+			)
 			.slice(0, 4);
 		return {
 			params: { id: institutionId, courseId: courseSlug },
