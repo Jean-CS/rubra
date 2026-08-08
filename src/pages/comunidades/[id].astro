@@ -1,0 +1,428 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "../../layouts/Layout.astro";
+import SiteFooter from "../../components/SiteFooter.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import { formatLongEventDate } from "../../lib/eventDates";
+import { eventIssueUrl } from "../../lib/eventIssues";
+import "../../styles/rubra-index-pages.css";
+
+export async function getStaticPaths() {
+	const communities = await getCollection("communities", ({ data }) => data.draft !== true);
+	const events = await getCollection("events", ({ data }) => data.draft !== true);
+
+	return communities.map((entry) => {
+		const communityEvents = events
+			.filter(({ data }) => data.organizerName === entry.data.name)
+			.map(({ id, data }) => ({ id, ...data }));
+		const relatedCommunities = communities
+			.filter(({ id }) => id !== entry.id)
+			.map((community) => ({
+				...community,
+				sharedTags: community.data.tags.filter((tag) => entry.data.tags.includes(tag)).length,
+			}))
+			.sort(
+				(a, b) =>
+					b.sharedTags - a.sharedTags ||
+					a.data.name.localeCompare(b.data.name, "pt-BR"),
+			)
+			.slice(0, 3);
+
+		return {
+			params: { id: entry.id },
+			props: { entry, communityEvents, relatedCommunities },
+		};
+	});
+}
+
+const { entry, communityEvents, relatedCommunities } = Astro.props;
+const { data } = entry;
+const getDateKey = (date: Date) => date.toISOString().slice(0, 10);
+const todayKey = getDateKey(new Date());
+
+const upcomingEvents = communityEvents
+	.filter((event) => getDateKey(event.endDate ?? event.date) >= todayKey)
+	.sort((a, b) => a.date.getTime() - b.date.getTime());
+const pastEvents = communityEvents
+	.filter((event) => getDateKey(event.endDate ?? event.date) < todayKey)
+	.sort((a, b) => b.date.getTime() - a.date.getTime());
+const visibleEvents = [...upcomingEvents, ...pastEvents].slice(0, 6);
+
+const githubIssueBaseUrl = "https://github.com/Jean-CS/rubra/issues/new";
+const communityIssueUrl = `${githubIssueBaseUrl}?template=indicar-comunidade.yml`;
+const updateIssueUrl = new URL(communityIssueUrl);
+updateIssueUrl.searchParams.set("title", `Atualizar comunidade: ${data.name}`);
+updateIssueUrl.searchParams.set("request-type", "Atualização de comunidade existente");
+updateIssueUrl.searchParams.set("name", data.name);
+updateIssueUrl.searchParams.set("type", data.type);
+if (data.website) updateIssueUrl.searchParams.set("website", data.website);
+updateIssueUrl.searchParams.set("cadence", data.cadence);
+updateIssueUrl.searchParams.set("status", data.status);
+updateIssueUrl.searchParams.set("description", data.description);
+updateIssueUrl.searchParams.set("tags", data.tags.join(", "));
+
+const headerLinks = [
+	{ href: "/comunidades", label: "Comunidades", accent: "lime" },
+	{ href: "/instituicoes", label: "Ensino", accent: "cyan" },
+	{ href: "/cursos", label: "Cursos", accent: "cyan" },
+	{ href: "/eventos", label: "Eventos", accent: "coral" },
+	{ href: "/sobre", label: "Sobre", accent: "violet" },
+	{ href: communityIssueUrl, label: "Indicar", accent: "lime" },
+] as const;
+
+const pageDescription = `Conheça ${data.name}, ${data.type.toLocaleLowerCase("pt-BR")} em Londrina. Veja temas, ritmo, status e eventos ligados à comunidade no Rubra.`;
+---
+
+<Layout
+	title={`${data.name}: comunidade tech em Londrina | Rubra`}
+	description={pageDescription}
+>
+	<div class:list={["index-page", "community-detail", `accent-${data.accent}`]}>
+		<SiteHeader links={headerLinks} />
+
+		<main>
+			<nav class="breadcrumb" aria-label="Navegação estrutural">
+				<a href="/">Início</a>
+				<span aria-hidden="true">/</span>
+				<a href="/comunidades">Comunidades</a>
+				<span aria-hidden="true">/</span>
+				<span aria-current="page">{data.name}</span>
+			</nav>
+
+			<section class="catalog-hero" aria-labelledby="community-title">
+				<div class="hero-copy">
+					<p class="eyebrow">Comunidade tech em Londrina</p>
+					<h1 id="community-title">{data.name}</h1>
+					<p>{data.description}</p>
+					<div class="hero-actions">
+						{data.website && (
+							<a
+								class="button button-primary"
+								href={data.website}
+								target="_blank"
+								rel="noopener noreferrer"
+							>
+								Acessar comunidade
+							</a>
+						)}
+						<a class="button button-secondary" href="/comunidades">Ver todas</a>
+					</div>
+				</div>
+
+				<aside class="signal-board" aria-label={`Resumo de ${data.name}`}>
+					<div class="board-topline">
+						<span>{data.type}</span>
+						<span>LDN / COM</span>
+					</div>
+					<div class="board-main">
+						<strong>{communityEvents.length}</strong>
+						<span>{communityEvents.length === 1 ? "evento registrado" : "eventos registrados"}</span>
+						<div class="signal-lines" aria-hidden="true">
+							{data.tags.slice(0, 3).map((tag) => <span>{tag}</span>)}
+						</div>
+					</div>
+					<div class="board-footline">
+						<span>{data.status}</span>
+						<span>{data.cadence}</span>
+					</div>
+				</aside>
+			</section>
+
+			<section class="section-band" aria-labelledby="community-role-title">
+				<div>
+					<p class="section-kicker">No mapa do Rubra</p>
+					<h2 id="community-role-title">Um ponto de encontro para {data.tags.join(", ")}.</h2>
+				</div>
+				<div class="profile-facts">
+					<dl>
+						<div>
+							<dt>Tipo</dt>
+							<dd>{data.type}</dd>
+						</div>
+						<div>
+							<dt>Status</dt>
+							<dd>{data.status}</dd>
+						</div>
+						<div>
+							<dt>Ritmo</dt>
+							<dd>{data.cadence}</dd>
+						</div>
+					</dl>
+					<a href={updateIssueUrl.toString()}>Corrigir ou atualizar este perfil</a>
+				</div>
+			</section>
+
+			<section class="entity-section" aria-labelledby="community-events-title">
+				<div class="section-heading">
+					<div>
+						<p class="section-kicker">Agenda e histórico</p>
+						<h2 id="community-events-title">Eventos de {data.name}</h2>
+					</div>
+					<p>
+						Próximos encontros aparecem primeiro. O histórico permanece público para
+						mostrar a atividade da comunidade ao longo do tempo.
+					</p>
+				</div>
+
+				{visibleEvents.length > 0 ? (
+					<div class="community-event-list">
+						{visibleEvents.map((event) => (
+							<article class="community-event-card">
+								<div class="event-date">
+									<span>{getDateKey(event.endDate ?? event.date) >= todayKey ? "Próximo" : "Realizado"}</span>
+									<strong>{formatLongEventDate(event.date)}</strong>
+								</div>
+								<div>
+									<p class="meta-label">{event.format} · {event.location}</p>
+									<h3>{event.title}</h3>
+									<p>{event.description}</p>
+									<a href={event.url} target="_blank" rel="noopener noreferrer">Ver evento oficial</a>
+								</div>
+							</article>
+						))}
+					</div>
+				) : (
+					<div class="empty-profile-state">
+						<strong>Ainda não há eventos ligados a este perfil.</strong>
+						<p>Ajude o mapa a ficar mais completo indicando um encontro desta comunidade.</p>
+						<a class="button button-primary" href={eventIssueUrl}>Indicar evento</a>
+					</div>
+				)}
+			</section>
+
+			<section class="entity-section related-section" aria-labelledby="related-communities-title">
+				<div class="section-heading">
+					<div>
+						<p class="section-kicker">Continue explorando</p>
+						<h2 id="related-communities-title">Outras comunidades</h2>
+					</div>
+					<a class="directory-link" href="/comunidades">Diretório completo →</a>
+				</div>
+				<div class="related-grid">
+					{relatedCommunities.map((community) => (
+						<a class:list={["related-card", `accent-${community.data.accent}`]} href={`/comunidades/${community.id}`}>
+							<span>{community.data.type}</span>
+							<strong>{community.data.name}</strong>
+							<small>{community.data.tags.join(" · ")}</small>
+						</a>
+					))}
+				</div>
+			</section>
+		</main>
+
+		<SiteFooter />
+	</div>
+</Layout>
+
+<style>
+	.breadcrumb,
+	.community-detail .entity-section {
+		position: relative;
+		z-index: 1;
+		width: min(1180px, calc(100% - (var(--page-gutter) * 2)));
+		margin-inline: auto;
+	}
+
+	.breadcrumb {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		padding-top: clamp(12px, 2vw, 24px);
+		color: var(--steel);
+		font-family: var(--mono);
+		font-size: 0.68rem;
+		font-weight: 700;
+		text-transform: uppercase;
+	}
+
+	.breadcrumb a {
+		text-underline-offset: 3px;
+	}
+
+	.community-detail .catalog-hero {
+		align-items: center;
+	}
+
+	.community-detail .catalog-hero h1 {
+		max-width: 11ch;
+	}
+
+	.profile-facts {
+		display: grid;
+		gap: 20px;
+	}
+
+	.profile-facts dl {
+		display: grid;
+		gap: 12px;
+		margin: 0;
+	}
+
+	.profile-facts div {
+		display: grid;
+		grid-template-columns: minmax(80px, 0.32fr) 1fr;
+		gap: 16px;
+		padding-bottom: 10px;
+		border-bottom: 1px solid var(--line);
+	}
+
+	.profile-facts dt {
+		color: var(--steel);
+		font-family: var(--mono);
+		font-size: 0.68rem;
+		font-weight: 700;
+		text-transform: uppercase;
+	}
+
+	.profile-facts dd {
+		margin: 0;
+		font-weight: 800;
+	}
+
+	.profile-facts a,
+	.community-event-card a,
+	.directory-link {
+		width: fit-content;
+		color: var(--ink);
+		font-weight: 800;
+		text-decoration-color: var(--accent);
+		text-decoration-thickness: 2px;
+		text-underline-offset: 4px;
+	}
+
+	.community-event-list {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 16px;
+	}
+
+	.community-event-card {
+		display: grid;
+		grid-template-columns: minmax(100px, 0.24fr) minmax(0, 1fr);
+		gap: 18px;
+		padding: clamp(18px, 3vw, 28px);
+		border: 1px solid var(--ink);
+		background: rgba(248, 241, 231, 0.88);
+		box-shadow: 5px 5px 0 var(--ink);
+	}
+
+	.event-date {
+		display: grid;
+		align-content: start;
+		gap: 8px;
+		padding-right: 16px;
+		border-right: 3px solid var(--accent);
+	}
+
+	.event-date span,
+	.event-date strong {
+		font-family: var(--mono);
+		font-size: 0.68rem;
+		text-transform: uppercase;
+	}
+
+	.event-date span {
+		color: var(--steel);
+	}
+
+	.community-event-card h3 {
+		margin: 0 0 8px;
+		font-family: var(--display);
+		font-size: clamp(1.35rem, 2.4vw, 2rem);
+		line-height: 1;
+	}
+
+	.community-event-card p:not(.meta-label) {
+		margin: 0 0 14px;
+		color: #4a3c31;
+		line-height: 1.55;
+	}
+
+	.empty-profile-state {
+		padding: clamp(22px, 4vw, 42px);
+		border: 1px solid var(--ink);
+		background: rgba(248, 241, 231, 0.88);
+		box-shadow: 5px 5px 0 var(--ink);
+	}
+
+	.empty-profile-state strong {
+		font-family: var(--display);
+		font-size: clamp(1.5rem, 3vw, 2.2rem);
+	}
+
+	.empty-profile-state p {
+		color: #4a3c31;
+	}
+
+	.related-section {
+		padding-top: clamp(22px, 4vw, 46px);
+	}
+
+	.related-grid {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 14px;
+	}
+
+	.related-card {
+		display: grid;
+		gap: 10px;
+		min-height: 180px;
+		align-content: end;
+		padding: 22px;
+		border: 1px solid var(--ink);
+		border-top: 7px solid var(--accent);
+		background: rgba(248, 241, 231, 0.88);
+		box-shadow: 5px 5px 0 var(--ink);
+		text-decoration: none;
+		transition: transform 160ms ease, box-shadow 160ms ease;
+	}
+
+	.related-card:hover,
+	.related-card:focus-visible {
+		box-shadow: 2px 2px 0 var(--ink);
+		outline: 0;
+		transform: translate(3px, 3px);
+	}
+
+	.related-card span,
+	.related-card small {
+		color: var(--steel);
+		font-family: var(--mono);
+		font-size: 0.67rem;
+		font-weight: 700;
+		text-transform: uppercase;
+	}
+
+	.related-card strong {
+		font-family: var(--display);
+		font-size: clamp(1.35rem, 2.6vw, 2rem);
+		line-height: 1;
+	}
+
+	@media (max-width: 880px) {
+		.community-event-list,
+		.related-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	@media (max-width: 560px) {
+		.community-event-card {
+			grid-template-columns: 1fr;
+		}
+
+		.event-date {
+			padding-right: 0;
+			padding-bottom: 12px;
+			border-right: 0;
+			border-bottom: 3px solid var(--accent);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.related-card {
+			transition: none;
+		}
+	}
+</style>

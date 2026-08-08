@@ -10,7 +10,7 @@ const sortByName = <T extends { name: string }>(items: T[]) =>
 
 const communities = sortByName(
 	(await getCollection("communities", ({ data }) => data.draft !== true)).map(
-		({ data }) => data,
+		({ id, data }) => ({ id, ...data }),
 	),
 );
 
@@ -25,10 +25,18 @@ const eventIssueUrl = `${githubIssueBaseUrl}?template=indicar-evento.yml`;
 const headerLinks = [
 	{ href: "/comunidades", label: "Comunidades", accent: "lime" },
 	{ href: "/instituicoes", label: "Ensino", accent: "cyan" },
+	{ href: "/cursos", label: "Cursos", accent: "cyan" },
 	{ href: "/eventos", label: "Eventos", accent: "coral" },
 	{ href: "/sobre", label: "Sobre", accent: "violet" },
 	{ href: communityIssueUrl, label: "Indicar", accent: "lime" },
 ] as const;
+
+const updatedAt = new Intl.DateTimeFormat("pt-BR", {
+	day: "numeric",
+	month: "long",
+	year: "numeric",
+	timeZone: "America/Sao_Paulo",
+}).format(new Date());
 
 const buildIssueUrl = (baseUrl: string, params: Record<string, string>) => {
 	const url = new URL(baseUrl);
@@ -76,16 +84,17 @@ const allTags = Array.from(new Set(communities.flatMap(({ tags }) => tags))).sor
 		<main class="index-main">
 			<section class="catalog-hero" aria-labelledby="communities-title">
 				<div class="hero-copy">
-					<p class="eyebrow">Comunidades tech em Londrina</p>
+					<p class="eyebrow">Diretório comunitário</p>
 					<h1 id="communities-title">
-						<span>Gente que faz</span>
-						<span>a cena aparecer.</span>
+						<span>Comunidades tech</span>
+						<span>em Londrina.</span>
 					</h1>
 					<p>
-						Um índice público de grupos, meetups, coletivos e iniciativas recorrentes
-						para quem quer aprender, trocar experiência, palestrar, organizar ou
-						encontrar seu primeiro círculo na tecnologia local.
+						Um índice público de grupos de programação, inteligência artificial,
+						produto, marketing, startups e cultura hacker para quem quer aprender,
+						trocar experiência ou encontrar seu primeiro círculo na tecnologia local.
 					</p>
+					<span class="freshness-note">Atualizado em {updatedAt}</span>
 					<div class="hero-actions">
 						<a class="button button-primary" href={communityIssueUrl}>Indicar comunidade</a>
 						<a class="button button-secondary" href="/eventos">Ver eventos</a>
@@ -154,9 +163,9 @@ const allTags = Array.from(new Set(communities.flatMap(({ tags }) => tags))).sor
 							return (
 								<article class={`entity-card accent-${community.accent}`}>
 									<span class="entity-index">{String(index + 1).padStart(2, "0")}</span>
-									<div class="entity-body">
-										<p class="meta-label">{community.type}</p>
-										<h3>{community.name}</h3>
+								<div class="entity-body">
+									<p class="meta-label">{community.type}</p>
+									<h3><a href={`/comunidades/${community.id}`}>{community.name}</a></h3>
 										<p>{community.description}</p>
 										<div class="tag-row" aria-label={`Temas de ${community.name}`}>
 											{community.tags.map((tag) => (
@@ -179,8 +188,9 @@ const allTags = Array.from(new Set(communities.flatMap(({ tags }) => tags))).sor
 												<dd>{eventCount || "A mapear"}</dd>
 											</div>
 										</dl>
-										<div class="side-links">
-											{community.website && (
+									<div class="side-links">
+										<a href={`/comunidades/${community.id}`}>Ver perfil</a>
+										{community.website && (
 												<a href={community.website} target="_blank" rel="noopener noreferrer">
 													Site
 												</a>
@@ -213,3 +223,9 @@ const allTags = Array.from(new Set(communities.flatMap(({ tags }) => tags))).sor
 		<SiteFooter />
 	</div>
 </Layout>
+
+<style>
+	.community-index .catalog-hero h1 {
+		max-width: 15ch;
+	}
+</style>

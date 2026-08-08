@@ -105,6 +105,20 @@
 	line-height: 1.6;
 }
 
+.freshness-note {
+	display: block;
+	width: fit-content;
+	margin-top: 16px;
+	padding: 6px 9px;
+	border-left: 3px solid var(--accent, var(--lime));
+	background: rgba(22, 15, 11, 0.045);
+	color: var(--steel);
+	font-family: var(--mono);
+	font-size: 0.68rem;
+	font-weight: 700;
+	text-transform: uppercase;
+}
+
 .hero-actions,
 .card-actions,
 .cta-actions {

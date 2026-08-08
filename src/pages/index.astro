@@ -13,7 +13,7 @@ const summarizeDescription = (description: string) => description.split(/\n\s*\n
 
 const communities = sortByName(
 	(await getCollection("communities", ({ data }) => data.draft !== true)).map(
-		({ data }) => data,
+		({ id, data }) => ({ id, ...data }),
 	),
 );
 
@@ -51,6 +51,7 @@ const eventsPageUrl = "/eventos";
 const headerLinks = [
 	{ href: "/comunidades", label: "Comunidades", accent: "lime" },
 	{ href: "/instituicoes", label: "Ensino", accent: "cyan" },
+	{ href: "/cursos", label: "Cursos", accent: "cyan" },
 	{ href: "#agenda", label: "Agenda", accent: "violet" },
 	{ href: eventsPageUrl, label: "Eventos", accent: "coral" },
 	{ href: "/sobre", label: "Sobre", accent: "violet" },
@@ -244,13 +245,7 @@ const ecosystemTracks = [
 								<span>{community.status}</span>
 							</div>
 							<h3>
-								{community.website ? (
-									<a href={community.website} target="_blank" rel="noopener noreferrer">
-										{community.name}
-									</a>
-								) : (
-									community.name
-								)}
+								<a href={`/comunidades/${community.id}`}>{community.name}</a>
 							</h3>
 							<p>{community.description}</p>
 							<div class="tag-row">
@@ -277,6 +272,9 @@ const ecosystemTracks = [
 									)
 								}
 								<div class="card-actions">
+									<a href={`/comunidades/${community.id}`} aria-label={`Ver perfil de ${community.name}`}>
+										Perfil
+									</a>
 									<a href={communityUpdateIssueUrl(community)} aria-label={`Atualizar dados de ${community.name}`}>
 										Atualizar
 									</a>

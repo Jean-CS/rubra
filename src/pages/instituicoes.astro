@@ -38,6 +38,7 @@ const eventIssueUrl = `${githubIssueBaseUrl}?template=indicar-evento.yml`;
 const headerLinks = [
 	{ href: "/comunidades", label: "Comunidades", accent: "lime" },
 	{ href: "/instituicoes", label: "Ensino", accent: "cyan" },
+	{ href: "/cursos", label: "Cursos", accent: "cyan" },
 	{ href: "/eventos", label: "Eventos", accent: "coral" },
 	{ href: "/sobre", label: "Sobre", accent: "violet" },
 	{ href: institutionIssueUrl, label: "Indicar", accent: "cyan" },
@@ -95,7 +96,7 @@ const profiles = Array.from(new Set(institutions.map(({ profile }) => profile)))
 					</p>
 					<div class="hero-actions">
 						<a class="button button-primary" href={institutionIssueUrl}>Indicar instituição</a>
-						<a class="button button-secondary" href="/comunidades">Ver comunidades</a>
+						<a class="button button-secondary" href="/cursos">Explorar cursos</a>
 					</div>
 				</div>
 
