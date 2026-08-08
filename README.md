@@ -111,6 +111,20 @@ syncIgnore:
 
 `syncIgnore` protege uma correção aprovada da comunidade contra atualizações posteriores da fonte. Os campos aceitos são `title`, `date`, `endDate`, `time`, `location`, `format`, `organizerName`, `url`, `description` e `status`. A execução manual fica em **Actions → Sincronizar eventos públicos → Run workflow**. Schedules do GitHub Actions podem ser desativados depois de 60 dias sem atividade no repositório; nesse caso, uma execução manual ou nova atividade reativa a automação.
 
+### Calibração da triagem automática
+
+Cada nova Issue de descoberta recebe uma sugestão explicável, sem substituir a decisão editorial:
+
+| Label | Significado durante a calibração |
+| --- | --- |
+| `triagem:obvio-nao` | Sinais fortes de que o evento pertence a medicina, direito, alimentação, vendas ou outro setor sem foco tecnológico |
+| `triagem:revisar` | Tecnologia aplicada a outro setor ou metadados insuficientes; exige avaliação humana |
+| `triagem:tecnologia` | Sinais diretos de software, programação, cloud, dados, segurança, IA, hackathon ou comunidade técnica |
+
+Durante a calibração, nenhuma dessas sugestões fecha, descarta ou publica um evento automaticamente. Todas as descobertas continuam abrindo Issue e exibem os motivos da sugestão. Exceções editoriais são versionadas e testadas; por exemplo, o Health Connect Summit 2026 é tratado como tecnologia para a comunidade de saúde.
+
+A calibração só pode terminar depois de pelo menos 14 execuções diárias e 20 sugestões `triagem:obvio-nao` sem nenhum falso descarte. Até lá, a label é apenas apoio para a curadoria.
+
 ## Desenvolvimento
 
 Requisitos:

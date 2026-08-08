@@ -90,6 +90,8 @@ test("cria Markdown apenas para organizador reconhecido e envia desconhecido par
 	assert.equal(result.changedFiles.length, 1);
 	assert.equal(result.candidates.length, 1);
 	assert.match(result.candidates[0].reason, /não reconhecido/);
+	assert.equal(result.candidates[0].triage.category, "technology");
+	assert.ok(result.candidates[0].triage.reasons.length > 0);
 	const created = await readFile(result.changedFiles[0], "utf8");
 	assert.match(created, /status: Agendado/);
 	assert.match(created, /source:/);
@@ -103,6 +105,7 @@ test("manda classificação incerta para triagem mesmo com organizador reconheci
 	assert.deepEqual(result.changedFiles, []);
 	assert.equal(result.candidates.length, 1);
 	assert.match(result.candidates[0].reason, /Classificação/);
+	assert.equal(result.candidates[0].triage.category, "technology");
 });
 
 test("organizador desconhecido não herda confiança de evento existente", async () => {
