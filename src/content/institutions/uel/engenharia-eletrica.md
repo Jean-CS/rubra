@@ -1,12 +1,16 @@
 ---
 name: Engenharia Elétrica
 level: Bacharelado
+area: engineering
 description: Bacharelado em engenharia elétrica com ênfase em sistemas de potência, eletrônica, automação e telecomunicações.
-url: https://portal.uel.br/
-shift: Integral
+shifts:
+  - Integral
 workload: "4.032h"
-mec_grade: 4
-tuition: "Gratuito"
+mec:
+  status: rated
+  grade: 4
+tuition:
+  type: free
 tags:
   - Engenharia
   - Hardware

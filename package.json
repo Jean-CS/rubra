@@ -14,7 +14,7 @@
     "events:sync": "tsx scripts/events/sync.ts",
     "events:publish-candidates": "tsx scripts/events/publish-candidates.ts",
     "check": "astro sync && tsc --noEmit",
-    "test": "tsx --test tests/events/*.test.ts"
+    "test": "tsx --test tests/events/*.test.ts tests/courses/*.test.ts"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.3",
