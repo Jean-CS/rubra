@@ -1,8 +1,8 @@
 ---
 title: GDG Londrina | Meetup Agosto/2026
 date: 2026-08-29
-time: 09h às 12h
-location: Torre Pietra, Londrina, PR
+time: 09h
+location: Torre Pietra — Londrina, PR
 format: Presencial
 organizerName: GDG Londrina
 organizerType: Comunidade
