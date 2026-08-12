@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { mkdtemp, mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 import test from "node:test";
 import { reconcileEvents } from "../../scripts/events/content";
 import type { ExternalEvent } from "../../scripts/events/types";
@@ -109,6 +110,38 @@ test("reconhece alias da fonte e preserva o nome editorial do organizador", asyn
 	const created = await readFile(result.changedFiles[0], "utf8");
 	assert.match(created, /organizerName: GDG Londrina/);
 	assert.doesNotMatch(created, /organizerName: GDG Londrina no Sympla/);
+});
+
+test("reconhece Dev Paraná como alias editorial de Londrina Tech", async () => {
+	const root = await createProject();
+	const projectRoot = fileURLToPath(new URL("../..", import.meta.url));
+	const londrinaTech = await readFile(
+		join(projectRoot, "src/content/communities/londrina-tech.md"),
+		"utf8",
+	);
+	await writeFile(
+		join(root, "src/content/communities/londrina-tech.md"),
+		londrinaTech,
+		"utf8",
+	);
+
+	const result = await reconcileEvents([
+		externalEvent({
+			provider: "meetup",
+			externalId: "316020847",
+			url: "https://www.meetup.com/developerparana/events/316020847",
+			title: "2° LondrinaTech Meetup",
+			date: "2026-08-15",
+			location: "UNOPAR CATUAÍ — Londrina, PR",
+			organizerName: "Dev Paraná",
+		}),
+	], root);
+
+	assert.equal(result.candidates.length, 0);
+	assert.equal(result.changedFiles.length, 1);
+	const created = await readFile(result.changedFiles[0], "utf8");
+	assert.match(created, /organizerName: Londrina Tech/);
+	assert.doesNotMatch(created, /organizerName: Dev Paraná/);
 });
 
 test("manda classificação incerta para triagem mesmo com organizador reconhecido", async () => {
