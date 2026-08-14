@@ -2,7 +2,7 @@
 title: 2° LondrinaTech Meetup
 date: 2026-08-15
 time: 09h
-location: UNOPAR CATUAÍ — Londrina, PR
+location: "UNOPAR CATUAÍ — Londrina, "
 format: Presencial
 organizerName: Londrina Tech
 organizerType: Comunidade
